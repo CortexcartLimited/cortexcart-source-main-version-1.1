@@ -9,7 +9,7 @@ export default function TopNav() {
     const [userDropdownOpen, setUserDropdownOpen] = useState(false);
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
-    
+
     const userDropdownRef = useRef(null);
     const notificationsRef = useRef(null);
 
@@ -36,7 +36,7 @@ export default function TopNav() {
     useEffect(() => {
         console.log("TopNav useEffect triggered. Auth status is:", status);
         if (status === 'authenticated') {
-            fetchNotifications(); 
+            fetchNotifications();
 
             const interval = setInterval(() => {
                 console.log("Polling for new notifications...");
@@ -67,13 +67,13 @@ export default function TopNav() {
     };
 
     if (status !== 'authenticated') {
-        return null; 
+        return null;
     }
 
     return (
-        
+
         <div className="flex items-center space-x-4 ml-auto">
-           {/* --- NEW: AI Token Counter --- */}
+            {/* --- NEW: AI Token Counter --- */}
             <div className="hidden md:flex flex-col items-end mr-2">
                 <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">AI Tokens</div>
                 <div className={`text-sm font-bold ${aiUsage.used >= aiUsage.limit ? 'text-red-600' : 'text-blue-600'}`}>
@@ -89,12 +89,17 @@ export default function TopNav() {
                         <span className="absolute top-1 right-1 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
                     )}
                 </button>
-                {notificationsOpen && <NotificationsPanel notifications={notifications} onNotificationClick={handleNotificationClick} />}
+                {notificationsOpen && (
+                    <NotificationsPanel
+                        notifications={notifications.filter(n => !n.is_read)}
+                        onNotificationClick={handleNotificationClick}
+                    />
+                )}
             </div>
 
             <div className="relative" ref={userDropdownRef}>
                 <button onClick={() => setUserDropdownOpen(!userDropdownOpen)} className="flex items-center space-x-2 rounded-full hover:bg-gray-100">
-                    <Image className="h-8 w-8 rounded-full" src={session.user.image || `https://avatar.vercel.sh/${session.user.email}`} alt="User avatar" width={96} height={96}/>
+                    <Image className="h-8 w-8 rounded-full" src={session.user.image || `https://avatar.vercel.sh/${session.user.email}`} alt="User avatar" width={96} height={96} />
                 </button>
                 {userDropdownOpen && (
                     <div className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20">

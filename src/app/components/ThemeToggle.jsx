@@ -1,25 +1,34 @@
 // src/app/components/ThemeToggle.jsx
 'use client';
 
-import { useTheme } from './ThemeProvider'; // Import our custom hook
-import { SunIcon, MoonIcon } from '@heroicons/react/24/solid';
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+import { SunIcon, MoonIcon } from "@heroicons/react/24/solid";
 
 const ThemeToggle = () => {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <button
-      onClick={toggleTheme}
-      className="p-2 rounded-full text-gray-500 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 transition-colors"
-      aria-label="Toggle theme"
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+      aria-label="Toggle Dark Mode"
     >
-      {theme === 'light' ? (
-        <MoonIcon className="h-6 w-6" /> // Show moon icon in light mode
+      {theme === "dark" ? (
+        <SunIcon className="h-5 w-5 text-yellow-500" />
       ) : (
-        <SunIcon className="h-6 w-6" /> // Show sun icon in dark mode
+        <MoonIcon className="h-5 w-5 text-gray-500" />
       )}
     </button>
   );
 };
-
 export default ThemeToggle;

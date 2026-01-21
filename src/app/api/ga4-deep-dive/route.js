@@ -27,14 +27,14 @@ export async function GET(req) {
 
     const { searchParams } = new URL(req.url);
     const type = searchParams.get('type');
-    
+
     // 1. Validate Dates
     let startDate = formatDate(searchParams.get('startDate'));
     let endDate = formatDate(searchParams.get('endDate') || 'today');
-    
+
     // Ensure start is not after end (causes INVALID_ARGUMENT)
     if (new Date(startDate) > new Date(endDate)) {
-        startDate = endDate; 
+        startDate = endDate;
     }
 
     try {
@@ -48,14 +48,14 @@ export async function GET(req) {
         }
 
         const { ga4_property_id, credentials_json } = rows[0];
-        
+
         let credentials;
         try {
             const decrypted = decrypt(credentials_json);
             if (decrypted) {
                 credentials = JSON.parse(decrypted);
             }
-        } catch (e) {}
+        } catch (e) { }
 
         if (!credentials) {
             try {
@@ -67,7 +67,7 @@ export async function GET(req) {
 
         credentials = formatCredentials(credentials);
         const client = new BetaAnalyticsDataClient({ credentials });
-        
+
         console.log(`[GA4 Deep Dive] Running report: ${type}`); // Debug Log
 
         let response;
@@ -119,12 +119,12 @@ export async function GET(req) {
                         property: `properties/${ga4_property_id}`,
                         dateRanges: [{ startDate, endDate }],
                         dimensions: [{ name: 'organicGoogleSearchQuery' }, { name: 'country' }],
-                        metrics: [{ name: 'organicGoogleSearchClicks' }], 
-                        orderBys: [{ metric: { metricName: 'organicGoogleSearchClicks' }, desc: true }],                        limit: 10
+                        metrics: [{ name: 'organicGoogleSearchClicks' }],
+                        orderBys: [{ metric: { metricName: 'organicGoogleSearchClicks' }, desc: true }], limit: 10
                     });
                     return NextResponse.json(response[0].rows ? response[0].rows.map(row => ({
-                        country: row.dimensionValues[0].value,
-                        query: row.dimensionValues[1].value,
+                        query: row.dimensionValues[0].value,
+                        country: row.dimensionValues[1].value,
                         sessions: parseInt(row.metricValues[0].value)
                     })) : []);
                 } catch (err) {
@@ -143,8 +143,8 @@ export async function GET(req) {
                         dimensionFilter: {
                             filter: {
                                 fieldName: 'sessionDefaultChannelGroup',
-                                stringFilter: { 
-                                    matchType: 'CONTAINS', 
+                                stringFilter: {
+                                    matchType: 'CONTAINS',
                                     value: 'Organic',
                                     caseSensitive: false
                                 }

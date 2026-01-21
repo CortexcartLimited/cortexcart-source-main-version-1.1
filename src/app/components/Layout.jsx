@@ -6,7 +6,8 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import RealTimeClock from './RealTimeClock';
 import AiChatAssistant from './AiChatAssistant';
-import { 
+import ThemeToggle from '@/app/components/ThemeToggle';
+import {
     ChartPieIcon, Cog6ToothIcon, ArrowRightEndOnRectangleIcon,
     MapIcon, Bars3Icon, XMarkIcon, InformationCircleIcon,
     ChatBubbleLeftRightIcon, ShareIcon, PuzzlePieceIcon, BellIcon, SparklesIcon, ChevronDownIcon, WrenchIcon, DocumentChartBarIcon
@@ -22,7 +23,7 @@ const TopNav = () => {
     const [notifications, setNotifications] = useState([]);
     const userDropdownRef = useRef(null);
     const notificationsRef = useRef(null);
-    const [aiUsage, setAiUsage] = useState({ used: 0, limit: 0 }); 
+    const [aiUsage, setAiUsage] = useState({ used: 0, limit: 0 });
 
     const unreadCount = notifications.filter(n => !n.is_read).length;
     const formatCompact = (num) => Intl.NumberFormat('en-US', { notation: "compact", maximumFractionDigits: 1 }).format(num);
@@ -47,7 +48,7 @@ const TopNav = () => {
                 .then(res => res.json())
                 .then(data => setAiUsage(data))
                 .catch(err => console.error("Failed to load AI usage", err));
-            
+
             const interval = setInterval(fetchNotifications, 30000);
             return () => clearInterval(interval);
         }
@@ -84,6 +85,7 @@ const TopNav = () => {
                 </div>
             </div>
             <div className="flex items-center space-x-4">
+                <ThemeToggle />
                 <div className="relative h-full flex items-center" ref={notificationsRef}>
                     <button onClick={() => setNotificationsOpen(!notificationsOpen)} className="p-2 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-700 relative">
                         <BellIcon className="h-6 w-6" />
@@ -93,13 +95,13 @@ const TopNav = () => {
                         <div className="absolute top-full right-0 mt-2 w-80 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
                             <div className="px-4 py-2 border-b"><p className="text-sm font-medium text-gray-900">Notifications</p></div>
                             <div className="max-h-80 overflow-y-auto">
-                                {notifications.length === 0 ? <p className="text-center text-sm text-gray-500 py-4">No new notifications</p> : 
-                                notifications.map(notif => <Link key={notif.id} href={notif.link || '#'}><div onClick={() => handleNotificationClick(notif.id)} className={`block px-4 py-3 text-sm hover:bg-gray-100 ${!notif.is_read ? 'bg-blue-50' : ''}`}><p className={!notif.is_read ? 'font-semibold':''}>{notif.message}</p><p className="text-xs text-gray-500 mt-1">{new Date(notif.created_at).toLocaleString()}</p></div></Link>)}
+                                {notifications.length === 0 ? <p className="text-center text-sm text-gray-500 py-4">No new notifications</p> :
+                                    notifications.map(notif => <Link key={notif.id} href={notif.link || '#'}><div onClick={() => handleNotificationClick(notif.id)} className={`block px-4 py-3 text-sm hover:bg-gray-100 ${!notif.is_read ? 'bg-blue-50' : ''}`}><p className={!notif.is_read ? 'font-semibold' : ''}>{notif.message}</p><p className="text-xs text-gray-500 mt-1">{new Date(notif.created_at).toLocaleString()}</p></div></Link>)}
                             </div>
                         </div>
                     )}
                 </div>
-                
+
                 <div className="relative h-full flex items-center" ref={userDropdownRef}>
                     <button onClick={() => setUserDropdownOpen(!userDropdownOpen)} className="flex items-center space-x-2 rounded-full h-full">
                         <span className="text-gray-700 text-sm font-medium hidden sm:block">{session.user.name}</span>
@@ -122,11 +124,11 @@ const TopNav = () => {
 // --- Sub-component: Footer ---
 const Footer = () => {
     const footerLinks = [
-       { name: 'About', href: 'https://cortexcart.com/pages/about' }, 
-       { name: 'Contact', href: 'https://cortexcart.com/pages/contact' },
-       { name: 'Terms of Service', href: 'https://cortexcart.com/pages/terms' }, 
-       { name: 'Privacy Policy', href: 'https://cortexcart.com/pages/privacy' },
-       { name: 'Data Protection', href: 'https://cortexcart.com/pages/data-protection/' },
+        { name: 'About', href: 'https://cortexcart.com/pages/about' },
+        { name: 'Contact', href: 'https://cortexcart.com/pages/contact' },
+        { name: 'Terms of Service', href: 'https://cortexcart.com/pages/terms' },
+        { name: 'Privacy Policy', href: 'https://cortexcart.com/pages/privacy' },
+        { name: 'Data Protection', href: 'https://cortexcart.com/pages/data-protection/' },
     ];
     const socialLinks = [
         { name: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61577780473897', icon: (props) => (<svg fill="currentColor" viewBox="0 0 24 24" {...props}><path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.77-1.63 1.562V12h2.773l-.443 2.89h-2.33v7.028C18.343 21.128 22 16.991 22 12z" clipRule="evenodd" /></svg>) },
@@ -136,11 +138,11 @@ const Footer = () => {
     ];
 
     return (
-        <footer className="bg-white border-t border-gray-200 w-full flex-none">
+        <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 w-full flex-none">
             <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
                 <nav className="flex flex-wrap justify-center -mx-5 -my-2">
                     {footerLinks.map((link) => (
-                        <div key={link.name} className="px-5 py-2"><a href={link.href} className="text-xs text-gray-500 hover:text-gray-900">{link.name}</a></div>
+                        <div key={link.name} className="px-5 py-2"><a href={link.href} className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">{link.name}</a></div>
                     ))}
                 </nav>
                 <div className="mt-4 flex justify-center space-x-6">
@@ -160,95 +162,95 @@ const Footer = () => {
 };
 
 const SidebarContent = () => {
-  const { data: session } = useSession();
-  const pathname = usePathname();
-  const [isAiMenuOpen, setIsAiMenuOpen] = useState(false);
-  const [isFinancialsMenuOpen, setIsFinancialsMenuOpen] = useState(false);
-  const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false);
+    const { data: session } = useSession();
+    const pathname = usePathname();
+    const [isAiMenuOpen, setIsAiMenuOpen] = useState(false);
+    const [isFinancialsMenuOpen, setIsFinancialsMenuOpen] = useState(false);
+    const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false);
 
-  const getLinkClass = (path) => pathname.startsWith(path) ? 'flex items-center p-2 bg-gray-800 text-gray-200 [&_span]:text-gray-200 [&_svg]:text-gray-200 rounded-lg font-medium transition-colors' : 'flex items-center p-2 text-gray-700 rounded-lg hover:bg-gray-200 hover:text-gray-900 transition-colors font-medium';
-  const getSubLinkClass = (path) => pathname.startsWith(path) ? 'text-blue-600 font-bold block py-1' : 'text-gray-600 hover:text-gray-900 block py-1 transition-colors';
-  const getParentClass = (childPaths) => childPaths.some(path => pathname.startsWith(path)) ? 'flex items-center justify-between w-full p-2 bg-gray-800 text-gray-200 [&_span]:text-gray-200 [&_svg]:text-gray-200 rounded-lg font-medium transition-colors' : 'flex items-center justify-between w-full p-2 text-gray-700 rounded-lg hover:bg-gray-200 hover:text-gray-900 transition-colors font-medium';
+    const getLinkClass = (path) => pathname.startsWith(path) ? 'flex items-center p-2 bg-gray-800 text-gray-200 [&_span]:text-gray-200 [&_svg]:text-gray-200 rounded-lg font-medium transition-colors' : 'flex items-center p-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors font-medium';
+    const getSubLinkClass = (path) => pathname.startsWith(path) ? 'text-blue-600 font-bold block py-1' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white block py-1 transition-colors';
+    const getParentClass = (childPaths) => childPaths.some(path => pathname.startsWith(path)) ? 'flex items-center justify-between w-full p-2 bg-gray-800 text-gray-200 [&_span]:text-gray-200 [&_svg]:text-gray-200 rounded-lg font-medium transition-colors' : 'flex items-center justify-between w-full p-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors font-medium';
 
-  useEffect(() => {
-    if (['/reports', '/recommendations', '/products'].some(p => pathname.startsWith(p))) setIsAiMenuOpen(true);
-    if (pathname.startsWith('/financials')) setIsFinancialsMenuOpen(true);
-    if (['/experiments', '/heatmaps'].some(p => pathname.startsWith(p))) setIsToolsMenuOpen(true);
-  }, [pathname]);
+    useEffect(() => {
+        if (['/reports', '/recommendations', '/products'].some(p => pathname.startsWith(p))) setIsAiMenuOpen(true);
+        if (pathname.startsWith('/financials')) setIsFinancialsMenuOpen(true);
+        if (['/experiments', '/heatmaps'].some(p => pathname.startsWith(p))) setIsToolsMenuOpen(true);
+    }, [pathname]);
 
-  return (
-    <>
-      <div className="flex-grow">
-        <a href="/" className="flex items-center pb-6 px-2"><h1 className="text-2xl font-bold text-gray-900">CortexCart</h1></a>
-        <nav>
-          <ul className="space-y-2">
-            {session && (
-            <> 
-                <li><a href="/dashboard" className={getLinkClass('/dashboard')}><ChartPieIcon className="h-6 w-6 mr-3" /><span>Dashboard</span></a></li>
-                <li>
-                    <button onClick={() => setIsAiMenuOpen(!isAiMenuOpen)} className={getParentClass(['/reports', '/recommendations', '/products'])}>
-                        <div className="flex items-center"><SparklesIcon className="h-6 w-6 mr-3" /><span>AI Tools</span></div>
-                        <ChevronDownIcon className={`h-5 w-5 transition-transform ${isAiMenuOpen ? 'rotate-180' : ''}`} />
-                    </button>
-                    {isAiMenuOpen && (
-                        <ul className="pt-2 pl-7 mt-1 space-y-2 border-l-2 border-gray-200 ml-4">
-                            <li><a href="/reports" className={getSubLinkClass('/reports')}><span>View AI Performance Report</span></a></li>
-                            <li><a href="/recommendations" className={getSubLinkClass('/recommendations')}><span>Homepage AI</span></a></li>
-                            <li><a href="/products/recommendations" className={getSubLinkClass('/products')}><span>Product AI</span></a></li>
-                        </ul>
-                    )}
-                </li>
-                <li><a href="/social" className={getLinkClass('/social')}><ShareIcon className="h-6 w-6 mr-3" /><span>Social Manager</span></a></li>
-<li>
- <a href="/crm" className={getLinkClass('/crm')}>
-        <ChatBubbleLeftRightIcon className="h-6 w-6 mr-3" />
-        <span>CRM & Inbox</span>
-    </a>
-</li>
-                <li>
-                    <button onClick={() => setIsFinancialsMenuOpen(!isFinancialsMenuOpen)} className={getParentClass(['/financials'])}>
-                        <div className="flex items-center"><DocumentChartBarIcon className="h-6 w-6 mr-3" /><span>Financials</span></div> 
-                        <ChevronDownIcon className={`h-5 w-5 transition-transform ${isFinancialsMenuOpen ? 'rotate-180' : ''}`} />
-                    </button>
-                    {isFinancialsMenuOpen && (
-                        <ul className="pt-2 pl-7 mt-1 space-y-2 border-l-2 border-gray-200 ml-4">
-                            <li><a href="/financials/quickbooks" className={getSubLinkClass('/financials/quickbooks')}><span>QuickBooks</span></a></li>
-                            <li><a href="/financials/shopify" className={getSubLinkClass('/financials/shopify')}><span>Shopify</span></a></li>
-                        </ul>
-                    )}
-                </li>
-                <li>
-                    <button onClick={() => setIsToolsMenuOpen(!isToolsMenuOpen)} className={getParentClass(['/experiments', '/heatmaps'])}>
-                        <div className="flex items-center"><WrenchIcon className="h-6 w-6 mr-3" /><span>Experiment Tools</span></div>
-                        <ChevronDownIcon className={`h-5 w-5 transition-transform ${isToolsMenuOpen ? 'rotate-180' : ''}`} />
-                    </button>
-                    {isToolsMenuOpen && (
-                        <ul className="pt-2 pl-7 mt-1 space-y-2 border-l-2 border-gray-200 ml-4">
-                            <li><a href="/experiments" className={getSubLinkClass('/experiments')}><span>A/B Testing</span></a></li>
-                            <li><a href="/heatmaps" className={getSubLinkClass('/heatmaps')}><span>Heatmaps</span></a></li>
-                        </ul>
-                    )}
-                </li>
-                <li className="pt-4 border-t border-gray-200 mt-4"><span className="px-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Help & Support</span></li>
-                <li><a href="/support" className={getLinkClass('/support')}><PuzzlePieceIcon className="h-6 w-6 mr-3" /><span>Support</span></a></li>
-                <li className="pt-4 border-t border-gray-200 mt-4"><span className="px-2 text-xs font-bold text-gray-500 uppercase tracking-wider">General</span></li>
-                <li><a href="/roadmap" className={getLinkClass('/roadmap')}><MapIcon className="h-6 w-6 mr-3" /><span>Roadmap</span></a></li>
-                <li><a href="/notifications" className={getLinkClass('/notifications')}><BellIcon className="h-6 w-6 mr-3" /><span>Notifications</span></a></li>
-            </>
-            )}
-          </ul>
-        </nav>
-      </div>
-      <div>
-        {session && (
-          <div className="mb-4 text-sm px-2"><p className="font-bold text-gray-900">{session.user.name}</p><p className="text-gray-600 truncate">{session.user.email}</p></div>
-        )}
-        <Link href={session ? '#' : '/login'} onClick={() => session && signOut({ callbackUrl: '/' })} className="w-full flex items-center p-2 text-gray-700 hover:bg-gray-200 hover:text-gray-900 rounded-lg transition-colors font-medium">
-          <ArrowRightEndOnRectangleIcon className="h-6 w-6 mr-3" /><span>{session ? 'Sign Out' : 'Sign In'}</span>
-        </Link>
-      </div>
-    </>
-  );
+    return (
+        <>
+            <div className="flex-grow">
+                <a href="/" className="flex items-center pb-6 px-2"><h1 className="text-2xl font-bold text-gray-900 dark:text-white">CortexCart</h1></a>
+                <nav>
+                    <ul className="space-y-2">
+                        {session && (
+                            <>
+                                <li><a href="/dashboard" className={getLinkClass('/dashboard')}><ChartPieIcon className="h-6 w-6 mr-3" /><span>Dashboard</span></a></li>
+                                <li>
+                                    <button onClick={() => setIsAiMenuOpen(!isAiMenuOpen)} className={getParentClass(['/reports', '/recommendations', '/products'])}>
+                                        <div className="flex items-center"><SparklesIcon className="h-6 w-6 mr-3" /><span>AI Tools</span></div>
+                                        <ChevronDownIcon className={`h-5 w-5 transition-transform ${isAiMenuOpen ? 'rotate-180' : ''}`} />
+                                    </button>
+                                    {isAiMenuOpen && (
+                                        <ul className="pt-2 pl-7 mt-1 space-y-2 border-l-2 border-gray-200 ml-4">
+                                            <li><a href="/reports" className={getSubLinkClass('/reports')}><span>View AI Performance Report</span></a></li>
+                                            <li><a href="/recommendations" className={getSubLinkClass('/recommendations')}><span>Homepage AI</span></a></li>
+                                            <li><a href="/products/recommendations" className={getSubLinkClass('/products')}><span>Product AI</span></a></li>
+                                        </ul>
+                                    )}
+                                </li>
+                                <li><a href="/social" className={getLinkClass('/social')}><ShareIcon className="h-6 w-6 mr-3" /><span>Social Manager</span></a></li>
+                                <li>
+                                    <a href="/crm" className={getLinkClass('/crm')}>
+                                        <ChatBubbleLeftRightIcon className="h-6 w-6 mr-3" />
+                                        <span>CRM & Inbox</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <button onClick={() => setIsFinancialsMenuOpen(!isFinancialsMenuOpen)} className={getParentClass(['/financials'])}>
+                                        <div className="flex items-center"><DocumentChartBarIcon className="h-6 w-6 mr-3" /><span>Financials</span></div>
+                                        <ChevronDownIcon className={`h-5 w-5 transition-transform ${isFinancialsMenuOpen ? 'rotate-180' : ''}`} />
+                                    </button>
+                                    {isFinancialsMenuOpen && (
+                                        <ul className="pt-2 pl-7 mt-1 space-y-2 border-l-2 border-gray-200 ml-4">
+                                            <li><a href="/financials/quickbooks" className={getSubLinkClass('/financials/quickbooks')}><span>QuickBooks</span></a></li>
+                                            <li><a href="/financials/shopify" className={getSubLinkClass('/financials/shopify')}><span>Shopify</span></a></li>
+                                        </ul>
+                                    )}
+                                </li>
+                                <li>
+                                    <button onClick={() => setIsToolsMenuOpen(!isToolsMenuOpen)} className={getParentClass(['/experiments', '/heatmaps'])}>
+                                        <div className="flex items-center"><WrenchIcon className="h-6 w-6 mr-3" /><span>Experiment Tools</span></div>
+                                        <ChevronDownIcon className={`h-5 w-5 transition-transform ${isToolsMenuOpen ? 'rotate-180' : ''}`} />
+                                    </button>
+                                    {isToolsMenuOpen && (
+                                        <ul className="pt-2 pl-7 mt-1 space-y-2 border-l-2 border-gray-200 ml-4">
+                                            <li><a href="/experiments" className={getSubLinkClass('/experiments')}><span>A/B Testing</span></a></li>
+                                            <li><a href="/heatmaps" className={getSubLinkClass('/heatmaps')}><span>Heatmaps</span></a></li>
+                                        </ul>
+                                    )}
+                                </li>
+                                <li className="pt-4 border-t border-gray-200 mt-4"><span className="px-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Help & Support</span></li>
+                                <li><a href="/support" className={getLinkClass('/support')}><PuzzlePieceIcon className="h-6 w-6 mr-3" /><span>Support</span></a></li>
+                                <li className="pt-4 border-t border-gray-200 mt-4"><span className="px-2 text-xs font-bold text-gray-500 uppercase tracking-wider">General</span></li>
+                                <li><a href="/roadmap" className={getLinkClass('/roadmap')}><MapIcon className="h-6 w-6 mr-3" /><span>Roadmap</span></a></li>
+                                <li><a href="/notifications" className={getLinkClass('/notifications')}><BellIcon className="h-6 w-6 mr-3" /><span>Notifications</span></a></li>
+                            </>
+                        )}
+                    </ul>
+                </nav>
+            </div>
+            <div>
+                {session && (
+                    <div className="mb-4 text-sm px-2"><p className="font-bold text-gray-900 dark:text-white">{session.user.name}</p><p className="text-gray-600 dark:text-gray-400 truncate">{session.user.email}</p></div>
+                )}
+                <Link href={session ? '#' : '/login'} onClick={() => session && signOut({ callbackUrl: '/' })} className="w-full flex items-center p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white rounded-lg transition-colors font-medium">
+                    <ArrowRightEndOnRectangleIcon className="h-6 w-6 mr-3" /><span>{session ? 'Sign Out' : 'Sign In'}</span>
+                </Link>
+            </div>
+        </>
+    );
 };
 
 // --- Sub-component: Beta Banner ---
@@ -348,72 +350,73 @@ const FeedbackButton = () => {
 
 // --- Main Layout Component ---
 const Layout = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
 
-  // Note: Since we moved scrolling to the <main> tag, we need to detect scroll THERE, not on window.
-  const mainRef = useRef(null);
+    // Note: Since we moved scrolling to the <main> tag, we need to detect scroll THERE, not on window.
+    const mainRef = useRef(null);
 
-  useEffect(() => {
-    const handleScroll = () => {
-        if (mainRef.current) {
-            setIsScrolled(mainRef.current.scrollTop > 0);
+    useEffect(() => {
+        const handleScroll = () => {
+            if (mainRef.current) {
+                setIsScrolled(mainRef.current.scrollTop > 0);
+            }
+        };
+
+        const mainElement = mainRef.current;
+        if (mainElement) {
+            mainElement.addEventListener('scroll', handleScroll);
         }
-    };
-    
-    const mainElement = mainRef.current;
-    if (mainElement) {
-        mainElement.addEventListener('scroll', handleScroll);
-    }
-    return () => {
-        if (mainElement) mainElement.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+        return () => {
+            if (mainElement) mainElement.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
 
-  return (
-    <div className="relative h-screen flex bg-gray-100 overflow-hidden">
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex lg:flex-shrink-0 w-64 bg-white p-4 flex-col border-r border-gray-200">
-        <SidebarContent />
-      </aside>
-      
-      {/* Right Side Wrapper: No Scrolling Here */}
-      <div className="flex-1 flex flex-col w-0 h-full overflow-hidden">
-        
-        {/* Header: Always at Top */}
-        <div className={`flex-none sticky top-0 z-10 flex h-16 bg-white shadow ${isScrolled ? 'shadow-md' : 'shadow-sm'}`}>
-            <button onClick={() => setSidebarOpen(true)} className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none lg:hidden">
-                <span className="sr-only">Open sidebar</span>
-                <Bars3Icon className="h-6 w-6" />
-            </button>
-            <div className="flex-1 px-4 sm:px-6 md:px-8 flex justify-end">
-                <TopNav />
+    return (
+        <div className="relative h-screen flex bg-gray-100 dark:bg-gray-900 overflow-hidden">
+            {/* Desktop Sidebar */}
+            <aside className="hidden lg:flex lg:flex-shrink-0 w-64 bg-white dark:bg-gray-800 p-4 flex-col border-r border-gray-200 dark:border-gray-700">
+                <SidebarContent />
+            </aside>
+
+
+            {/* Right Side Wrapper: No Scrolling Here */}
+            <div className="flex-1 flex flex-col w-0 h-full overflow-hidden">
+
+                {/* Header: Always at Top */}
+                <div className={`flex-none sticky top-0 z-10 flex h-16 bg-white dark:bg-gray-800 shadow ${isScrolled ? 'shadow-md' : 'shadow-sm'}`}>
+                    <button onClick={() => setSidebarOpen(true)} className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none lg:hidden">
+                        <span className="sr-only">Open sidebar</span>
+                        <Bars3Icon className="h-6 w-6" />
+                    </button>
+                    <div className="flex-1 px-4 sm:px-6 md:px-8 flex justify-end">
+                        <TopNav />
+                    </div>
+                </div>
+
+                {/* Main Content: This is the ONLY thing that scrolls */}
+                <main ref={mainRef} className="flex-1 overflow-y-auto p-6 lg:p-10 bg-gray-100 relative z-0">
+
+                    {children}
+                </main>
+
+                {/* Footer: Always at Bottom (Outside of Main) */}
+                <Footer />
+
             </div>
+
+            {/* Mobile Sidebar Flyout */}
+            <div className={`fixed inset-0 z-40 lg:hidden ${sidebarOpen ? '' : 'pointer-events-none'}`}>
+                <div className={`fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity ${sidebarOpen ? 'opacity-100' : 'opacity-0'}`} onClick={() => setSidebarOpen(false)}></div>
+                <div className={`relative max-w-xs w-full bg-white h-full flex flex-col p-4 transition-transform transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                    <button onClick={() => setSidebarOpen(false)} className="absolute top-2 right-2 text-gray-400"><XMarkIcon className="h-6 w-6" /></button>
+                    <SidebarContent />
+                </div>
+            </div>
+            <AiChatAssistant />
+            <FeedbackButton />
         </div>
-
-        {/* Main Content: This is the ONLY thing that scrolls */}
-        <main ref={mainRef} className="flex-1 overflow-y-auto p-6 lg:p-10 bg-gray-100 relative z-0">
-          
-            {children}
-        </main>
-
-        {/* Footer: Always at Bottom (Outside of Main) */}
-        <Footer />
-        
-      </div>
-
-      {/* Mobile Sidebar Flyout */}
-      <div className={`fixed inset-0 z-40 lg:hidden ${sidebarOpen ? '' : 'pointer-events-none'}`}>
-        <div className={`fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity ${sidebarOpen ? 'opacity-100' : 'opacity-0'}`} onClick={() => setSidebarOpen(false)}></div>
-        <div className={`relative max-w-xs w-full bg-white h-full flex flex-col p-4 transition-transform transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-            <button onClick={() => setSidebarOpen(false)} className="absolute top-2 right-2 text-gray-400"><XMarkIcon className="h-6 w-6"/></button>
-            <SidebarContent />
-        </div>
-      </div>
-      <AiChatAssistant />
-      <FeedbackButton />
-    </div>
-  );
+    );
 };
 
 export default Layout;

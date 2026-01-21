@@ -28,19 +28,29 @@
   --radius: 0.5rem;
 
 
-/* --- FIX: DISABLE AUTOMATIC DARK MODE SWITCHING --- */
-/* This prevents mobile phones from turning text white on your light dashboard */
-/*
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #f9fafb;
-  }
+/* --- ENABLE DARK MODE VARIABLES --- */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #f9fafb;
+  --card: #171717;
+  --card-foreground: #f9fafb;
+  --popover: #171717;
+  --popover-foreground: #f9fafb;
+  --primary: #f9fafb;
+  --primary-foreground: #171717;
+  --secondary: #1f2937;
+  --secondary-foreground: #f9fafb;
+  --muted: #1f2937;
+  --muted-foreground: #9ca3af;
+  --accent: #1f2937;
+  --accent-foreground: #f9fafb;
+  --destructive: #7f1d1d;
+  --destructive-foreground: #f9fafb;
+  --border: #374151;
+  --input: #374151;
+  --ring: #d1d5db;
 }
-*/
-/* --- CRITICAL FIX: Link Color Inheritance --- */
-/* This forces links to use the text color of their container (e.g., White in footer) 
-   instead of the default browser Blue/Purple. */
+
 a {
   color: inherit;
   text-decoration: none;

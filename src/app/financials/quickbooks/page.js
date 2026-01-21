@@ -10,6 +10,7 @@ import Layout from '@/app/components/Layout';
 import QuickBooksStatCard from '@/app/components/QuickBooksStatCard';
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
+import FriendlyError from '@/app/components/FriendlyError';
 
 const ConnectQuickBooksPrompt = () => (
     <div className="flex flex-col items-center justify-center rounded-lg border border-dashed shadow-sm p-8 text-center mt-4">
@@ -89,35 +90,38 @@ export default function FinancialsPage() {
     ];
 
     const renderContent = () => {
+        // Removed: import FriendlyError from '@/app/components/FriendlyError';
+
         if (isLoading) return <FinancialsPageSkeleton />;
-        if (error) return (
-            <div className="flex flex-col items-center text-red-600">
-                <AlertCircle className="h-8 w-8 mb-2" />
-                <p>Error: {error}</p>
-            </div>
-        );
+        if (error) {
+            let userMessage = error;
+            if (error.includes('invalid_grant') || error.includes('unauthorized')) {
+                userMessage = "Sorry, the app is experiencing an issue connecting to QuickBooks. Please try reconnecting or contact support if the issue persists. (Error Code: 500)";
+            }
+            return <FriendlyError message={userMessage} onRetry={() => window.location.reload()} />;
+        }
         if (!isConnected) return <ConnectQuickBooksPrompt />;
         if (isConnected && !financialData) return <p>Could not load financial data. Please try again.</p>;
 
         return (
             <div className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    <QuickBooksStatCard 
-                        title="Total Revenue" 
+                    <QuickBooksStatCard
+                        title="Total Revenue"
                         value={financialData.totalRevenue}
                         icon={TrendingUp}
                         description="This Fiscal Year-to-date"
                         className="bg-green-100 dark:bg-green-900/50 border-green-200 dark:border-green-800"
                     />
-                    <QuickBooksStatCard 
-                        title="Total Expenses" 
+                    <QuickBooksStatCard
+                        title="Total Expenses"
                         value={financialData.totalExpenses}
                         icon={TrendingDown}
                         description="This Fiscal Year-to-date"
                         className="bg-red-100 dark:bg-red-900/50 border-red-200 dark:border-red-800"
                     />
-                    <QuickBooksStatCard 
-                        title="Net Profit" 
+                    <QuickBooksStatCard
+                        title="Net Profit"
                         value={financialData.netProfit}
                         icon={DollarSign}
                         description="This Fiscal Year-to-date"
