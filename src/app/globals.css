@@ -1,0 +1,112 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+:root {
+  /* Force Default Variables (Light Mode) */
+  --background: #ffffff;
+  --foreground: #111827; /* Dark Gray (High Contrast) */
+  
+  /* Add these for consistency if using shadcn components */
+  --card: #ffffff;
+  --card-foreground: #111827;
+  --popover: #ffffff;
+  --popover-foreground: #111827;
+  --primary: #111827;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #111827;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f1f5f9;
+  --accent-foreground: #111827;
+  --destructive: #ef4444;
+  --destructive-foreground: #fafafa;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #111827;
+  --radius: 0.5rem;
+
+
+/* --- FIX: DISABLE AUTOMATIC DARK MODE SWITCHING --- */
+/* This prevents mobile phones from turning text white on your light dashboard */
+/*
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #f9fafb;
+  }
+}
+*/
+/* --- CRITICAL FIX: Link Color Inheritance --- */
+/* This forces links to use the text color of their container (e.g., White in footer) 
+   instead of the default browser Blue/Purple. */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+/* --- UI COMPONENT VARIABLES (Restored) --- */
+  /* These are required for Cards, Modals, and Popovers to have a background */
+  --card: #ffffff;
+  --card-foreground: #171717;
+  
+  --popover: #ffffff;
+  --popover-foreground: #171717;
+  
+  --primary: #171717;
+  --primary-foreground: #ffffff;
+  
+  --secondary: #f1f5f9;
+  --secondary-foreground: #171717;
+  
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  
+  --accent: #f1f5f9;
+  --accent-foreground: #171717;
+  
+  --destructive: #ef4444;
+  --destructive-foreground: #fafafa;
+  
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #171717;
+  
+  --radius: 0.5rem;
+}
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  /* Makes text sharper and more legible */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- MOBILE TEXT FIX --- */
+/* Force high-contrast dark text on all main elements */
+h1, h2, h3, h4, h5, h6, p, span, div, li, a {
+    color: var(--foreground);
+}
+
+/* Exceptions for muted/secondary text */
+.text-gray-500, .text-muted-foreground {
+    color: #6b7280 !important; /* Mid-gray, still readable */
+}
+
+.text-white {
+    color: #ffffff !important; /* Allow white text specifically where requested (like buttons/nav) */
+}
+
+/* --- UTILITY: Forced Light Mode Container --- */
+/* Use this class if a specific component (like a modal) is acting up */
+.light-mode-forced {
+  --background: #ffffff !important;
+  --foreground: #171717 !important;
+  background-color: #ffffff !important;
+  color: #171717 !important;
+}
+.light-mode-forced * {
+    color: #171717 !important;
+    border-color: #e2e8f0 !important;
+}

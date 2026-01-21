@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "analytics-dashboard-464606",
+  "private_key_id": "6c0947d73aabb2cb97af6fc3b2f80f2382844509",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCkseHJQ3dOY26T\nxB3sNVrz0mXi5tI2HUI3J5KEB3ha1eaUlbJQ9Vf+di68kPEzAr/lMZkePYIRPGHE\nto35fw3XcGov+iuLrjqZYpDB1o6d0Yfb3k+SvwFdeLR+JTPdI7Cz/WkHDbOGkCpA\nIIkF0qGBMq7UzpH9OHsTB+02LIRU405iyjoffnYyLzlu66YI/deHRP2d6CtPHslV\ngH6JEELT2kOVcZPLpzz91qlJAp0MrXGtY343A0KlMTipX0YabETPELyB7i0smihP\nB7z0EoBljOzTnEn5zNrT6+L1Tj+I43s2PDd2xHZ6sJ7UQS06rlpcp7mXJk7Ef4CA\n9F8MN8d1AgMBAAECggEAS3xUdoD7r+wXBJdA98DEvThUBpmxA6iJbuouV2FtIoUj\nuDqcjkrFWBYm+bqdMrox5gTDn36lnOzGCvl5PT+kwnf905ugVdc3eJIasx16JI+i\n632Lj0EIiSUH5UF78gGnvfeKKfd3r1doZhgDda3C5IqsY1GCzEMU9fYOHWRuCtGf\nrcpvHHcy/tIjVh7AIaWI+bIXJA0TtYozWUAvKXqsEyjQcIpXsHK+Fjfc1kmfbV7w\nMYw6v0mcRl4QIkB2dEseSjrI+pGue5MZj9BqkzOLBdwDbV0CKxHR2Qx+1vUll+Yk\nI3IFrnZsZbb0OlSZfoBGvngpEHyk7vUJIKMa10YESQKBgQDcN+0sK2UJxypfdbAa\nrfXii//N0ze98YB8DZ1L6rW0VTRrAFZSTIe+Ob5Y8BHgsYEc0ffbC8so/705RqZ1\nLKwH0XQ9sZYnmzel2I6VlMH1NGTIzA5yshoIQ+vZ1IQfaem27daO/0s0lDdlhtRk\n1dAOjgPORy/bPHuwrt7wtQ92XwKBgQC/dG3YQPysTYV0iT7mbI5nOWP2hONB9rNy\nfrD/GBuuXtWKpAxfoCK6q9cbgaPdakWhTNW01OZbEMQa7YPRJNPEVYmmd1iKivq6\nwUAMqnt+0offOU4P7+772vYiJ6ipSnW8OVhNW0wZAgp7gvk3+o9moTl6BneBJ1o/\nJRL/fjwKqwKBgCmv1I/F7yx4rUbAyoNiZudpxRS7ZRPpwX66PQp/9cGbV37h43VU\n02VpHOVNHLVCJMTF4ntushiiwLk07JHF0RLxzWVYVqpMsa4NXoBmVokKUAHKzvlb\nSZ5C7USg/BnOPNXKFBGhtiTP4eSwL0ifSPFYZNQJmb+QpYF+uOkr/S9VAoGAKMvZ\ngERQ0zJtpqh8M8OcEJjlGSm1919nW5Vth94OP/jLThCo5lOMMvTdEGpujYbQsY9a\n1n6rW2pWL1q/RPiw+1wyybsSrerxhIwbZteJGzwnYcSnQrQg26AL5LlIslJAhkw9\n6bXzoDyUGT+OdYQ5vGfMhJkOLAJDs8LlqnWuu6MCgYAt6jyGoX7zbEvCyHj356jp\nDM8vsnCPyO4LYxGLU1lXec4GpNTZLfinL5Ps5WSZ9AWfRKZc79KImwL/R1XyIO4l\nIZjJNBYlajsQ30FhU/rVITjy1rkrwNv8Hr/4krQlSj2+w+fpzu9+dXu8hPJ0/Xus\nbErbSaDvpAZSEdjygP92gQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "cortexcart-analytics-service@analytics-dashboard-464606.iam.gserviceaccount.com",
+  "client_id": "105026057718110709857",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/cortexcart-analytics-service%40analytics-dashboard-464606.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
