@@ -1,15 +1,25 @@
-<b>Welcome to CortexCart Version 0.9.3 Beta</b>
+<b>Welcome to CortexCart Version 1.1 Release 1</b>
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 <h2>Test Drive</h2>
 <em>to take the app for a test drive to see how it performs go to: <url>https://tracker.cortexcart.com</url> and sign in for free all you need is a Google Account</em>
 <h3>Screenshots</h3>
-<h3>The dashboard Total Revenue, Total Sales, Total Page Views and Sales by day chart</h3>
+<h3>The dashboard Now fully customizable *NEW in Version 1.1*</h3>
 <em>Viewing your most important stats from your dashboard is a must for any E-commerce store, with our easy to read and follow stats dashboard you will always know those details at a glance and can also filter results by timeframe.</em>
+<h2>New Features:</h2>
+<ul>
+  <li>2 default dashboards (Default shows cortexcart tracking data, second is Google Analytics 4 essential stats and charts)</li>
+  <li>Add custom dashboards As many as you need</li>
+  <li>Add whatever widget you want</li>
+  <li>Choose from 12 essential stats, charts, text, lists and many more related to platfroms connected and use the widget to display on your custom dashboard</li>
+  <li>Print your dashboard as a report essentialy creating your own custom reports</li>
+  <li>Add custom hsection headers and descriptions add flair to your data</li>
+</ul>
+
+<img width="1470" height="956" alt="Screenshot 2026-01-22 at 19 30 26" src="https://github.com/user-attachments/assets/8a379395-6bea-422b-82b0-6d8ae3efe9d6" />
 
 
-<img width="1469" alt="Screenshot 2025-06-18 at 07 36 43" src="https://github.com/user-attachments/assets/4a7174c6-f965-4c68-a4c1-8df32a9ed02e" />
 <h3>The AI homepage recommendations page</h3>
 <em>Using our powerful Gemini integration, leverage insights into your homepage performance and get real actionable recommendations that can help your business grow further.</em>
 <img width="1209" alt="Screenshot 2025-06-18 at 07 37 17" src="https://github.com/user-attachments/assets/8f153a91-90b6-4962-b3a9-3b4c03f6d31b" />
