@@ -2,7 +2,7 @@
 import { useEffect, useState, Suspense } from 'react';
 import { getProviders, signIn } from 'next-auth/react';
 import { Button } from '@/app/components/ui/button';
-import { Input } from '@/app/components/ui/input'; 
+import { Input } from '@/app/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/app/components/ui/card";
 import Image from 'next/image';
 import Link from 'next/link';
@@ -53,9 +53,9 @@ function LoginForm() {
 
         if (result?.error) {
             if (result.error === "CredentialsSignin") {
-                 setError("Invalid email or password.");
+                setError("Invalid email or password.");
             } else {
-                 setError(result.error);
+                setError(result.error);
             }
         } else {
             router.push('/dashboard');
@@ -69,7 +69,7 @@ function LoginForm() {
                     <Image src="/cortexcart-com-logo-home.png" alt="CortexCart Logo" width={320} height={100} className="mx-auto mb-4" />
                     <CardTitle>Welcome Back</CardTitle>
                     <CardDescription>Sign in to access your dashboard</CardDescription>
-                    
+
                     {error && (
                         <div className="bg-red-50 border border-red-200 text-red-600 p-3 mt-4 rounded text-sm text-left" role="alert">
                             <p className="font-semibold">Login Failed</p>
@@ -81,32 +81,32 @@ function LoginForm() {
                 <CardContent>
                     <form onSubmit={handleCredentialsLogin} className="space-y-4 mb-4">
                         <div className="space-y-2">
-                            <Input 
-                                type="email" 
-                                placeholder="Email address" 
+                            <Input
+                                type="email"
+                                placeholder="Email address"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                required 
+                                required
                                 className="bg-white"
                             />
-                            <Input 
-                                type="password" 
-                                placeholder="Password" 
+                            <Input
+                                type="password"
+                                placeholder="Password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                required 
+                                required
                                 className="bg-white"
                             />
                             <div className="flex justify-end mt-1">
-                                <Link 
-                                    href="https://cortexcart.com/forgot-password" 
+                                <Link
+                                    href="https://cortexcart.com/forgot-password"
                                     className="text-xs text-blue-600 hover:underline"
                                 >
                                     Forgot password?
                                 </Link>
                             </div>
                         </div>
-                        <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-full" disabled={isLoading}>
+                        <Button type="submit" className="w-full bg-blue-950 hover:bg-blue-800 text-gray-50 font-bold py-2 rounded-full" disabled={isLoading} style={{ 'color': 'white !important' }}>
                             {isLoading ? 'Signing in...' : 'Sign In'}
                         </Button>
                     </form>
@@ -147,9 +147,9 @@ function LoginForm() {
                         </p>
                     </div>
                 </CardContent>
-                
+
                 <CardFooter className="justify-center border-t pt-4">
-                     <p className="text-xs text-gray-400">App Version: {process.env.NEXT_PUBLIC_APP_VERSION}</p>
+                    <p className="text-xs text-gray-400">App Version: {process.env.NEXT_PUBLIC_APP_VERSION}</p>
                 </CardFooter>
             </Card>
         </div>
@@ -158,18 +158,8 @@ function LoginForm() {
 
 export default function LoginPage() {
     return (
-        <div className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden">
-            {/* Background Image */}
-            <div className="absolute inset-0 z-0">
-                <Image 
-                    src="/uploads/Gemini_Generated_Image_mpqbl4mpqbl4mpqb.webp"
-                    alt="Background"
-                    fill
-                    priority={true}
-                    className="object-cover object-center"
-                    quality={80}
-                />
-            </div>
+        <div className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden bg-gray-50 dark:bg-gray-900">
+            {/* Background Image Removed */}
 
             {/* Login Form Wrapper */}
             <div className="relative z-10 w-full flex justify-center items-center flex-grow p-4">
@@ -179,11 +169,11 @@ export default function LoginPage() {
             </div>
 
             {/* Footer */}
-            <footer className="relative z-10 w-full text-center p-4 bg-blue-950/80 text-gray-100 text-sm mt-auto backdrop-blur-sm">
+            <footer className="relative z-10 w-full text-center p-4 text-gray-500 dark:text-gray-400 text-sm mt-auto">
                 &copy; {new Date().getFullYear()} CortexCart. All Rights Reserved.
                 <div className="flex justify-center space-x-4 mt-2">
-                    <Link href="https://cortexcart.com/pages/terms" className="hover:underline text-white">Terms of Service</Link>
-                    <Link href="https://cortexcart.com/pages/privacy" className="hover:underline text-white">Privacy Policy</Link>
+                    <Link href="https://cortexcart.com/pages/terms" className="hover:underline text-gray-600 dark:text-gray-300">Terms of Service</Link>
+                    <Link href="https://cortexcart.com/pages/privacy" className="hover:underline text-gray-600 dark:text-gray-300">Privacy Policy</Link>
                 </div>
             </footer>
         </div>

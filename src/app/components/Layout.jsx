@@ -149,7 +149,7 @@ const Footer = () => {
     ];
 
     return (
-        <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 w-full flex-none">
+        <footer className="bg-transparent dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 w-full flex-none">
             <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
                 <nav className="flex flex-wrap justify-center -mx-5 -my-2">
                     {footerLinks.map((link) => (
@@ -408,11 +408,13 @@ const Layout = ({ children }) => {
                 {/* Main Content: This is the ONLY thing that scrolls */}
                 <main ref={mainRef} className="flex-1 overflow-y-auto p-6 lg:p-10 bg-gray-100 dark:bg-gray-900 relative z-0">
 
+
                     {children}
+                    <Footer />
                 </main>
 
                 {/* Footer: Always at Bottom (Outside of Main) */}
-                <Footer />
+
 
             </div>
 

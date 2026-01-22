@@ -537,10 +537,7 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                         <div className="mt-4 space-y-4">
                             <div>
                                 <label htmlFor="board-select" className="block text-sm font-medium text-gray-700">Choose a board <span className="text-red-500">*</span></label>
-                                <select
-                                    id="board-select"
-                                    value={selectedBoardId}
-                                    onChange={(e) => setSelectedBoardId(e.target.value)}
+
                                 <select
                                     id="board-select"
                                     value={selectedBoardId}
@@ -755,7 +752,7 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                     // Add required props like user_email or userId if needed by ImageManager API calls
                     />
                 </div>
-            </div>
+            </div >
         </>
     );
 };

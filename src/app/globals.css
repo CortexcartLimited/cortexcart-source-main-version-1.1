@@ -5,8 +5,9 @@
 :root {
   /* Force Default Variables (Light Mode) */
   --background: #ffffff;
-  --foreground: #111827; /* Dark Gray (High Contrast) */
-  
+  --foreground: #111827;
+  /* Dark Gray (High Contrast) */
+
   /* Add these for consistency if using shadcn components */
   --card: #ffffff;
   --card-foreground: #111827;
@@ -28,62 +29,64 @@
   --radius: 0.5rem;
 
 
-/* --- ENABLE DARK MODE VARIABLES --- */
-.dark {
-  --background: #0a0a0a;
-  --foreground: #f9fafb;
-  --card: #171717;
-  --card-foreground: #f9fafb;
-  --popover: #171717;
-  --popover-foreground: #f9fafb;
-  --primary: #f9fafb;
-  --primary-foreground: #171717;
-  --secondary: #1f2937;
-  --secondary-foreground: #f9fafb;
-  --muted: #1f2937;
-  --muted-foreground: #9ca3af;
-  --accent: #1f2937;
-  --accent-foreground: #f9fafb;
-  --destructive: #7f1d1d;
-  --destructive-foreground: #f9fafb;
-  --border: #374151;
-  --input: #374151;
-  --ring: #d1d5db;
-}
+  /* --- ENABLE DARK MODE VARIABLES --- */
+  .dark {
+    --background: #0a0a0a;
+    --foreground: #f9fafb;
+    --card: #171717;
+    --card-foreground: #f9fafb;
+    --popover: #171717;
+    --popover-foreground: #f9fafb;
+    --primary: #f9fafb;
+    --primary-foreground: #171717;
+    --secondary: #1f2937;
+    --secondary-foreground: #f9fafb;
+    --muted: #1f2937;
+    --muted-foreground: #9ca3af;
+    --accent: #1f2937;
+    --accent-foreground: #f9fafb;
+    --destructive: #7f1d1d;
+    --destructive-foreground: #f9fafb;
+    --border: #374151;
+    --input: #374151;
+    --ring: #d1d5db;
+  }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-/* --- UI COMPONENT VARIABLES (Restored) --- */
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* --- UI COMPONENT VARIABLES (Restored) --- */
   /* These are required for Cards, Modals, and Popovers to have a background */
   --card: #ffffff;
   --card-foreground: #171717;
-  
+
   --popover: #ffffff;
   --popover-foreground: #171717;
-  
+
   --primary: #171717;
   --primary-foreground: #ffffff;
-  
+
   --secondary: #f1f5f9;
   --secondary-foreground: #171717;
-  
+
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
-  
+
   --accent: #f1f5f9;
   --accent-foreground: #171717;
-  
+
   --destructive: #ef4444;
   --destructive-foreground: #fafafa;
-  
+
   --border: #e2e8f0;
   --input: #e2e8f0;
   --ring: #171717;
-  
+
   --radius: 0.5rem;
 }
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -95,17 +98,30 @@ body {
 
 /* --- MOBILE TEXT FIX --- */
 /* Force high-contrast dark text on all main elements */
-h1, h2, h3, h4, h5, h6, p, span, div, li, a {
-    color: var(--foreground);
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+div,
+li,
+a {
+  color: var(--foreground);
 }
 
 /* Exceptions for muted/secondary text */
-.text-gray-500, .text-muted-foreground {
-    color: #6b7280 !important; /* Mid-gray, still readable */
+.text-gray-500,
+.text-muted-foreground {
+  color: #6b7280 !important;
+  /* Mid-gray, still readable */
 }
 
 .text-white {
-    color: #ffffff !important; /* Allow white text specifically where requested (like buttons/nav) */
+  color: #ffffff !important;
+  /* Allow white text specifically where requested (like buttons/nav) */
 }
 
 /* --- UTILITY: Forced Light Mode Container --- */
@@ -116,7 +132,49 @@ h1, h2, h3, h4, h5, h6, p, span, div, li, a {
   background-color: #ffffff !important;
   color: #171717 !important;
 }
+
 .light-mode-forced * {
-    color: #171717 !important;
-    border-color: #e2e8f0 !important;
+  color: #171717 !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* --- PRINT STYLES --- */
+@media print {
+
+  /* Hide UI Elements */
+  aside,
+  nav,
+  footer,
+  button,
+  /* Hides all buttons including the print/edit ones */
+  .fixed,
+  /* Hides fixed elements like feedback button/chat */
+  header,
+  .print-hidden,
+  /* Explicitly hidden elements */
+  .no-print {
+    display: none !important;
+  }
+
+  /* Reset Layout for Print */
+  body,
+  main {
+    background: white !important;
+    color: black !important;
+    overflow: visible !important;
+    height: auto !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Ensure Grid works correctly */
+  main {
+    display: block !important;
+  }
+
+  /* Remove scrollbars and limitations */
+  div {
+    overflow: visible !important;
+  }
 }
