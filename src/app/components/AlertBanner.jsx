@@ -11,33 +11,33 @@ const AlertBanner = ({ title, message, type = 'info' }) => {
   // 1. Define styles for different alert types
   const alertStyles = {
     success: {
-      bgColor: 'bg-green-50 dark:bg-green-900/30',
-      textColor: 'text-green-800 dark:text-green-200',
+      bgColor: 'bg-green-50 dark:bg-green-900',
+      textColor: 'text-green-800 dark:text-green-100',
       iconColor: 'text-green-400 dark:text-green-400',
       icon: CheckCircleIcon
     },
     warning: {
-      bgColor: 'bg-yellow-50 dark:bg-yellow-900/30',
-      textColor: 'text-yellow-800 dark:text-yellow-200',
+      bgColor: 'bg-yellow-50 dark:bg-yellow-900',
+      textColor: 'text-yellow-800 dark:text-yellow-100',
       iconColor: 'text-yellow-400 dark:text-yellow-400',
       icon: ExclamationTriangleIcon
     },
     error: {
-      bgColor: 'bg-red-50 dark:bg-red-900/30',
-      textColor: 'text-red-800 dark:text-red-200',
+      bgColor: 'bg-red-50 dark:bg-red-900',
+      textColor: 'text-red-800 dark:text-red-100',
       iconColor: 'text-red-400 dark:text-red-400',
       icon: XCircleIcon
     },
     info: {
-      bgColor: 'bg-blue-50 dark:bg-blue-900/30',
-      textColor: 'text-blue-800 dark:text-blue-200',
+      bgColor: 'bg-blue-50 dark:bg-blue-900',
+      textColor: 'text-blue-800 dark:text-blue-100',
       iconColor: 'text-blue-400 dark:text-blue-400',
       icon: InformationCircleIcon
     },
     // 2. New 'ai-recommendation' type
     'ai-recommendation': {
-      bgColor: 'bg-indigo-50 dark:bg-indigo-900/30', // A distinct color for AI
-      textColor: 'text-indigo-900 dark:text-indigo-200',
+      bgColor: 'bg-indigo-50 dark:bg-indigo-900', // A distinct color for AI
+      textColor: 'text-indigo-900 dark:text-indigo-100',
       iconColor: 'text-indigo-400 dark:text-indigo-400',
       // No standard icon, we'll use a custom image
     }

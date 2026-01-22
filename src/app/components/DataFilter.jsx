@@ -14,7 +14,7 @@ const DateFilter = ({ onFilterChange }) => {
 
   const handleButtonClick = (value) => {
     setActiveFilter(value);
-    
+
     const today = new Date();
     let startDate = new Date();
     let endDate = new Date();
@@ -36,25 +36,24 @@ const DateFilter = ({ onFilterChange }) => {
       default:
         startDate.setDate(today.getDate() - 30);
     }
-    
+
     // Format dates to YYYY-MM-DD
     const formattedStartDate = startDate.toISOString().split('T')[0];
     const formattedEndDate = endDate.toISOString().split('T')[0];
-    
+
     onFilterChange(formattedStartDate, formattedEndDate);
   };
 
   return (
-    <div className="flex space-x-2 bg-gray-200 p-1 rounded-lg">
+    <div className="flex space-x-2 bg-gray-200 dark:bg-gray-800 p-1 rounded-lg">
       {filterOptions.map((option) => (
         <button
           key={option.value}
           onClick={() => handleButtonClick(option.value)}
-          className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors duration-200 ${
-            activeFilter === option.value
-              ? 'bg-white text-gray-900 shadow'
-              : 'bg-transparent text-gray-600 hover:bg-white/60'
-          }`}
+          className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors duration-200 ${activeFilter === option.value
+              ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow'
+              : 'bg-transparent text-gray-600 dark:text-gray-400 hover:bg-white/60 dark:hover:bg-gray-700'
+            }`}
         >
           {option.label}
         </button>

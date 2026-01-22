@@ -1,6 +1,7 @@
 // File: src/app/components/PlatformPostsChart.jsx
 
 'use client';
+import { useTheme } from 'next-themes';
 
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
@@ -9,27 +10,39 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 const PlatformPostsChart = ({ chartData }) => {
 
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { 
+      legend: {
         display: true,
         position: 'top',
+        labels: {
+          color: isDark ? '#e5e7eb' : '#374151'
+        }
       },
-      title: { 
-        display: false 
+      title: {
+        display: false
       },
     },
     scales: {
-        y: { 
-            beginAtZero: true,
-            ticks: {
-                // Ensure y-axis only shows whole numbers for post counts
-                stepSize: 1,
-                precision: 0
-            }
-        }
+      x: {
+        ticks: { color: isDark ? '#9ca3af' : '#4b5563' },
+        grid: { color: isDark ? '#374151' : '#e5e7eb' }
+      },
+      y: {
+        beginAtZero: true,
+        ticks: {
+          // Ensure y-axis only shows whole numbers for post counts
+          stepSize: 1,
+          precision: 0,
+          color: isDark ? '#9ca3af' : '#4b5563'
+        },
+        grid: { color: isDark ? '#374151' : '#e5e7eb' }
+      }
     }
   };
 

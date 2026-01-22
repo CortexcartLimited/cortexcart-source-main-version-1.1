@@ -3,6 +3,7 @@
 'use client';
 
 import React from 'react';
+import { useTheme } from 'next-themes';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
@@ -10,16 +11,22 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 const EngagementByPlatformChart = ({ data }) => {
   // Define default options inside the component for robustness
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'bottom',
+        labels: {
+          color: isDark ? '#e5e7eb' : '#374151'
+        }
       },
       tooltip: {
         callbacks: {
-          label: function(context) {
+          label: function (context) {
             let label = context.label || '';
             if (label) {
               label += ': ';
@@ -33,6 +40,12 @@ const EngagementByPlatformChart = ({ data }) => {
         }
       }
     },
+    elements: {
+      arc: {
+        borderColor: isDark ? '#1f2937' : '#ffffff',
+        borderWidth: 2
+      }
+    }
   };
 
   // Define custom colors for each platform

@@ -73,49 +73,60 @@ const TopNav = () => {
         setNotificationsOpen(false);
     };
 
-    if (status !== 'authenticated') return null;
+    // If status is loading, we might want to show nothing or a skeleton. 
+    // Here we let it render so ThemeToggle is available, but hide user specific stuff.
+    const isAuthenticated = status === 'authenticated';
 
     return (
         <div className="flex items-center justify-between w-full h-full">
             <RealTimeClock />
-            <div className="hidden md:flex flex-col items-end mr-2">
-                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">AI Tokens</div>
-                <div className={`text-sm font-bold ${aiUsage.used >= aiUsage.limit ? 'text-red-600' : 'text-blue-600'}`}>
-                    {formatCompact(aiUsage.used)} / {formatCompact(aiUsage.limit)}
+
+            {isAuthenticated && (
+                <div className="hidden md:flex flex-col items-end mr-2">
+                    <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">AI Tokens</div>
+                    <div className={`text-sm font-bold ${aiUsage.used >= aiUsage.limit ? 'text-red-600' : 'text-blue-600'}`}>
+                        {formatCompact(aiUsage.used)} / {formatCompact(aiUsage.limit)}
+                    </div>
                 </div>
-            </div>
+            )}
+
             <div className="flex items-center space-x-4">
                 <ThemeToggle />
-                <div className="relative h-full flex items-center" ref={notificationsRef}>
-                    <button onClick={() => setNotificationsOpen(!notificationsOpen)} className="p-2 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-700 relative">
-                        <BellIcon className="h-6 w-6" />
-                        {unreadCount > 0 && <span className="absolute top-1 right-1 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>}
-                    </button>
-                    {notificationsOpen && (
-                        <div className="absolute top-full right-0 mt-2 w-80 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
-                            <div className="px-4 py-2 border-b"><p className="text-sm font-medium text-gray-900">Notifications</p></div>
-                            <div className="max-h-80 overflow-y-auto">
-                                {notifications.length === 0 ? <p className="text-center text-sm text-gray-500 py-4">No new notifications</p> :
-                                    notifications.map(notif => <Link key={notif.id} href={notif.link || '#'}><div onClick={() => handleNotificationClick(notif.id)} className={`block px-4 py-3 text-sm hover:bg-gray-100 ${!notif.is_read ? 'bg-blue-50' : ''}`}><p className={!notif.is_read ? 'font-semibold' : ''}>{notif.message}</p><p className="text-xs text-gray-500 mt-1">{new Date(notif.created_at).toLocaleString()}</p></div></Link>)}
-                            </div>
-                        </div>
-                    )}
-                </div>
 
-                <div className="relative h-full flex items-center" ref={userDropdownRef}>
-                    <button onClick={() => setUserDropdownOpen(!userDropdownOpen)} className="flex items-center space-x-2 rounded-full h-full">
-                        <span className="text-gray-700 text-sm font-medium hidden sm:block">{session.user.name}</span>
-                        <img className="h-8 w-8 rounded-full" src={session.user.image || `https://avatar.vercel.sh/${session.user.email}`} alt="User avatar" />
-                    </button>
-                    {userDropdownOpen && (
-                        <div className="absolute top-full right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
-                            <div className="px-4 py-2 border-b"><p className="text-sm font-medium text-gray-900 truncate">{session.user.name}</p><p className="text-xs text-gray-500 truncate">{session.user.email}</p></div>
-                            <a href="/settings" className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><Cog6ToothIcon className="h-5 w-5 mr-2" /> Settings</a>
-                            <a href="/account" className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 mr-2"><path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" /></svg> Account</a>
-                            <button onClick={() => signOut({ callbackUrl: '/login' })} className="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><ArrowRightEndOnRectangleIcon className="h-5 w-5 mr-2" /> Sign Out</button>
+                {isAuthenticated && (
+                    <>
+                        <div className="relative h-full flex items-center" ref={notificationsRef}>
+                            <button onClick={() => setNotificationsOpen(!notificationsOpen)} className="p-2 rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-700 relative">
+                                <BellIcon className="h-6 w-6" />
+                                {unreadCount > 0 && <span className="absolute top-1 right-1 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>}
+                            </button>
+                            {notificationsOpen && (
+                                <div className="absolute top-full right-0 mt-2 w-80 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
+                                    <div className="px-4 py-2 border-b"><p className="text-sm font-medium text-gray-900">Notifications</p></div>
+                                    <div className="max-h-80 overflow-y-auto">
+                                        {notifications.length === 0 ? <p className="text-center text-sm text-gray-500 py-4">No new notifications</p> :
+                                            notifications.map(notif => <Link key={notif.id} href={notif.link || '#'}><div onClick={() => handleNotificationClick(notif.id)} className={`block px-4 py-3 text-sm hover:bg-gray-100 ${!notif.is_read ? 'bg-blue-50' : ''}`}><p className={!notif.is_read ? 'font-semibold' : ''}>{notif.message}</p><p className="text-xs text-gray-500 mt-1">{new Date(notif.created_at).toLocaleString()}</p></div></Link>)}
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                    )}
-                </div>
+
+                        <div className="relative h-full flex items-center" ref={userDropdownRef}>
+                            <button onClick={() => setUserDropdownOpen(!userDropdownOpen)} className="flex items-center space-x-2 rounded-full h-full">
+                                <span className="text-gray-700 text-sm font-medium hidden sm:block">{session.user.name}</span>
+                                <img className="h-8 w-8 rounded-full" src={session.user.image || `https://avatar.vercel.sh/${session.user.email}`} alt="User avatar" />
+                            </button>
+                            {userDropdownOpen && (
+                                <div className="absolute top-full right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
+                                    <div className="px-4 py-2 border-b"><p className="text-sm font-medium text-gray-900 truncate">{session.user.name}</p><p className="text-xs text-gray-500 truncate">{session.user.email}</p></div>
+                                    <a href="/settings" className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><Cog6ToothIcon className="h-5 w-5 mr-2" /> Settings</a>
+                                    <a href="/account" className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5 mr-2"><path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" /></svg> Account</a>
+                                    <button onClick={() => signOut({ callbackUrl: '/login' })} className="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><ArrowRightEndOnRectangleIcon className="h-5 w-5 mr-2" /> Sign Out</button>
+                                </div>
+                            )}
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );
@@ -168,9 +179,9 @@ const SidebarContent = () => {
     const [isFinancialsMenuOpen, setIsFinancialsMenuOpen] = useState(false);
     const [isToolsMenuOpen, setIsToolsMenuOpen] = useState(false);
 
-    const getLinkClass = (path) => pathname.startsWith(path) ? 'flex items-center p-2 bg-gray-800 text-gray-200 [&_span]:text-gray-200 [&_svg]:text-gray-200 rounded-lg font-medium transition-colors' : 'flex items-center p-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors font-medium';
-    const getSubLinkClass = (path) => pathname.startsWith(path) ? 'text-blue-600 font-bold block py-1' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white block py-1 transition-colors';
-    const getParentClass = (childPaths) => childPaths.some(path => pathname.startsWith(path)) ? 'flex items-center justify-between w-full p-2 bg-gray-800 text-gray-200 [&_span]:text-gray-200 [&_svg]:text-gray-200 rounded-lg font-medium transition-colors' : 'flex items-center justify-between w-full p-2 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white transition-colors font-medium';
+    const getLinkClass = (path) => pathname.startsWith(path) ? 'flex items-center p-2 bg-gray-800 dark:bg-gray-700 text-gray-200 dark:text-white [&_span]:text-gray-200 dark:[&_span]:text-white [&_svg]:text-gray-200 dark:[&_svg]:text-white rounded-lg font-medium transition-colors shadow-sm' : 'flex items-center p-2 text-gray-700 dark:text-gray-400 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors font-medium';
+    const getSubLinkClass = (path) => pathname.startsWith(path) ? 'text-blue-600 dark:text-blue-400 font-bold block py-1' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white block py-1 transition-colors';
+    const getParentClass = (childPaths) => childPaths.some(path => pathname.startsWith(path)) ? 'flex items-center justify-between w-full p-2 bg-gray-800 dark:bg-gray-700 text-gray-200 dark:text-white [&_span]:text-gray-200 dark:[&_span]:text-white [&_svg]:text-gray-200 dark:[&_svg]:text-white rounded-lg font-medium transition-colors shadow-sm' : 'flex items-center justify-between w-full p-2 text-gray-700 dark:text-gray-400 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors font-medium';
 
     useEffect(() => {
         if (['/reports', '/recommendations', '/products'].some(p => pathname.startsWith(p))) setIsAiMenuOpen(true);
@@ -395,7 +406,7 @@ const Layout = ({ children }) => {
                 </div>
 
                 {/* Main Content: This is the ONLY thing that scrolls */}
-                <main ref={mainRef} className="flex-1 overflow-y-auto p-6 lg:p-10 bg-gray-100 relative z-0">
+                <main ref={mainRef} className="flex-1 overflow-y-auto p-6 lg:p-10 bg-gray-100 dark:bg-gray-900 relative z-0">
 
                     {children}
                 </main>

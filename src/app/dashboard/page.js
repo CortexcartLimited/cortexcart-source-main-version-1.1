@@ -44,9 +44,9 @@ import {
 const currencySymbols = { USD: '$', EUR: '€', GBP: '£', JPY: '¥', CAD: '$', AUD: '$' };
 
 const DataSourceToggle = ({ dataSource, setDataSource }) => (
-    <div className="flex items-center p-1 bg-gray-200 rounded-lg">
-        <button onClick={() => setDataSource('cortexcart')} className={`px-4 py-1 text-sm font-medium rounded-md transition-colors ${dataSource === 'cortexcart' ? 'bg-white shadow' : 'text-gray-600'}`}>CortexCart</button>
-        <button onClick={() => setDataSource('ga4')} className={`px-4 py-1 text-sm font-medium rounded-md transition-colors ${dataSource === 'ga4' ? 'bg-white shadow' : 'text-gray-600'}`}>Google Analytics</button>
+    <div className="flex items-center p-1 bg-gray-200 dark:bg-gray-800 rounded-lg">
+        <button onClick={() => setDataSource('cortexcart')} className={`px-4 py-1 text-sm font-medium rounded-md transition-colors ${dataSource === 'cortexcart' ? 'bg-white dark:bg-gray-600 shadow text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}>CortexCart</button>
+        <button onClick={() => setDataSource('ga4')} className={`px-4 py-1 text-sm font-medium rounded-md transition-colors ${dataSource === 'ga4' ? 'bg-white dark:bg-gray-600 shadow text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}>Google Analytics</button>
     </div>
 );
 

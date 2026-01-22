@@ -99,7 +99,7 @@ const SocialNav = ({ activeTab, setActiveTab }) => {
                         <tab.icon className="mr-2 h-5 w-5" /> {tab.name}
                     </button>
                 ))}
-                <Link href="/settings/social-connections" className="ml-auto flex items-center py-4 px-1 font-medium text-sm transition-colors text-gray-500 hover:text-gray-700">
+                <Link href="/settings/social-connections" className="ml-auto flex items-center py-4 px-1 font-medium text-sm transition-colors text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                     <Cog6ToothIcon className="h-6 w-6" /> Social Settings
                 </Link>
             </nav>
@@ -487,7 +487,7 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
             />
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Left Column (Composer) */}
-                <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                <div className="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
                     {/* Platform Tabs */}
                     <div className="flex items-center border-b pb-4 overflow-x-auto whitespace-nowrap">
                         {Object.values(PLATFORMS).map(platform => {
@@ -499,7 +499,7 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                                     key={platformKey}
                                     // Use the platform key for setting state and checking active
                                     onClick={() => setSelectedPlatform(platformKey)}
-                                    className={`flex items-center px-4 py-2 text-sm font-medium rounded-md mr-2 ${selectedPlatform === platformKey ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                                    className={`flex items-center px-4 py-2 text-sm font-medium rounded-md mr-2 ${selectedPlatform === platformKey ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
                                     disabled={platform.disabled}
                                 >
                                     {Icon && <Icon className="h-5 w-5 mr-2" />} {platform.name}
@@ -516,8 +516,8 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                                 <input type="file" id="video-file" accept="video/*" onChange={(e) => setVideoFile(e.target.files?.[0] || null)} className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
                             </div>
                             <div>
-                                <label htmlFor="video-title" className="block text-sm font-medium text-gray-700">Video Title <span className="text-red-500">*</span></label>
-                                <input type="text" id="video-title" value={videoTitle} onChange={(e) => setVideoTitle(e.target.value)} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                                <label htmlFor="video-title" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Video Title <span className="text-red-500">*</span></label>
+                                <input type="text" id="video-title" value={videoTitle} onChange={(e) => setVideoTitle(e.target.value)} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white" required />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Video Thumbnail (Optional)</label>
@@ -525,7 +525,7 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                             </div>
                             <div>
                                 <label htmlFor="privacy-status" className="block text-sm font-medium text-gray-700">Privacy</label>
-                                <select id="privacy-status" value={privacyStatus} onChange={(e) => setPrivacyStatus(e.target.value)} className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm">
+                                <select id="privacy-status" value={privacyStatus} onChange={(e) => setPrivacyStatus(e.target.value)} className="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md shadow-sm">
                                     <option value="private">Private</option>
                                     <option value="unlisted">Unlisted</option>
                                     <option value="public">Public</option>
@@ -541,7 +541,11 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                                     id="board-select"
                                     value={selectedBoardId}
                                     onChange={(e) => setSelectedBoardId(e.target.value)}
-                                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                                <select
+                                    id="board-select"
+                                    value={selectedBoardId}
+                                    onChange={(e) => setSelectedBoardId(e.target.value)}
+                                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                                     disabled={loading || !pinterestBoards || pinterestBoards.length === 0}
                                     required
                                 >
@@ -560,8 +564,8 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                                 </select>
                             </div>
                             <div>
-                                <label htmlFor="pin-title" className="block text-sm font-medium text-gray-700">Pin Title <span className="text-red-500">*</span></label>
-                                <input type="text" id="pin-title" value={pinTitle} onChange={(e) => setPinTitle(e.target.value)} placeholder="Add a title" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md" required />
+                                <label htmlFor="pin-title" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Pin Title <span className="text-red-500">*</span></label>
+                                <input type="text" id="pin-title" value={pinTitle} onChange={(e) => setPinTitle(e.target.value)} placeholder="Add a title" className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white" required />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">Pin Image <span className="text-red-500">*</span></label>
@@ -577,7 +581,7 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                                     id="ig-account-select"
                                     value={selectedInstagramId}
                                     onChange={(e) => setSelectedInstagramId(e.target.value)}
-                                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                                     required
                                 >
                                     <option value="" disabled>-- Select Account --</option>
@@ -622,7 +626,7 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                         value={postContent}
                         onChange={(e) => setPostContent(e.target.value)}
                         placeholder={currentPlatform?.placeholder || "Write your post content here..."}
-                        className="mt-4 w-full h-64 p-4 border border-gray-200 rounded-md"
+                        className="mt-4 w-full h-64 p-4 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md placeholder-gray-500 dark:placeholder-gray-400"
                         maxLength={currentPlatform?.maxLength < Infinity ? currentPlatform?.maxLength : undefined} // Apply maxLength unless Infinity
                     />
 
@@ -666,12 +670,12 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                             {error && <p className="text-sm text-red-600 mb-2">{error}</p>} {/* Show schedule error */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label htmlFor="scheduleDate" className="block text-sm font-medium text-gray-700">Date</label>
-                                    <input type="date" id="scheduleDate" name="scheduleDate" onChange={(e) => setScheduleDate(e.target.value)} value={scheduleDate} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" min={moment().format('YYYY-MM-DD')} required />
+                                    <label htmlFor="scheduleDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
+                                    <input type="date" id="scheduleDate" name="scheduleDate" onChange={(e) => setScheduleDate(e.target.value)} value={scheduleDate} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white" min={moment().format('YYYY-MM-DD')} required />
                                 </div>
                                 <div>
-                                    <label htmlFor="scheduleTime" className="block text-sm font-medium text-gray-700">Time</label>
-                                    <input type="time" id="scheduleTime" name="scheduleTime" value={scheduleTime} onChange={(e) => setScheduleTime(e.target.value)} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required />
+                                    <label htmlFor="scheduleTime" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Time</label>
+                                    <input type="time" id="scheduleTime" name="scheduleTime" value={scheduleTime} onChange={(e) => setScheduleTime(e.target.value)} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white" required />
                                 </div>
                             </div>
                             <div className="mt-6">
@@ -698,9 +702,9 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                 <div className="lg:col-span-1 space-y-8">
                     {/* AI Assistant */}
                     {currentPlatform && ( // Only show AI if a platform is selected
-                        <div className="bg-white p-6 rounded-lg shadow-md space-y-4 border border-gray-200">
-                            <h3 className="font-semibold text-lg">AI Assistant</h3>
-                            <input type="text" value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="e.g., 'New Summer T-Shirt Sale'" className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm" />
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md space-y-4 border border-gray-200 dark:border-gray-700">
+                            <h3 className="font-semibold text-lg text-gray-900 dark:text-white">AI Assistant</h3>
+                            <input type="text" value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="e.g., 'New Summer T-Shirt Sale'" className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
                             <button onClick={handleGeneratePost} disabled={isGenerating || !topic.trim()} className="w-full flex items-center justify-center px-4 py-2 border rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400">
                                 <SparklesIcon className="h-5 w-5 mr-2" />
                                 {isGenerating ? 'Generating...' : `Generate for ${currentPlatform.name}`}
@@ -710,9 +714,9 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                     )}
 
                     {/* Upcoming Posts */}
-                    <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-semibold text-lg">Upcoming Posts</h3>
+                            <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Upcoming Posts</h3>
                             {/* Link to full schedule view? */}
                             <Link href="#" onClick={(e) => { e.preventDefault(); setActiveTab('Schedule'); }} className="text-sm text-blue-600 hover:underline">
                                 View Calendar
@@ -724,15 +728,15 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                                 const platformConfig = PLATFORMS[postPlatformKey];
                                 const Icon = platformConfig?.icon;
                                 return (
-                                    <div key={post.id} className={`p-3 bg-gray-50 rounded-lg border-l-4`} style={{ borderColor: platformConfig?.color || '#9CA3AF' }}>
+                                    <div key={post.id} className={`p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border-l-4`} style={{ borderColor: platformConfig?.color || '#9CA3AF' }}>
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-2">
-                                                {Icon && <Icon className="h-4 w-4 text-gray-600" />}
-                                                <span className="font-semibold text-sm text-gray-800">{platformConfig?.name || postPlatformKey}</span>
+                                                {Icon && <Icon className="h-4 w-4 text-gray-600 dark:text-gray-300" />}
+                                                <span className="font-semibold text-sm text-gray-800 dark:text-white">{platformConfig?.name || postPlatformKey}</span>
                                             </div>
                                             <span className="text-xs text-blue-600 font-medium">{moment(post.start).format('MMM D, h:mm a')}</span>
                                         </div>
-                                        <p className="text-sm text-gray-600 truncate mt-1">{post.title && typeof post.title === 'string' ? post.title.split(': ')[1] || post.title : '(No Content/Title)'}</p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-300 truncate mt-1">{post.title && typeof post.title === 'string' ? post.title.split(': ')[1] || post.title : '(No Content/Title)'}</p>
                                     </div>
                                 );
                             }) : (
@@ -853,8 +857,8 @@ const AnalyticsTabContent = () => {
 
     return (
         <div className="space-y-8">
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                <h3 className="text-2xl font-bold text-gray-800 mb-4">Analytics Overview</h3>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+                <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Analytics Overview</h3>
                 <div className="flex flex-wrap gap-2">
                     {/* Dynamically create sync buttons based on PLATFORMS might be better */}
                     <button onClick={() => handleSync('x')} disabled={isSyncing.x} className="inline-flex items-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 disabled:bg-gray-400">
@@ -882,38 +886,38 @@ const AnalyticsTabContent = () => {
             </div>
 
             {/* Key Metrics */}
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Key Metrics</h3>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+                <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Key Metrics</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-blue-50 p-5 rounded-lg border border-blue-200">
-                        <p className="text-sm font-medium text-blue-600">Total Posts</p>
-                        <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalPosts || 0}</p>
+                    <div className="bg-blue-50 dark:bg-blue-900/20 p-5 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Total Posts</p>
+                        <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.totalPosts || 0}</p>
                     </div>
-                    <div className="bg-green-50 p-5 rounded-lg border border-green-200">
-                        <p className="text-sm font-medium text-green-600">Total Reach (Impressions)</p>
-                        <p className="text-3xl font-bold text-gray-900 mt-1">{(stats.totalReach || 0).toLocaleString()}</p>
+                    <div className="bg-green-50 dark:bg-green-900/20 p-5 rounded-lg border border-green-200 dark:border-green-800">
+                        <p className="text-sm font-medium text-green-600 dark:text-green-400">Total Reach (Impressions)</p>
+                        <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{(stats.totalReach || 0).toLocaleString()}</p>
                     </div>
-                    <div className="bg-purple-50 p-5 rounded-lg border border-purple-200">
-                        <p className="text-sm font-medium text-purple-600">Avg. Engagement Rate</p>
-                        <p className="text-3xl font-bold text-gray-900 mt-1">{parseFloat(stats.engagementRate || 0).toFixed(2)}%</p>
+                    <div className="bg-purple-50 dark:bg-purple-900/20 p-5 rounded-lg border border-purple-200 dark:border-purple-800">
+                        <p className="text-sm font-medium text-purple-600 dark:text-purple-400">Avg. Engagement Rate</p>
+                        <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{parseFloat(stats.engagementRate || 0).toFixed(2)}%</p>
                     </div>
                 </div>
             </div>
 
             {/* Charts */}
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                <h4 className="text-xl font-semibold text-gray-800 mb-4">Daily Reach (Last 30 Days)</h4>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+                <h4 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Daily Reach (Last 30 Days)</h4>
                 <div className="h-80"><Ga4LineChart data={reachChartData} /></div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200"> {/* Added border */}
-                    <h4 className="text-xl font-semibold text-gray-800 mb-4">Posts by Platform</h4>
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700"> {/* Added border */}
+                    <h4 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Posts by Platform</h4>
                     <div className="h-80 flex justify-center"> {/* Centering might affect bar chart */}
                         <PlatformPostsChart chartData={postsByPlatformData} />
                     </div>
                 </div>
-                <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                    <h4 className="text-xl font-semibold text-gray-800 mb-4">Engagement Rate by Platform</h4>
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+                    <h4 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Engagement Rate by Platform</h4>
                     <div className="h-80 flex justify-center"><EngagementByPlatformChart data={engagementByPlatformData} /></div>
                 </div>
             </div>
@@ -1012,29 +1016,29 @@ const ScheduleTabContent = ({ scheduledPosts, setScheduledPosts, calendarDate, s
 
     return (
         <>
-            <div className="bg-white p-6 rounded-lg shadow-md mb-4 border border-gray-200">
-                <h3 className="text-2xl font-bold text-gray-800 mb-4">Schedule Posts</h3>
-                <p className="mt-1 text-sm text-gray-500">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-4 border border-gray-200 dark:border-gray-700">
+                <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Schedule Posts</h3>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Plan and organize your social media content calendar. Drag and drop posts to easily reschedule them. Highlighted days indicate optimal posting times based on your settings.
                 </p>
             </div>
 
             <div className="flex justify-between items-center mb-4 flex-wrap gap-2"> {/* Added flex layout */}
-                <div className="bg-blue-50 border-l-4 border-blue-400 text-blue-700 p-3 rounded-r-lg" role="alert"> {/* Reduced padding */}
+                <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-500 text-blue-700 dark:text-blue-300 p-3 rounded-r-lg" role="alert"> {/* Reduced padding */}
                     <div className="flex items-center">
-                        <InformationCircleIcon className="h-5 w-5 text-blue-400 mr-2" />
+                        <InformationCircleIcon className="h-5 w-5 text-blue-400 dark:text-blue-400 mr-2" />
                         <p className="text-sm">Drag & drop posts to reschedule.</p>
                     </div>
                 </div>
-                <div className="bg-green-50 border-l-4 border-green-400 text-green-800 p-3 rounded-r-lg"> {/* Reduced padding */}
+                <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-400 dark:border-green-500 text-green-800 dark:text-green-300 p-3 rounded-r-lg"> {/* Reduced padding */}
                     <div className="flex items-center">
-                        <StarIcon className="h-5 w-5 text-green-500 mr-2" aria-hidden="true" />
+                        <StarIcon className="h-5 w-5 text-green-500 dark:text-green-400 mr-2" aria-hidden="true" />
                         <p className="text-sm">Green days are optimal posting times.</p>
                     </div>
                 </div>
             </div>
 
-            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md border border-gray-200" style={{ height: '75vh' }}> {/* Adjusted padding and height */}
+            <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700" style={{ height: '75vh' }}> {/* Adjusted padding and height */}
                 <DragAndDropCalendar
                     localizer={localizer}
                     events={scheduledPosts}
@@ -1142,37 +1146,37 @@ const DemographicsTabContent = () => {
 
     return (
         <div className="space-y-8">
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6">Audience Demographics</h3>
-                <p className="text-gray-600 mb-6">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+                <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Audience Demographics</h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-6">
                     Set your target audience demographics. This information helps tailor AI suggestions and identify optimal posting times.
                 </p>
             </div>
 
             {/* Display Current Settings */}
             {currentDemographics && (
-                <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                    <h3 className="text-xl font-bold text-gray-800 mb-4">Current Settings</h3>
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Current Settings</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="bg-blue-50 p-5 rounded-lg border border-blue-200 flex items-center">
-                            <CakeIcon className="h-8 w-8 text-blue-600 mr-3 flex-shrink-0" />
+                        <div className="bg-blue-50 dark:bg-blue-900/20 p-5 rounded-lg border border-blue-200 dark:border-blue-800 flex items-center">
+                            <CakeIcon className="h-8 w-8 text-blue-600 dark:text-blue-400 mr-3 flex-shrink-0" />
                             <div>
-                                <p className="text-sm font-medium text-blue-600">Age Range</p>
-                                <p className="text-xl font-bold text-gray-900">{formatAgeRangeDisplay(currentDemographics.age_range)}</p>
+                                <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Age Range</p>
+                                <p className="text-xl font-bold text-gray-900 dark:text-white">{formatAgeRangeDisplay(currentDemographics.age_range)}</p>
                             </div>
                         </div>
-                        <div className="bg-green-50 p-5 rounded-lg border border-green-200 flex items-center">
-                            <UserIcon className="h-8 w-8 text-green-600 mr-3 flex-shrink-0" />
+                        <div className="bg-green-50 dark:bg-green-900/20 p-5 rounded-lg border border-green-200 dark:border-green-800 flex items-center">
+                            <UserIcon className="h-8 w-8 text-green-600 dark:text-green-400 mr-3 flex-shrink-0" />
                             <div>
-                                <p className="text-sm font-medium text-green-600">Sex</p>
-                                <p className="text-xl font-bold text-gray-900 capitalize">{currentDemographics.sex || 'Not set'}</p>
+                                <p className="text-sm font-medium text-green-600 dark:text-green-400">Sex</p>
+                                <p className="text-xl font-bold text-gray-900 dark:text-white capitalize">{currentDemographics.sex || 'Not set'}</p>
                             </div>
                         </div>
-                        <div className="bg-purple-50 p-5 rounded-lg border border-purple-200 flex items-center">
-                            <GlobeAltIcon className="h-8 w-8 text-purple-600 mr-3 flex-shrink-0" />
+                        <div className="bg-purple-50 dark:bg-purple-900/20 p-5 rounded-lg border border-purple-200 dark:border-purple-800 flex items-center">
+                            <GlobeAltIcon className="h-8 w-8 text-purple-600 dark:text-purple-400 mr-3 flex-shrink-0" />
                             <div>
-                                <p className="text-sm font-medium text-purple-600">Country</p>
-                                <p className="text-xl font-bold text-gray-900">{currentDemographics.country || 'Not set'}</p>
+                                <p className="text-sm font-medium text-purple-600 dark:text-purple-400">Country</p>
+                                <p className="text-xl font-bold text-gray-900 dark:text-white">{currentDemographics.country || 'Not set'}</p>
                             </div>
                         </div>
                     </div>
@@ -1180,8 +1184,8 @@ const DemographicsTabContent = () => {
             )}
 
             {/* Form to Update Settings */}
-            <div className="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">Update Target Audience</h3>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+                <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Update Target Audience</h3>
                 {/* Display Save Status */}
                 {saveStatus.message && (
                     <div className={`mb-4 text-sm p-3 rounded-md text-center ${saveStatus.type === 'success' ? 'bg-green-100 text-green-800' :
@@ -1193,8 +1197,8 @@ const DemographicsTabContent = () => {
                 )}
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Age Range Slider */}
-                    <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
-                        <label htmlFor="ageRangeSlider" className="block text-sm font-medium text-gray-700">Target Age Range: {formatAgeRangeDisplay(ageRange)}</label>
+                    <div className="bg-gray-50 dark:bg-gray-700 p-5 rounded-lg border border-gray-200 dark:border-gray-600">
+                        <label htmlFor="ageRangeSlider" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Target Age Range: {formatAgeRangeDisplay(ageRange)}</label>
                         <input
                             type="range"
                             id="ageRangeSlider" // Changed ID
@@ -1214,8 +1218,8 @@ const DemographicsTabContent = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Sex Selection */}
-                        <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
-                            <label className="block text-sm font-medium text-gray-700">Target Sex</label>
+                        <div className="bg-gray-50 dark:bg-gray-700 p-5 rounded-lg border border-gray-200 dark:border-gray-600">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Target Sex</label>
                             <div className="mt-2 space-y-2">
                                 {['any', 'male', 'female', 'other'].map((option) => ( // Added 'any'
                                     <div key={option} className="flex items-center">
@@ -1228,7 +1232,7 @@ const DemographicsTabContent = () => {
                                             onChange={() => setSex(option)}
                                             className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
                                         />
-                                        <label htmlFor={`sex-${option}`} className="ml-2 block text-sm text-gray-900 capitalize">
+                                        <label htmlFor={`sex-${option}`} className="ml-2 block text-sm text-gray-900 dark:text-gray-200 capitalize">
                                             {option === 'any' ? 'Any' : option}
                                         </label>
                                     </div>
@@ -1237,8 +1241,8 @@ const DemographicsTabContent = () => {
                         </div>
 
                         {/* Country Selection */}
-                        <div className="bg-gray-50 p-5 rounded-lg border border-gray-200">
-                            <label htmlFor="country" className="block text-sm font-medium text-gray-700">Target Country</label>
+                        <div className="bg-gray-50 dark:bg-gray-700 p-5 rounded-lg border border-gray-200 dark:border-gray-600">
+                            <label htmlFor="country" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Target Country</label>
                             {/* Consider using a searchable dropdown component for better UX */}
                             <input
                                 type="text"
@@ -1247,7 +1251,7 @@ const DemographicsTabContent = () => {
                                 value={country}
                                 onChange={(e) => setCountry(e.target.value)}
                                 placeholder="e.g., United States (or leave blank for Any)"
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-500 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-600 dark:text-white"
                             />
                             {/* Basic datalist example for suggestions */}
                             {/* <datalist id="country-suggestions">
@@ -1412,8 +1416,8 @@ export default function SocialMediaManagerPage() {
     return (
         <Layout>
             <div className="mb-8">
-                <h2 className="text-3xl font-bold">Social Media Manager</h2>
-                <p className="mt-1 text-sm text-gray-500">Design, schedule, and analyze your social media content.</p>
+                <h2 className="text-3xl font-bold dark:text-white">Social Media Manager</h2>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Design, schedule, and analyze your social media content.</p>
             </div>
             <SocialNav activeTab={activeTab} setActiveTab={setActiveTab} />
 
