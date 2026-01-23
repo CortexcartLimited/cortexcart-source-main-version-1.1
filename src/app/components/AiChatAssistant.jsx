@@ -30,14 +30,14 @@ export default function AiChatAssistant({ contextData }) {
       const response = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           message: input,
           context: contextData // We pass the dashboard stats here
         }),
       });
 
       const data = await response.json();
-      
+
       if (!response.ok) throw new Error(data.message || 'Error');
 
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
@@ -49,10 +49,10 @@ export default function AiChatAssistant({ contextData }) {
   };
 
   return (
-   // Changed 'right-6' to 'right-24' (moves it left)
-// Increased z-index to 'z-[100]' to ensure it sits on top of everything
-<div className="fixed bottom-6 right-24 z-[100] flex flex-col items-end">
-      
+    // Changed 'right-6' to 'right-24' (moves it left)
+    // Increased z-index to 'z-[100]' to ensure it sits on top of everything
+    <div className="fixed bottom-6 right-24 z-[100] flex flex-col items-end">
+
       {/* --- Chat Window --- */}
       {isOpen && (
         <div className="mb-4 w-80 md:w-96 h-[500px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 fade-in duration-200">
@@ -60,7 +60,7 @@ export default function AiChatAssistant({ contextData }) {
           <div className="bg-gray-800 p-4 text-white flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Bot className="h-5 w-5" />
-              <span className="font-semibold">Cortexcart AI Analyst</span>
+              <span className="font-semibold text-gray-100">Cortexcart AI Analyst</span>
             </div>
             <button onClick={() => setIsOpen(false)} className="hover:bg-white/20 p-1 rounded-full transition">
               <X className="h-4 w-4" />
@@ -71,11 +71,10 @@ export default function AiChatAssistant({ contextData }) {
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
             {messages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[80%] rounded-2xl p-3 text-sm ${
-                  msg.role === 'user' 
-                    ? 'bg-blue-600 text-white rounded-tr-none' 
+                <div className={`max-w-[80%] rounded-2xl p-3 text-sm ${msg.role === 'user'
+                    ? 'bg-blue-600 text-white rounded-tr-none'
                     : 'bg-white text-gray-800 border border-gray-200 rounded-tl-none shadow-sm'
-                }`}>
+                  }`}>
                   {msg.content}
                 </div>
               </div>
@@ -101,8 +100,8 @@ export default function AiChatAssistant({ contextData }) {
               placeholder="Ask about your data..."
               className="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isLoading || !input.trim()}
               className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 disabled:opacity-50 transition"
             >
@@ -115,9 +114,8 @@ export default function AiChatAssistant({ contextData }) {
       {/* --- Floating Trigger Button --- */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`group relative flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all duration-300 hover:scale-110 ${
-          isOpen ? 'bg-gray-800 rotate-90' : 'bg-gradient-to-r from-blue-600 to-purple-600'
-        }`}
+        className={`group relative flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all duration-300 hover:scale-110 ${isOpen ? 'bg-gray-800 rotate-90' : 'bg-gradient-to-r from-blue-600 to-purple-600'
+          }`}
       >
         {isOpen ? (
           <X className="h-6 w-6 text-white" />

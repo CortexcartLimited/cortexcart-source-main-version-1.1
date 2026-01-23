@@ -1,6 +1,7 @@
 // src/middleware.js
 export const runtime = 'nodejs';
 
+import { withAuth } from "next-auth/middleware";
 import { NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { jwtVerify } from 'jose';
@@ -16,7 +17,7 @@ const PATH_REQUIREMENTS = {
     '/heatmaps': { limitKey: 'maxHeatmaps', minRequired: 1 },
     '/recommendations': { limitKey: 'recommendationWidgets', minRequired: true },
     '/reports': { limitKey: 'maxReports', minRequired: true },
-    '/support/support-tickets': { limitKey: 'supportTickets', minRequired: true},
+    '/support/support-tickets': { limitKey: 'supportTickets', minRequired: true },
 };
 
 const getAdminSecret = () => {
@@ -25,33 +26,15 @@ const getAdminSecret = () => {
     return new TextEncoder().encode(secret);
 };
 
-export async function middleware(req) {
+// ==============================================================
+// 1. ORIGINAL MIDDLEWARE LOGIC (Renamed)
+// ==============================================================
+async function customMiddleware(req) {
     const { pathname } = req.nextUrl;
     const appUrl = process.env.NEXTAUTH_URL || req.nextUrl.origin;
 
-    // ==============================================================
-    // 1. CRITICAL: EXPLICITLY ALLOW PUBLIC PATHS (Circuit Breaker)
-    // ==============================================================
-    // This runs before ANYTHING else to prevent redirect loops.
-    const publicPaths = [
-        '/login',
-        '/registration',
-        '/verify-email',
-        '/api/auth',     // Important for NextAuth to work
-        '/api/register', // Your registration API
-        '/api/verify-token',
-        '/favicon.ico',
-        '/_next',        // Next.js system files
-        '/static',        // Static assets
-        '/api/webhooks', // Webhooks for meta
-        '/api/crm/send-message', // send-message
-        '/api/webhooks/whatsapp'
-    ];
-
-    // If the path starts with any of these, stop and let it pass.
-    if (publicPaths.some(path => pathname.startsWith(path))) {
-        return NextResponse.next();
-    }
+    // NOTE: Public path check is now handled in 'authorized' callback below,
+    // but redundant check here is harmless and safe.
 
     // ==============================================================
     // 2. Admin Check
@@ -74,12 +57,14 @@ export async function middleware(req) {
     const requirement = Object.entries(PATH_REQUIREMENTS).find(([path]) => pathname.startsWith(path))?.[1];
 
     if (requirement) {
+        // We can reuse the token from NextAuth wrapper if we wanted, but existing logic fetches it.
+        // req.nextauth.token is available if we used 'callbacks' correctly above.
+        // Let's stick to existing getToken to minimize breakage risk during migration.
         const sessionToken = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
         // If user is not logged in, redirect to login
         if (!sessionToken?.email) {
             const loginUrl = new URL('/login', appUrl);
-            // We add the callbackUrl so they go back to the right place after login
             loginUrl.searchParams.set('callbackUrl', req.url);
             return NextResponse.redirect(loginUrl);
         }
@@ -116,11 +101,58 @@ export async function middleware(req) {
     return NextResponse.next();
 }
 
-// --- SIMPLIFIED MATCHER ---
-// We match essentially everything here, relying on the code above to filter.
-// This prevents "matcher regex bugs" from accidentally blocking /login.
+// ==============================================================
+// 4. MAIN EXPORT: WITHAUTH WRAPPER
+// ==============================================================
+export default withAuth(
+    customMiddleware,
+    {
+        callbacks: {
+            authorized: ({ req, token }) => {
+                const { pathname } = req.nextUrl;
+
+                // A. PUBLIC PATHS - Allow
+                const publicPaths = [
+                    '/login',
+                    '/registration',
+                    '/verify-email',
+                    '/api/auth',
+                    '/api/register',
+                    '/api/verify-token',
+                    '/favicon.ico',
+                    '/_next',
+                    '/static',
+                    '/api/webhooks',
+                    '/api/crm/send-message',
+                    '/api/webhooks/whatsapp'
+                ];
+                if (publicPaths.some(path => pathname.startsWith(path))) {
+                    return true;
+                }
+
+                // B. ADMIN PATHS - Allow (Let inner middleware handle custom token check)
+                if (pathname.startsWith('/admin')) {
+                    return true;
+                }
+
+                // C. DEFAULT - Require Session Token
+                // If token exists, return true (allow access -> run middleware).
+                // If false, redirects to pages.signIn
+                return !!token;
+            },
+        },
+        pages: {
+            signIn: '/login',
+        },
+    }
+);
+
+// ==============================================================
+// 5. CONFIGURATION
+// ==============================================================
 export const config = {
     matcher: [
+        // match all paths except static files
         '/((?!_next/static|_next/image|favicon.ico).*)',
     ],
 };
