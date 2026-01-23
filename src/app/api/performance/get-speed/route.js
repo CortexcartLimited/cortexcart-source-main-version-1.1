@@ -36,18 +36,25 @@ export async function GET(req) {
 
         // 3. Extract Data safely
         const lighthouse = data.lighthouseResult;
-        
+
         // METRICS: Core Web Vitals
         const audits = lighthouse.audits || {};
         const lcp = audits['largest-contentful-paint']?.displayValue || 'N/A';
         const cls = audits['cumulative-layout-shift']?.displayValue || 'N/A';
         const fcp = audits['first-contentful-paint']?.displayValue || 'N/A';
-        
+
         // SCORE: The 0-100 Performance Score
         // It comes as 0.95, so we multiply by 100
-        const performancScore = lighthouse.categories?.performance?.score 
-            ? Math.round(lighthouse.categories.performance.score * 100) 
+        // SCORE: The 0-100 Performance Score
+        // It comes as 0.95, so we multiply by 100
+        const performancScore = lighthouse.categories?.performance?.score
+            ? Math.round(lighthouse.categories.performance.score * 100)
             : 0;
+
+        // Fallback if score is missing but no error thrown
+        if (!performancScore && !data.error) {
+            console.warn("Lighthouse returned no performance score.");
+        }
 
         return NextResponse.json({
             score: performancScore, // This was likely missing or named wrong before

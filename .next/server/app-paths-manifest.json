@@ -1,22 +1,6 @@
 {
-  "/dashboard/page": "app/dashboard/page.js",
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/api/notifications/route": "app/api/notifications/route.js",
-  "/api/events/route": "app/api/events/route.js",
-  "/api/social/analytics/route": "app/api/social/analytics/route.js",
-  "/api/analytics/traffic-sources/route": "app/api/analytics/traffic-sources/route.js",
-  "/settings/page": "app/settings/page.js",
-  "/api/ai/usage/route": "app/api/ai/usage/route.js",
-  "/api/stats/live-visitors/route": "app/api/stats/live-visitors/route.js",
-  "/api/social/recent-posts/route": "app/api/social/recent-posts/route.js",
-  "/api/performance/get-speed/route": "app/api/performance/get-speed/route.js",
-  "/api/charts/sales-by-day/route": "app/api/charts/sales-by-day/route.js",
-  "/api/stats/top-pages/route": "app/api/stats/top-pages/route.js",
-  "/api/alerts/active/route": "app/api/alerts/active/route.js",
-  "/api/stats/top-referrers/route": "app/api/stats/top-referrers/route.js",
-  "/api/stats/route": "app/api/stats/route.js",
-  "/api/stats/device-types/route": "app/api/stats/device-types/route.js",
-  "/api/ga4-connections/route": "app/api/ga4-connections/route.js",
-  "/api/site-settings/route": "app/api/site-settings/route.js",
-  "/settings/integrations/page": "app/settings/integrations/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/page": "app/page.js",
+  "/login/page": "app/login/page.js",
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js"
 }

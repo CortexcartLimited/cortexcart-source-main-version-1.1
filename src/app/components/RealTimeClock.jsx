@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react';
 
 const RealTimeClock = ({ locale = 'en-US' }) => { // Default to US format
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState(null);
 
   useEffect(() => {
+    setCurrentTime(new Date());
     const timerId = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timerId);
   }, []);
@@ -21,9 +22,13 @@ const RealTimeClock = ({ locale = 'en-US' }) => { // Default to US format
 
   return (
     <div className="hidden md:flex items-center text-sm text-gray-500">
-      <span>{formatDate(currentTime)}</span>
-      <span className="mx-2">|</span>
-      <span>{formatTime(currentTime)}</span>
+      {currentTime && (
+        <>
+          <span>{formatDate(currentTime)}</span>
+          <span className="mx-2">|</span>
+          <span>{formatTime(currentTime)}</span>
+        </>
+      )}
     </div>
   );
 };

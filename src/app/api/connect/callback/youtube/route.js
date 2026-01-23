@@ -33,10 +33,7 @@ export async function GET(req) {
         const encryptedRefreshToken = encrypt(tokens.refresh_token);
         const encryptedAccessToken = encrypt(tokens.access_token);
 
-        // --- THE FIX ---
-        // Correctly match the column names from your prisma schema:
-        // 'access_token' is now 'access_token_encrypted'
-        // 'expiry_date' is now 'expires_at'
+        // Use the correct column names:
         await db.query(
             `INSERT INTO social_connect (user_email, platform, refresh_token_encrypted, access_token_encrypted, expires_at)
              VALUES (?, 'youtube', ?, ?, FROM_UNIXTIME(? / 1000))

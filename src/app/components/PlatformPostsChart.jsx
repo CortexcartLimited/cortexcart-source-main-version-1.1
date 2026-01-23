@@ -1,43 +1,26 @@
-// File: src/app/components/PlatformPostsChart.jsx
-
 'use client';
 
-import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+export default function PlatformPostsChart({ data }) {
+  if (!data || !data.labels || !data.datasets) return <div className="flex items-center justify-center h-full text-gray-500">No data available</div>;
 
-const PlatformPostsChart = ({ chartData }) => {
+  const chartData = data.labels.map((label, index) => ({
+    name: label,
+    posts: data.datasets[0].data[index],
+    fill: data.datasets[0].backgroundColor[index]
+  }));
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { 
-        display: true,
-        position: 'top',
-      },
-      title: { 
-        display: false 
-      },
-    },
-    scales: {
-        y: { 
-            beginAtZero: true,
-            ticks: {
-                // Ensure y-axis only shows whole numbers for post counts
-                stepSize: 1,
-                precision: 0
-            }
-        }
-    }
-  };
-
-  if (!chartData || !chartData.labels || chartData.labels.length === 0) {
-    return <p className="text-sm text-gray-500 text-center mt-4">No post data available to display.</p>;
-  }
-
-  return <Bar data={chartData} options={options} />;
-};
-
-export default PlatformPostsChart;
+  return (
+    <ResponsiveContainer width="100%" height="100%">
+      <BarChart data={chartData}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="name" />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+        <Bar dataKey="posts" name="Posts" />
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
