@@ -16,6 +16,12 @@
       "static/chunks/main-app.js",
       "static/css/app/dashboard/page.css",
       "static/chunks/app/dashboard/page.js"
+    ],
+    "/social/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/social/page.css",
+      "static/chunks/app/social/page.js"
     ]
   }
 }
