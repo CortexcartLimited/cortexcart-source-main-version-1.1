@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "cortexcart-insight-dashboard",
+  "private_key_id": "f9d8dff8b90fb262050ed13b5e0545c03f9652e0",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCl3877jXCSY3u6\nQfq+FG2RPE5PSOOhCptIB2oHu7Vl/GkT427ZfMYJeXMLWHxso9mhAUDt0rBM4qVD\nHtGkoouM2+MByFzzxRxDnBQ/C/qXpE3P74ebBRNOTaRtm093yoyYPm96KuphevYx\nTXHAMOI3lStrUzFPtRpN4kamdch9GmUOgu87+bqUbOuBQ4uRjqyGKannW1RCud6V\nnQOA25Ku43EJ4cs7ZztiFygCnOTDcU7BTyfreChEcKERdRgVF76S9NXxqoIxONZK\nrTPYIQWunBvxb61suFeeVc4T3ZpnNlHdpsi24Jp9HoFhp7RCf3pzexnRRw1m8L3N\nQugNh2qhAgMBAAECggEAA9bB7tL3bb/lK2qe/7qvzXpwkoeskvvQm7JmOw8WU+mr\nUeVD2b84QxxfM/5EhOwm24HQq6BiaakeK4dBUVbctXIaVx54vkCL1qm8Uzg3AL7x\n+RPBVu5fY8LKwSmkxXA34Ecjo9dt7LsgiwQQk6Ld/WzToCyA+egGV5Ka0Xvs265Q\n1k5Ubk/L7/nL1W9hpi6PyQ5Nk8k+FDZuGCSmo5wFtKiLmbygTMb+X5q1ef0ViKKu\nVpw3EVMZd72z2aDBM7P0Veua/UW8eNzE45REQaj3yC6DI8BucFpX3UTaft/eiY/t\nbja1l4tltRPinO34UBF/RztnKEZ3BzJQS+ItB4nMkQKBgQDqCK3eWS7mCA6c5HR8\nXdPJ06O2IhbSSO5a8i2Kx3Mm+RHDL8J9GOW+936OZ+r5nwhsDGii/G8ilz2spTnN\nqhVDnt99bMmGNwP/GhHyrUaLdIXrpAUIfsEwHz4l3kZCRNEdmTcqFvNXH1YHNTYD\nE1kJEPHjWRl2OR7yp5zIBPRgKQKBgQC1cWcQhkLrNBkjfe131hAKovr64vYhm93G\ndrWCuQsH+Mh6nw1zSHlxg29yHkASQzfmqoLobInhSe0wtN/hvPgX++ZFVzo6iWCO\nDGst8EpY85zdV/7jE+TOBemTv40QPqwYA8TYWPSwciXdqN1Vh3SHy1Go9TmQp1O2\n8cDOr8gluQKBgQDajbRhGoPzib6rwaUOp0irCBuwcPFC+5ysDdF98niVArAVyTol\nPOUAi3wCXQVQi7V/wa7N1lOqx/ZujfYHHDizZ2BqbvdbgXEYAC6WpD5m6TBPOGMC\n5exfli2hi4utQzrOG1Eq2zfwOnFKVeTUxnK1Rr+9gm2GvB0sml6NZCMa0QKBgE7+\nFBTJnxCvGdKt3FizxUAcPJBFh0qShTcGL3e9/+N0mDNqU3zBLL4Srs5MBTDuOsQd\nr+hoeI6wlKcD2AR7NLecX2AI3bzmWjb9iRvy5StcxApJaRqLaq2XPV2po0xTPLEn\n0uctszmuOHYMMnAuDLmh9udL+8fSUUvwbDSPqt9hAoGALSeHNRsEDXpFWR48YjTq\nU2BhyFokT90lc3lmErl8h8WCbC2qc6+EN+3fv476flpjBnh1zHY9Z5UpY4G2d3Pl\nm4q4Zjt+Wk0cKTrAH4CtJ02PlAXOQ7MkXuFw3S16D6kW854/wGtwJGmRJIh1QtlY\nVMsTDOpx1bOvFRYTVoHwkBs=\n-----END PRIVATE KEY-----\n",
+  "client_email": "google-api@cortexcart-insight-dashboard.iam.gserviceaccount.com",
+  "client_id": "102971431656884131524",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-api%40cortexcart-insight-dashboard.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
