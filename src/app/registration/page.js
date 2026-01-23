@@ -115,7 +115,8 @@ const RegistrationPage = () => {
     ];
 
     return (
-       
+
+        <div className="min-h-screen bg-white dark:bg-gray-900 !bg-none" style={{ backgroundImage: 'none' }}>
             <div className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
                 <div className="text-center">
                     <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
@@ -247,7 +248,8 @@ const RegistrationPage = () => {
                     </form>
                 </div>
             </div>
-       
+        </div>
+
     );
 };
 
