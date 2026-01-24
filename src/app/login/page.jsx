@@ -66,7 +66,8 @@ function LoginForm() {
         <div className="light-mode-forced w-full max-w-sm">
             <Card className="w-full bg-white shadow-md text-gray-900">
                 <CardHeader className="text-center">
-                    <Image src="/optimized_image_2.webp" alt="CortexCart Logo" width={320} height={100} className="mx-auto mb-4" />
+                    <Image src="/optimized_image_2.webp" alt="CortexCart Logo" width={120} height={100} className="mx-auto mb-4" />
+                    <span className="text-lg font-bold">Cortexcart Insight Dashboard</span>
                     <CardTitle>Welcome Back</CardTitle>
                     <CardDescription>Sign in to access your dashboard</CardDescription>
 
