@@ -26,13 +26,15 @@ async function fetchPageContent(url) {
             }
         });
 
-        const response = await page.goto(url, { 
-            waitUntil: 'domcontentloaded', 
-            timeout: 25000 
+        const response = await page.goto(url, {
+            waitUntil: 'domcontentloaded',
+            timeout: 25000
         });
 
         if (!response || !response.ok()) {
-            throw new Error(`Failed to load page. Status: ${response ? response.status() : 'Unknown'}`);
+            const status = response ? response.status() : 'Unknown';
+            console.error(`Puppeteer failed to load ${url}: Status ${status}`);
+            throw new Error(`Failed to load page. Status: ${status}`);
         }
 
         return await page.content();
@@ -77,13 +79,17 @@ export async function POST() {
             throw new Error('Site URL not found. Please set it in Settings.');
         }
 
+        // Ensure protocol exists
+        const targetUrl = siteUrl.startsWith('http') ? siteUrl : `https://${siteUrl}`;
+        console.log(`Analyzing Homepage: ${targetUrl}`);
+
         // Fetch HTML
-        const htmlContent = await fetchPageContent(siteUrl);
-        
+        const htmlContent = await fetchPageContent(targetUrl);
+
         // Clean HTML to save tokens
         const cleanHtml = htmlContent.replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gim, "")
-                                     .replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gim, "")
-                                     .substring(0, 15000);
+            .replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gim, "")
+            .substring(0, 15000);
 
         const prompt = `
             As an expert CRO consultant, analyze this homepage HTML.
@@ -95,25 +101,25 @@ export async function POST() {
             ${cleanHtml}
             \`\`\`
         `;
-        
+
         // Call Gemini API
         const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
         const apiKey = process.env.GEMINI_API_KEY; // Using your correct variable name
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-        
-        const geminiResponse = await fetch(apiUrl, { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify(payload) 
+
+        const geminiResponse = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
         });
 
         if (!geminiResponse.ok) {
             const err = await geminiResponse.json();
             throw new Error(err.error?.message || 'AI Model Failed');
         }
-        
+
         const result = await geminiResponse.json();
-        
+
         if (result.candidates && result.candidates.length > 0) {
             const rawText = result.candidates[0].content.parts[0].text;
             const jsonText = rawText.replace(/```json|```/g, '').trim();
@@ -145,14 +151,14 @@ export async function POST() {
                     }
                 }
             }
-            
+
             await connection.query(
                 'INSERT INTO notifications (user_email, message, link) VALUES (?, ?, ?)',
                 [userEmail, 'Your new Homepage Analysis Report is ready.', '/recommendations']
             );
 
             await connection.commit();
-            
+
             return NextResponse.json({ message: 'Analysis complete.', reportId: reportId }, { status: 200 });
         } else {
             throw new Error('No content received from AI.');

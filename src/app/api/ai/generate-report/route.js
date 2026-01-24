@@ -21,10 +21,10 @@ export async function POST(req) {
         } catch (e) {
             console.warn("Empty request body, using defaults.");
         }
-        
+
         const contextData = await getReportingData(
-            session.user.email, 
-            body.startDate, 
+            session.user.email,
+            body.startDate,
             body.endDate
         );
 
@@ -64,7 +64,8 @@ export async function POST(req) {
         `;
 
         const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
+        // Using gemini-2.0-flash for better performance and to avoid 404s on deprecated models
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
         const geminiResponse = await fetch(apiUrl, {
             method: 'POST',
@@ -73,7 +74,7 @@ export async function POST(req) {
         });
 
         const responseText = await geminiResponse.text();
-        
+
         if (!geminiResponse.ok) {
             console.error("🔥 AI API Error Response:", responseText);
             throw new Error(`AI Request Failed: ${geminiResponse.status}`);

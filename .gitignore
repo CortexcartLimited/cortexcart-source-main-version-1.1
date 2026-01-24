@@ -1,4 +1,12 @@
 node_modules
 service-account.json
 *.json
+.next
+build
+dist
 .env
+.DS_Store
+*.log
+*.sql
+*.mp4
+*.zip

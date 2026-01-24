@@ -1,6 +1,6 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
-import { db } from '@/lib/db';import { NextResponse } from 'next/server';
+import { db } from '@/lib/db'; import { NextResponse } from 'next/server';
 import { checkAiLimit, chargeAiTokens, estimateTokens } from '@/lib/ai-limit';
 
 
@@ -10,7 +10,7 @@ export async function POST() {
         return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
     }
     const userEmail = session.user.email;
-// 1. CHECK LIMIT
+    // 1. CHECK LIMIT
     const limitCheck = await checkAiLimit(session.user.email);
     if (!limitCheck.allowed) {
         // Return null or a specific "Upgrade" alert object
@@ -60,13 +60,13 @@ export async function POST() {
         }
 
         const prompt = `As an e-commerce copywriter, suggest a new "productName" and a brief "productDescription" (max 20 words) for these products: ${JSON.stringify(products)}. Your response MUST be a valid JSON object array.`;
-        
+
         // --- FIX: Correctly use the 'prompt' variable in the Gemini API call ---
         let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
         const payload = { contents: chatHistory };
         const apiKey = process.env.GEMINI_API_KEY;
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-        
+
         const geminiResponse = await fetch(apiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -76,22 +76,24 @@ export async function POST() {
         if (!geminiResponse.ok) {
             throw new Error('Failed to get a response from the AI model.');
         }
-        // 2. CHARGE TOKENS
-        const usedTokens = result.usageMetadata?.totalTokenCount || (estimateTokens(prompt) + estimateTokens(rawText));
-        await chargeAiTokens(session.user.email, usedTokens);
+
         const result = await geminiResponse.json();
 
         if (result.candidates && result.candidates.length > 0) {
-            // --- FIX: Remove unused 'reportResult' variable ---
-            // Just insert the report to log the timestamp for the cooldown.
+            const rawText = result.candidates[0].content.parts[0].text;
+            const jsonText = rawText.replace(/```json|```/g, '').trim();
+            const analysisData = JSON.parse(jsonText);
+
+            // 2. CHARGE TOKENS (Moved after result is defined)
+            const usedTokens = result.usageMetadata?.totalTokenCount || (estimateTokens(prompt) + estimateTokens(rawText));
+            await chargeAiTokens(session.user.email, usedTokens);
+
+            // Log the report
             await db.query(
                 'INSERT INTO analysis_reports (user_email, report_type) VALUES (?, ?)',
                 [userEmail, 'product']
             );
-            
-            const rawText = result.candidates[0].content.parts[0].text;
-            const jsonText = rawText.replace(/```json|```/g, '').trim();
-            const analysisData = JSON.parse(jsonText);
+
             return NextResponse.json(analysisData, { status: 200 });
         } else {
             throw new Error('No content received from the AI model.');
