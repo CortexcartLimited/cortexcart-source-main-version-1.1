@@ -742,6 +742,32 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                         </div>
                     </div>
 
+                    {/* Pixel Perfect AI Banner */}
+                    <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg shadow-lg p-5 text-white relative overflow-hidden group">
+                        <div className="relative z-10">
+                            <h3 className="text-lg font-bold flex items-center gap-2">
+                                <SparklesIcon className="h-5 w-5 text-yellow-300" />
+                                Pixel Perfect AI
+                            </h3>
+                            <p className="text-purple-100 text-sm mt-1 mb-4 max-w-[90%]">
+                                Create stunning visuals with our free AI-powered image editor and generator.
+                            </p>
+                            <a
+                                href="https://cortexcart.com/pixel-perfect-ai/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center px-4 py-2 bg-white text-purple-700 text-sm font-bold rounded-lg hover:bg-purple-50 transition-colors shadow-sm"
+                            >
+                                Try it Free
+                                <ArrowUpTrayIcon className="h-4 w-4 ml-2 transform rotate-90" />
+                            </a>
+                        </div>
+                        {/* Decorative Background Element */}
+                        <div className="absolute -right-4 -bottom-8 opacity-20 transform rotate-12">
+                            <SparklesIcon className="h-32 w-32 text-white" />
+                        </div>
+                    </div>
+
                     {/* Image Manager */}
                     <ImageManager
                         onImageSelect={(url) => {
