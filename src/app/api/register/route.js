@@ -2,17 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
-import nodemailer from 'nodemailer';
-
-// Configure Email Transporter (Use your SMTP details here)
-const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_SERVER_HOST,
-    port: process.env.EMAIL_SERVER_PORT,
-    auth: {
-        user: process.env.EMAIL_SERVER_USER,
-        pass: process.env.EMAIL_SERVER_PASSWORD,
-    },
-});
+import { sendEmail } from '@/lib/email';
 
 export async function POST(req) {
     try {
@@ -40,7 +30,7 @@ export async function POST(req) {
         const hashedPassword = await bcrypt.hash(password, 10);
         const verificationToken = crypto.randomBytes(32).toString('hex');
         // Generate a random ID (since you aren't using UUID library, we can use crypto)
-        const userId = crypto.randomUUID(); 
+        const userId = crypto.randomUUID();
 
         // 4. Save to Database (Verified is NULL initially)
         await db.query(
@@ -51,14 +41,13 @@ export async function POST(req) {
 
         // 5. Send Verification Email
         const verifyUrl = `${process.env.NEXTAUTH_URL}/verify-email?token=${verificationToken}`;
-        
-        await transporter.sendMail({
-            from: process.env.EMAIL_FROM,
+
+        await sendEmail({
             to: email,
             subject: 'Verify your Cortexcart Account',
             html: `
                 <div style="font-family: sans-serif; padding: 20px;">
-                    <h2>Welcome to Cortexcart!</h2>
+                    <h2>Welcome to CortexCart!</h2>
                     <p>Please verify your email address to access your dashboard.</p>
                     <a href="${verifyUrl}" style="background: #000; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
                     <p>Or paste this link: ${verifyUrl}</p>
