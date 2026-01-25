@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { checkAiLimit, chargeAiTokens, estimateTokens } from '@/lib/ai-limit';
 import { getReportingData } from '@/lib/report-helper';
+import { db } from '@/lib/db';
 
 export async function POST(req) {
     const session = await getServerSession(authOptions);
@@ -100,7 +101,14 @@ export async function POST(req) {
         const usedTokens = result.usageMetadata?.totalTokenCount || (estimateTokens(prompt) + estimateTokens(reportHtml));
         await chargeAiTokens(session.user.email, usedTokens);
 
-        return NextResponse.json({ report: reportHtml });
+        // --- NEW: SAVE REPORT TO DB ---
+        // We use 'performance' as the report_type for these generic AI reports
+        const [insertResult] = await db.query(
+            'INSERT INTO analysis_reports (user_email, report_type, content, status) VALUES (?, ?, ?, ?)',
+            [session.user.email, 'performance', reportHtml, 'completed']
+        );
+
+        return NextResponse.json({ report: reportHtml, id: insertResult.insertId });
 
     } catch (error) {
         console.error('Report Generation Error:', error);

@@ -2,7 +2,7 @@
 
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
-import { db } from '@/lib/db';import { NextResponse } from 'next/server';
+import { db } from '@/lib/db'; import { NextResponse } from 'next/server';
 
 // GET handler to fetch a list of reports for the user
 export async function GET() {
@@ -13,7 +13,7 @@ export async function GET() {
 
     try {
         const [reports] = await db.query(
-            'SELECT id, report_type, status, created_at FROM generated_reports WHERE user_email = ? ORDER BY created_at DESC',
+            'SELECT id, report_type, status, created_at FROM analysis_reports WHERE user_email = ? ORDER BY created_at DESC',
             [session.user.email]
         );
         return NextResponse.json(reports, { status: 200 });
