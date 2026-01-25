@@ -90,7 +90,12 @@ export async function POST(req) {
         }
 
         const rawText = result.candidates?.[0]?.content?.parts?.[0]?.text || "";
-        const reportHtml = rawText.replace(/```html|```/g, '').trim();
+        console.log("🤖 Raw AI Response:", rawText); // Debug log
+
+        // Robust regex to extract content from ```html ... ``` or just ``` ... ``` blocks
+        // This regex looks for optional ```html (or just ```), captures the content, and optional closing ```
+        const match = rawText.match(/```(?:html)?\s*([\s\S]*?)\s*```/);
+        const reportHtml = match ? match[1].trim() : rawText.trim();
 
         const usedTokens = result.usageMetadata?.totalTokenCount || (estimateTokens(prompt) + estimateTokens(reportHtml));
         await chargeAiTokens(session.user.email, usedTokens);
