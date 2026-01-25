@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 function SetPasswordContent() {
     const router = useRouter();
-    constsearchParams = useSearchParams();
+    const searchParams = useSearchParams();
     const token = searchParams.get('token');
 
     const [password, setPassword] = useState('');
@@ -99,7 +99,7 @@ function SetPasswordContent() {
                         <input type="hidden" name="remember" value="true" />
                         <div className="rounded-md shadow-sm -space-y-px">
                             <div className="mb-4">
-                                <label htmlFor="password" class="sr-only">Password</label>
+                                <label htmlFor="password" className="sr-only">Password</label>
                                 <input
                                     id="password"
                                     name="password"
@@ -112,7 +112,7 @@ function SetPasswordContent() {
                                 />
                             </div>
                             <div>
-                                <label htmlFor="confirm-password" class="sr-only">Confirm Password</label>
+                                <label htmlFor="confirm-password" className="sr-only">Confirm Password</label>
                                 <input
                                     id="confirm-password"
                                     name="confirm-password"
