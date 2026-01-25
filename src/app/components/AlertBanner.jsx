@@ -54,7 +54,7 @@ const AlertBanner = ({ title, message, type = 'info' }) => {
           {type === 'ai-recommendation' ? (
             <div className="h-24 w-24 rounded-full overflow-hidden p-4">
               <Image
-                src="/images/ai-icon.png" // Path to your saved image
+                src="/optimized-image-2.webp" // Path to your saved image
                 alt="AI"
                 width={48}
                 height={48}
