@@ -12,16 +12,31 @@ export const sendEmail = async ({ to, subject, html }) => {
         console.warn("⚠️ Email credentials missing in environment variables. Email might not send.");
     }
 
+    console.log(`📧 Attempting to send email to ${to} via ${host}:${port}`);
+
     const transporter = nodemailer.createTransport({
         host,
         port,
         auth: { user, pass },
     });
 
-    await transporter.sendMail({
-        from,
-        to,
-        subject,
-        html,
-    });
+    try {
+        await transporter.verify();
+        console.log(`✅ SMTP Connection Verified for ${host}`);
+    } catch (verifyErr) {
+        console.error(`❌ SMTP Connection Failed for ${host}:`, verifyErr);
+    }
+
+    try {
+        await transporter.sendMail({
+            from,
+            to,
+            subject,
+            html,
+        });
+        console.log(`✅ Email sent successfully to ${to}`);
+    } catch (sendErr) {
+        console.error(`❌ Failed to send email to ${to}:`, sendErr);
+        throw sendErr;
+    }
 };

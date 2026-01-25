@@ -17,13 +17,20 @@ export async function POST(req) {
         );
 
         if (users.length === 0) {
+            console.warn(`❌ SetPassword Attempt: Token not found: ${token}`);
             return NextResponse.json({ message: 'Invalid or expired token.' }, { status: 400 });
         }
 
         const user = users[0];
 
         // 2. Check Expiry
-        if (user.reset_expiry && new Date(user.reset_expiry) < new Date()) {
+        const now = new Date();
+        const expiry = new Date(user.reset_expiry);
+
+        console.log(`🕒 Token Validation: User: ${user.email}, Now: ${now.toISOString()}, Expiry: ${expiry.toISOString()}`);
+
+        if (user.reset_expiry && expiry < now) {
+            console.warn(`❌ SetPassword Attempt: Token expired for ${user.email}`);
             return NextResponse.json({ message: 'Token has expired.' }, { status: 400 });
         }
 

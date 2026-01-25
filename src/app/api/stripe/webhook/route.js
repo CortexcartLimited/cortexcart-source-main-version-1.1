@@ -64,7 +64,12 @@ export async function POST(req) {
             await log(`✨ User does not exist. Creating new user for ${customerEmail}...`);
             const userId = crypto.randomUUID();
             const resetToken = crypto.randomBytes(32).toString('hex');
-            const resetExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+            // Format for MySQL DATETIME: YYYY-MM-DD HH:mm:ss
+            const expiryDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
+            const resetExpiry = expiryDate.toISOString().slice(0, 19).replace('T', ' ');
+
+            await log(`🕒 Generated Expiry: ${resetExpiry} (UTC)`);
 
             // Insert User
             await db.query(
