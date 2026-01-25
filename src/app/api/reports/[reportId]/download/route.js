@@ -1,7 +1,7 @@
 // src/app/api/reports/[reportId]/download/route.js
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
-import { db } from '@/lib/db';import { NextResponse } from 'next/server';
+import { db } from '@/lib/db'; import { NextResponse } from 'next/server';
 import puppeteer from 'puppeteer';
 import { marked } from 'marked';
 
@@ -26,7 +26,17 @@ export async function GET(request, { params }) {
 
         const report = reports[0];
         const htmlContent = marked.parse(report.report_content);
-        const chartData = JSON.stringify(report.chart_data?.salesByDay || []);
+
+        let chartDataObj = report.chart_data;
+        if (typeof chartDataObj === 'string') {
+            try {
+                chartDataObj = JSON.parse(chartDataObj);
+            } catch (e) {
+                console.warn('Failed to parse chart_data JSON', e);
+                chartDataObj = {};
+            }
+        }
+        const chartData = JSON.stringify(chartDataObj?.salesByDay || []);
 
         // We now build a more advanced HTML document that includes the Chart.js library
         const fullHtml = `
@@ -70,7 +80,10 @@ export async function GET(request, { params }) {
                                 borderWidth: 1
                             }]
                         },
-                        options: { scales: { y: { beginAtZero: true } } }
+                        options: { 
+                            animation: false,
+                            scales: { y: { beginAtZero: true } } 
+                        }
                     });
                 </script>
             </body>

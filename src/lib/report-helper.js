@@ -46,6 +46,7 @@ export async function getReportingData(identifier, startDate, endDate) {
 
         // 4. Get Revenue (Shopify Logic)
         let totalRevenue = "Not Connected"; // DEFAULT STATUS
+        let salesByDay = [];
 
         try {
             const [storeRows] = await db.query(
@@ -62,7 +63,7 @@ export async function getReportingData(identifier, startDate, endDate) {
                     created_at_min: startObj.toISOString(),
                     created_at_max: endObj.toISOString(),
                     limit: '250',
-                    fields: 'total_price'
+                    fields: 'total_price,created_at'
                 });
 
                 const shopifyRes = await fetch(`https://${store_url}/admin/api/2024-04/orders.json?${queryParams}`, {
@@ -74,8 +75,23 @@ export async function getReportingData(identifier, startDate, endDate) {
 
                 if (shopifyRes.ok) {
                     const data = await shopifyRes.json();
-                    // Calculate actual revenue
+
+                    // Calculate Total Revenue
                     totalRevenue = data.orders.reduce((sum, order) => sum + parseFloat(order.total_price), 0);
+
+                    // Calculate Daily Sales for Chart
+                    const salesMap = {};
+                    data.orders.forEach(order => {
+                        const date = order.created_at.split('T')[0];
+                        salesMap[date] = (salesMap[date] || 0) + parseFloat(order.total_price);
+                    });
+
+                    // Sort by date
+                    salesByDay = Object.keys(salesMap).sort().map(date => ({
+                        date,
+                        total_sales: parseFloat(salesMap[date].toFixed(2))
+                    }));
+
                 } else {
                     console.warn("Shopify API Error:", shopifyRes.statusText);
                     totalRevenue = "Sync Error";
@@ -84,6 +100,7 @@ export async function getReportingData(identifier, startDate, endDate) {
         } catch (shopifyErr) {
             console.error("Failed to fetch Shopify revenue:", shopifyErr);
             totalRevenue = "Sync Error";
+            salesByDay = [];
         }
 
         // 5. Get Top Pages
@@ -128,7 +145,8 @@ export async function getReportingData(identifier, startDate, endDate) {
                 pageviews: trafficStats[0]?.pageviews || 0
             },
             topPages,
-            referrers
+            referrers,
+            salesByDay
         };
 
     } catch (error) {
