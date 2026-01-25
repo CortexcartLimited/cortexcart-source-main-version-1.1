@@ -104,8 +104,8 @@ export async function POST(req) {
         // --- NEW: SAVE REPORT TO DB ---
         // We use 'performance' as the report_type for these generic AI reports
         const [insertResult] = await db.query(
-            'INSERT INTO analysis_reports (user_email, report_type, content, status) VALUES (?, ?, ?, ?)',
-            [session.user.email, 'performance', reportHtml, 'completed']
+            'INSERT INTO generated_reports (user_email, report_content, status) VALUES (?, ?, ?)',
+            [session.user.email, reportHtml, 'completed']
         );
 
         return NextResponse.json({ report: reportHtml, id: insertResult.insertId });

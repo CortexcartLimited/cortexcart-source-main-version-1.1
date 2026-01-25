@@ -13,7 +13,7 @@ export async function GET() {
 
     try {
         const [reports] = await db.query(
-            'SELECT id, report_type, status, created_at FROM analysis_reports WHERE user_email = ? ORDER BY created_at DESC',
+            'SELECT id, status, created_at FROM generated_reports WHERE user_email = ? ORDER BY created_at DESC',
             [session.user.email]
         );
         return NextResponse.json(reports, { status: 200 });
