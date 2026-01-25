@@ -1,4 +1,4 @@
 {
-  "/api/stripe/webhook/route": "app/api/stripe/webhook/route.js",
-  "/login/page": "app/login/page.js"
+  "/login/page": "app/login/page.js",
+  "/api/stripe/webhook/route": "app/api/stripe/webhook/route.js"
 }
