@@ -1,11 +1,11 @@
 import nodemailer from 'nodemailer';
 
 export const sendEmail = async ({ to, subject, html }) => {
-    // defaults to env vars used in register route
-    const host = process.env.EMAIL_SERVER_HOST || process.env.MAIL_HOST;
-    const port = process.env.EMAIL_SERVER_PORT || process.env.MAIL_PORT || 587;
-    const user = process.env.EMAIL_SERVER_USER || process.env.MAIL_USER;
-    const pass = process.env.EMAIL_SERVER_PASSWORD || process.env.MAIL_PASS;
+    // Check multiple common environment variable naming conventions
+    const host = process.env.EMAIL_SERVER_HOST || process.env.MAIL_HOST || process.env.SMTP_HOST;
+    const port = parseInt(process.env.EMAIL_SERVER_PORT || process.env.MAIL_PORT || process.env.SMTP_PORT || '587');
+    const user = process.env.EMAIL_SERVER_USER || process.env.MAIL_USER || process.env.SMTP_USER;
+    const pass = process.env.EMAIL_SERVER_PASSWORD || process.env.MAIL_PASS || process.env.SMTP_PASS;
     const from = process.env.EMAIL_FROM || '"CortexCart" <noreply@cortexcart.com>';
 
     if (!host || !user || !pass) {
@@ -17,7 +17,12 @@ export const sendEmail = async ({ to, subject, html }) => {
     const transporter = nodemailer.createTransport({
         host,
         port,
+        secure: port === 465, // true for 465, false for other ports
         auth: { user, pass },
+        tls: {
+            // Do not fail on invalid certs (e.g. self-signed or host mismatch)
+            rejectUnauthorized: false
+        }
     });
 
     try {
