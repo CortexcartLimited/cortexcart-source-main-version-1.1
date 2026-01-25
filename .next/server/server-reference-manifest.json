@@ -1,1 +1,5 @@
-{"node":{"4fca30f7dac22aaa10deb9de6a17bf41b836cc4f":{"workers":{"app/connect/callback/pinterest/page":"16124"},"layer":{"app/connect/callback/pinterest/page":"action-browser"}}},"edge":{},"encryptionKey":"aJ6zmReVHLWDei/dh95bX0LEVk7dbdkc7VQSqhYjY98="}
+{
+  "node": {},
+  "edge": {},
+  "encryptionKey": "3hFsxD527aKK/i4J7FRkXT0wiS8g8TyQ99MqmcuLZK4="
+}

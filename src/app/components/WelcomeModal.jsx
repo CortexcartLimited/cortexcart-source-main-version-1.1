@@ -39,7 +39,7 @@ export default function WelcomeModal() {
       <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center transform transition-all animate-in fade-in zoom-in-95 duration-500">
         <div className="flex justify-center mb-6">
           <Image
-            src="/cortexcart-com-logo.png"
+            src="/optimized-image-2.webp"
             alt="CortexCart Logo"
             width={200}
             height={50}

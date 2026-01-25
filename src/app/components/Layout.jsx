@@ -192,7 +192,7 @@ const SidebarContent = () => {
     return (
         <>
             <div className="flex-grow">
-                <a href="/" className="flex items-center pb-6 px-2"><h1 className="text-2xl font-bold text-gray-900 dark:text-white">CortexCart</h1></a>
+                <a href="/" className="flex items-center pb-6 px-2"><img src="/optimized-image-2.webp" alt="Logo" className="h-8 w-auto mr-3" /><h1 className="text-2xl font-bold text-gray-900 dark:text-white">CortexCart</h1></a>
                 <nav>
                     <ul className="space-y-2">
                         {session && (

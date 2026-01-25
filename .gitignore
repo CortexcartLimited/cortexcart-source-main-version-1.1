@@ -5,8 +5,11 @@ service-account.json
 build
 dist
 .env
+.env.production
+*.env.production
 .DS_Store
 *.log
 *.sql
 *.mp4
 *.zip
+ecosystem.config.js
