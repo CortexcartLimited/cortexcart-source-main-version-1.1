@@ -116,6 +116,7 @@ export default withAuth(
                     '/login',
                     '/registration',
                     '/verify-email',
+                    '/auth/set-password',
                     '/api/auth',
                     '/api/register',
                     '/api/verify-token',
