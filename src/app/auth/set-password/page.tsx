@@ -1,43 +1,17 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { resetPassword } from './actions';
-import { Suspense, useEffect, useState } from 'react';
-
-// Submit Button Component for handling loading state
-function SubmitButton() {
-    const { pending } = useFormStatus();
-
-    return (
-        <button
-            type="submit"
-            disabled={pending}
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-            {pending ? (
-                <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Setting Password...
-                </>
-            ) : (
-                'Set Password'
-            )}
-        </button>
-    );
-}
+import { Suspense, useState } from 'react';
+import { signIn } from 'next-auth/react';
 
 function SetPasswordForm() {
     const searchParams = useSearchParams();
+    const router = useRouter();
     const token = searchParams.get('token');
-    const [state, formAction] = useFormState(resetPassword, null);
-    const [clientError, setClientError] = useState<string | null>(null);
-
-    // Validate fields on change or before submit if possible, 
-    // but for simplicity and robustness we rely on server + basic client checks.
+    const [error, setError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isLoggingIn, setIsLoggingIn] = useState(false);
 
     if (!token) {
         return (
@@ -46,6 +20,64 @@ function SetPasswordForm() {
                 <p className="mt-2 text-sm text-red-700">
                     This password reset link is missing user information. Please request a new one.
                 </p>
+            </div>
+        );
+    }
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        setError(null);
+        setIsSubmitting(true);
+
+        const formData = new FormData(event.currentTarget);
+        const password = formData.get('password') as string;
+
+        try {
+            // Call Server Action
+            const result = await resetPassword(null, formData);
+
+            if (result?.error) {
+                setError(result.error);
+                setIsSubmitting(false);
+                return;
+            }
+
+            if (result?.success && result?.email) {
+                // Auto Login
+                setIsLoggingIn(true);
+                const signInResult = await signIn('credentials', {
+                    redirect: false,
+                    email: result.email,
+                    password: password,
+                    callbackUrl: '/dashboard',
+                });
+
+                if (signInResult?.error) {
+                    // Fallback if auto-login fails
+                    router.push('/login?success=password_set');
+                } else if (signInResult?.ok) {
+                    router.push('/dashboard');
+                }
+            }
+        } catch (err) {
+            console.error(err);
+            setError('An unexpected error occurred.');
+            setIsSubmitting(false);
+        }
+    };
+
+    if (isLoggingIn) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+                <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
+                    <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
+                        <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                    <h2 className="text-3xl font-extrabold text-gray-900">Password secured!</h2>
+                    <p className="mt-2 text-sm text-gray-600">Logging you into your dashboard...</p>
+                </div>
             </div>
         );
     }
@@ -63,10 +95,10 @@ function SetPasswordForm() {
 
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                    <form action={formAction} className="space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-6">
                         <input type="hidden" name="token" value={token} />
 
-                        {(state?.error || clientError) && (
+                        {error && (
                             <div className="rounded-md bg-red-50 p-4">
                                 <div className="flex">
                                     <div className="ml-3">
@@ -74,7 +106,7 @@ function SetPasswordForm() {
                                             Error
                                         </h3>
                                         <div className="mt-2 text-sm text-red-700">
-                                            <p>{state?.error || clientError}</p>
+                                            <p>{error}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -124,7 +156,23 @@ function SetPasswordForm() {
                         </div>
 
                         <div>
-                            <SubmitButton />
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Setting Password...
+                                    </>
+                                ) : (
+                                    'Set Password'
+                                )}
+                            </button>
                         </div>
                     </form>
                 </div>

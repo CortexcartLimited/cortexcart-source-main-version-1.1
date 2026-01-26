@@ -396,12 +396,14 @@ const Layout = ({ children }) => {
 
                 {/* Header: Always at Top */}
                 <div className={`flex-none sticky top-0 z-10 flex h-16 bg-white dark:bg-gray-800 shadow ${isScrolled ? 'shadow-md' : 'shadow-sm'}`}>
-                    <button onClick={() => setSidebarOpen(true)} className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none lg:hidden">
-                        <span className="sr-only">Open sidebar</span>
-                        <Bars3Icon className="h-6 w-6" />
-                    </button>
-                    <div className="flex-1 px-4 sm:px-6 md:px-8 flex justify-end">
-                        <TopNav />
+                    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+                        <button onClick={() => setSidebarOpen(true)} className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none lg:hidden">
+                            <span className="sr-only">Open sidebar</span>
+                            <Bars3Icon className="h-6 w-6" />
+                        </button>
+                        <div className="flex-1 flex justify-end">
+                            <TopNav />
+                        </div>
                     </div>
                 </div>
 

@@ -29,7 +29,7 @@ export async function resetPassword(prevState: any, formData: FormData) {
     try {
         // 1. Verify Token
         const [rows] = await db.query(
-            'SELECT id FROM users WHERE reset_token = ? AND reset_expiry > NOW()',
+            'SELECT id, email FROM users WHERE reset_token = ? AND reset_expiry > NOW()',
             [token]
         );
 
@@ -38,6 +38,7 @@ export async function resetPassword(prevState: any, formData: FormData) {
         }
 
         const userId = (rows as any[])[0].id;
+        const userEmail = (rows as any[])[0].email; // Fetch email
 
         // 2. Hash Password
         const salt = await bcrypt.genSalt(10);
@@ -49,11 +50,10 @@ export async function resetPassword(prevState: any, formData: FormData) {
             [hashedPassword, userId]
         );
 
+        return { success: true, email: userEmail };
+
     } catch (error) {
         console.error('Error resetting password:', error);
         return { error: 'An unexpected error occurred. Please try again.' };
     }
-
-    // Redirect on success (outside try/catch to avoid next/navigation error catching)
-    redirect('/login?success=password_set');
 }
