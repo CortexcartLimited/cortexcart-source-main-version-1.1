@@ -112,9 +112,15 @@ const TopNav = () => {
                         </div>
 
                         <div className="relative h-full flex items-center" ref={userDropdownRef}>
-                            <button onClick={() => setUserDropdownOpen(!userDropdownOpen)} className="flex items-center space-x-2 rounded-full h-full">
+                            <button onClick={() => setUserDropdownOpen(!userDropdownOpen)} className="flex items-center space-x-2 rounded-full h-full focus:outline-none">
                                 <span className="text-gray-700 text-sm font-medium hidden sm:block">{session.user.name}</span>
-                                <img className="h-8 w-8 rounded-full" src={session.user.image || `https://avatar.vercel.sh/${session.user.email}`} alt="User avatar" />
+                                <div className="h-8 w-8 rounded-full overflow-hidden bg-gray-200 flex-shrink-0 flex items-center justify-center">
+                                    <img
+                                        className="h-full w-full object-cover"
+                                        src={session.user.image || `https://avatar.vercel.sh/${session.user.email}`}
+                                        alt={session.user.name?.charAt(0) || "U"}
+                                    />
+                                </div>
                             </button>
                             {userDropdownOpen && (
                                 <div className="absolute top-full right-0 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-20">
