@@ -9,10 +9,12 @@ import { ChevronUpDownIcon } from '@heroicons/react/24/solid'; // Import the ico
 
 // Currency options available for the user to select
 const currencyOptions = [
-    { code: 'USD', symbol: '$', name: 'United States Dollar' },
-    { code: 'EUR', symbol: '€', name: 'Euro' },
-    { code: 'GBP', symbol: '£', name: 'British Pound Sterling' },
-    // You can add more currencies here if needed
+  { code: 'USD', symbol: '$', name: 'United States Dollar' },
+  { code: 'EUR', symbol: '€', name: 'Euro' },
+  { code: 'GBP', symbol: '£', name: 'British Pound Sterling' },
+  { code: 'CAD', symbol: '$', name: 'Canadian Dollar' },
+  { code: 'INR', symbol: '₹', name: 'Indian Rupee' },
+  // You can add more currencies here if needed
 ];
 
 const PersonalCurrencyPage = () => {
@@ -60,7 +62,7 @@ const PersonalCurrencyPage = () => {
         const errorData = await res.json();
         throw new Error(errorData.message || 'An error occurred while saving.');
       }
-      
+
       setFormMessage({ text: 'Currency saved successfully!', isError: false });
       // Redirect back to the general settings page
       setTimeout(() => router.push('/general-settings'), 2000);
@@ -71,14 +73,14 @@ const PersonalCurrencyPage = () => {
       setIsSaving(false);
     }
   };
-  
+
   // Display a loading state while fetching initial data
   if (isLoading) {
     return (
       <Layout>
         <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Currency</h2>
         <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mt-6 border border-gray-200 dark:border-gray-700">
-            <p className="text-gray-600 dark:text-gray-300">Loading currency setting...</p>
+          <p className="text-gray-600 dark:text-gray-300">Loading currency setting...</p>
         </div>
       </Layout>
     );
@@ -96,13 +98,13 @@ const PersonalCurrencyPage = () => {
         <form onSubmit={handleSaveSettings}>
           <div className="mb-4">
             <label htmlFor="currency" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Currency</label>
-          {/* START: Updated Select Box Styling */}
+            {/* START: Updated Select Box Styling */}
             <div className="relative mt-1">
-              <select 
-                id="currency" 
+              <select
+                id="currency"
                 name="currency"
-                value={currency} 
-                onChange={(e) => setCurrency(e.target.value)} 
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
                 className="appearance-none w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               >
                 {currencyOptions.map(opt => (
@@ -117,7 +119,7 @@ const PersonalCurrencyPage = () => {
             </div>
             {/* END: Updated Select Box Styling */}
           </div>
-          
+
           <div className="flex justify-end items-center mt-6">
             {formMessage.text && (
               <p className={`text-sm mr-4 ${formMessage.isError ? 'text-red-600' : 'text-green-600'}`}>

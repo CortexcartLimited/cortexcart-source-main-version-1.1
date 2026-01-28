@@ -17,7 +17,7 @@ import { DashboardProvider, useDashboard } from '@/app/context/DashboardContext'
 import DynamicGrid from '@/app/components/dashboard/DynamicGrid';
 import DashboardSwitcher from '@/app/components/dashboard/DashboardSwitcher';
 
-const currencySymbols = { USD: '$', EUR: '€', GBP: '£', JPY: '¥', CAD: '$', AUD: '$' };
+const currencySymbols = { USD: '$', EUR: '€', GBP: '£', JPY: '¥', CAD: '$', AUD: '$', INR: '₹' };
 
 // Wrapper to provide context
 export default function DashboardPage() {
@@ -29,6 +29,30 @@ export default function DashboardPage() {
 }
 
 function DashboardContent() {
+    // ... (existing code)
+
+    // Prepare Context Data for Widgets
+    const currencySymbol = siteSettings?.currency ? (currencySymbols[siteSettings.currency] || '$') : '$';
+
+    const dataContext = {
+        stats,
+        chartApiData,
+        recentEvents,
+        topPages,
+        topReferrers,
+        liveVisitors,
+        ga4Stats,
+        ga4ChartData,
+        ga4AudienceData,
+        ga4Demographics,
+        googleAdsData,
+        quickBooksData, // Pass to context
+        shopifyData, // Pass to context
+        socialAnalytics, // Pass to context
+        siteSettings,
+        currencySymbol, // Pass currency symbol to context
+        dateRange // Important for ActivityTimeline
+    };
     const { data: session, status, update } = useSession();
     const { activeDashboard } = useDashboard(); // Get active dashboard for context if needed
 
@@ -231,28 +255,6 @@ function DashboardContent() {
     const handleDateFilterChange = (startDate, endDate) => { setDateRange({ startDate, endDate }); };
 
     if (status === 'loading') return <Layout><p>Loading...</p></Layout>;
-
-    // Prepare Context Data for Widgets
-    const dataContext = {
-        stats,
-        chartApiData,
-        recentEvents,
-        topPages,
-        topReferrers,
-        liveVisitors,
-        ga4Stats,
-        ga4ChartData,
-        ga4AudienceData,
-        ga4Demographics,
-        googleAdsData,
-        quickBooksData, // Pass to context
-        shopifyData, // Pass to context
-        socialAnalytics, // Pass to context
-        siteSettings,
-        dateRange // Important for ActivityTimeline
-    };
-
-    const currencySymbol = siteSettings?.currency ? (currencySymbols[siteSettings.currency] || '$') : '$';
 
     // AI Context
     const aiContext = {

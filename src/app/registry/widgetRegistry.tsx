@@ -70,7 +70,7 @@ export const WIDGET_REGISTRY: Record<string, RegistryItem> = {
             description: props.description,
             value: props.dataKey ?
                 (props.dataKey === 'revenue'
-                    ? `$${(resolveDataKey(contextData, props.dataKey) || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                    ? `${contextData.currencySymbol || '$'}${(resolveDataKey(contextData, props.dataKey) || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                     : (resolveDataKey(contextData, props.dataKey) || 0).toLocaleString())
                 : props.value
         })
@@ -79,7 +79,7 @@ export const WIDGET_REGISTRY: Record<string, RegistryItem> = {
         component: SalesBarChart,
         mapProps: (_, contextData) => ({
             apiData: contextData.chartApiData,
-            currencySymbol: '$'
+            currencySymbol: contextData.currencySymbol || '$'
         }),
         wrapperClass: "p-4 bg-white dark:bg-gray-800 rounded-lg shadow h-96 overflow-hidden min-w-0" // Added overflow fix
     },

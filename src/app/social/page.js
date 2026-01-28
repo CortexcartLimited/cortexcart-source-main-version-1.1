@@ -745,7 +745,7 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                     {/* Pixel Perfect AI Banner */}
                     <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg shadow-lg p-5 text-white relative overflow-hidden group">
                         <div className="relative z-10">
-                            <h3 className="text-lg font-bold flex items-center gap-2">
+                            <h3 className="text-lg font-bold flex items-center gap-2 text-gray-100">
                                 <SparklesIcon className="h-5 w-5 text-yellow-300" />
                                 Pixel Perfect AI
                             </h3>
