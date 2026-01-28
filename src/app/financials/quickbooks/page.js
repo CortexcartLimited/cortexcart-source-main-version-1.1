@@ -46,6 +46,9 @@ export default function FinancialsPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [financialData, setFinancialData] = useState(null);
     const [error, setError] = useState(null);
+    const [currencySymbol, setCurrencySymbol] = useState('$');
+
+    const currencySymbols = { USD: '$', EUR: '€', GBP: '£', JPY: '¥', CAD: '$', AUD: '$', INR: '₹' };
 
     useEffect(() => {
         const checkStatus = async () => {
@@ -68,11 +71,24 @@ export default function FinancialsPage() {
 
         const fetchFinancials = async () => {
             try {
-                const response = await fetch('/api/quickbooks/financial-summary');
-                const data = await response.json();
-                if (response.ok) {
-                    setFinancialData(data);
-                } else { throw new Error(data.message || 'Failed to fetch financial data'); }
+                const [financialsRes, settingsRes] = await Promise.all([
+                    fetch('/api/quickbooks/financial-summary'),
+                    fetch('/api/site-settings') // Fetch settings
+                ]);
+
+                if (!financialsRes.ok) {
+                    const data = await financialsRes.json();
+                    throw new Error(data.message || 'Failed to fetch financial data');
+                }
+                setFinancialData(await financialsRes.json());
+
+                if (settingsRes.ok) {
+                    const settings = await settingsRes.json();
+                    if (settings.currency && currencySymbols[settings.currency]) {
+                        setCurrencySymbol(currencySymbols[settings.currency]);
+                    }
+                }
+
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -112,6 +128,7 @@ export default function FinancialsPage() {
                         icon={TrendingUp}
                         description="This Fiscal Year-to-date"
                         className="bg-green-100 dark:bg-green-900/50 border-green-200 dark:border-green-800"
+                        currencySymbol={currencySymbol}
                     />
                     <QuickBooksStatCard
                         title="Total Expenses"
@@ -119,6 +136,7 @@ export default function FinancialsPage() {
                         icon={TrendingDown}
                         description="This Fiscal Year-to-date"
                         className="bg-red-100 dark:bg-red-900/50 border-red-200 dark:border-red-800"
+                        currencySymbol={currencySymbol}
                     />
                     <QuickBooksStatCard
                         title="Net Profit"
@@ -126,6 +144,7 @@ export default function FinancialsPage() {
                         icon={DollarSign}
                         description="This Fiscal Year-to-date"
                         className="bg-blue-100 dark:bg-blue-900/50 border-blue-200 dark:border-blue-800"
+                        currencySymbol={currencySymbol}
                     />
                 </div>
 
@@ -139,7 +158,7 @@ export default function FinancialsPage() {
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="name" />
                                 <YAxis />
-                                <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+                                <Tooltip formatter={(value) => `${currencySymbol}${value.toLocaleString()}`} />
                                 <Legend />
                                 <Bar dataKey="value" fill="hsl(var(--primary))" />
                             </BarChart>

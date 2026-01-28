@@ -115,7 +115,8 @@ export const WIDGET_REGISTRY: Record<string, RegistryItem> = {
         component: ShopifyStatCard,
         mapProps: (props, contextData) => {
             const data = contextData.shopifyData || {};
-            const currency = data.shop?.currency_symbol || '$';
+            // Use global currency if available, otherwise fallback to store currency or '$'
+            const currency = contextData.currencySymbol || data.shop?.currency_symbol || '$';
 
             let value: string | number = 0;
             let icon = null;
@@ -252,7 +253,8 @@ export const WIDGET_REGISTRY: Record<string, RegistryItem> = {
     GoogleAdsCharts: {
         component: GoogleAdsCharts,
         mapProps: (_, contextData) => ({
-            data: contextData.googleAdsData
+            data: contextData.googleAdsData,
+            currencySymbol: contextData.currencySymbol || '$'
         }),
         wrapperClass: "p-4 bg-white dark:bg-gray-800 rounded-lg shadow h-96 overflow-hidden min-w-0"
     },
@@ -262,13 +264,15 @@ export const WIDGET_REGISTRY: Record<string, RegistryItem> = {
             title: props.title,
             description: props.description,
             dataKey: props.dataKey,
-            data: contextData.quickBooksData
+            data: contextData.quickBooksData,
+            currencySymbol: contextData.currencySymbol || '$'
         })
     },
     QuickBooksChart: {
         component: QuickBooksChart,
         mapProps: (_, contextData) => ({
-            data: contextData.quickBooksData
+            data: contextData.quickBooksData,
+            currencySymbol: contextData.currencySymbol || '$'
         }),
         wrapperClass: "p-4 bg-white dark:bg-gray-800 rounded-lg shadow h-96 overflow-hidden min-w-0"
     },
