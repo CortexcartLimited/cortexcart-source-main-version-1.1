@@ -42,7 +42,7 @@ export async function POST() {
         // 3. Construct the prompt for the Gemini API
         const prompt = `
             As an expert e-commerce conversion rate optimization consultant, analyze the following HTML of a website's homepage.
-            Provide actionable recommendations focusing on these three areas: SEO, Performance, and Copywriting.
+            Provide actionable recommendations focusing on these three areas: SEO, Performance, and Copywriting. Add charts and images to the recommendations.
             
             Your response MUST be a valid JSON object. Do not include any text or markdown formatting before or after the JSON object.
             

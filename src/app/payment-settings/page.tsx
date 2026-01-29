@@ -22,11 +22,11 @@ const PaymentSettingsPage = () => {
         if (!res.ok) {
           const data = await res.json();
           if (res.status !== 404) {
-             throw new Error(data.message || 'Could not fetch subscription status.');
+            throw new Error(data.message || 'Could not fetch subscription status.');
           }
         } else {
-            const data = await res.json();
-            setAutoPaymentEnabled(data.autoPaymentEnabled);
+          const data = await res.json();
+          setAutoPaymentEnabled(data.autoPaymentEnabled);
         }
       } catch (err) {
         // FIX: Check the type of 'err' before using it
@@ -41,7 +41,7 @@ const PaymentSettingsPage = () => {
     };
     fetchSubscriptionStatus();
   }, []);
-  
+
   const handleManageBilling = async () => {
     setIsPortalLoading(true);
     setError('');
@@ -70,7 +70,6 @@ const PaymentSettingsPage = () => {
       <p className="text-gray-600 dark:text-gray-300 mb-6">
         Manage your billing information and subscription settings. Cortexcart Insight Dashboard uses stripe to handle billing and subscription services for security and peace of mind, the manage billing button below will take you to their site to securely manage all aspects of your subscription.
       </p>
-      <Image src="/uploads/upgrade_black_friday_banner.gif" width={1500} height={400} className="mb-4" alt='Upgrade banner black friday deal'/>
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
       <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-8 border border-gray-200 dark:border-gray-700">
