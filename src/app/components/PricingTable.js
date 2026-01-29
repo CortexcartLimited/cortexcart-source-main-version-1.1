@@ -8,14 +8,14 @@ const StripePricingTable = () => {
 
   // 1. Get these values from your Stripe Dashboard
   const PRICING_TABLE_ID = 'prctbl_1S6r3LF6XLY4flzw2vZp4OW6'; // Replace with your Pricing Table ID
-  const PUBLISHABLE_KEY = 'pk_live_WYJzenOkJZzqDr0BmsGnlddg'; // Replace with your Publishable Key
+  const PUBLISHABLE_KEY = 'pk_live_516AKZLF6XLY4flzwwwMzeUtWpKJwS6hvzICj7TLnuUuUxmBIGVJuqRArTcUy3tYSKvcZz1tGd5EBL1GPqYc1wQt500llD4lfK6'; // Replace with your Publishable Key
 
   // Show a loading state while we get the user's session
   if (status === 'loading') {
     return (
-        <div className="w-full bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg" style={{ height: '500px' }}>
-            <span className="sr-only">Loading Pricing Table...</span>
-        </div>
+      <div className="w-full bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg" style={{ height: '500px' }}>
+        <span className="sr-only">Loading Pricing Table...</span>
+      </div>
     );
   }
 
