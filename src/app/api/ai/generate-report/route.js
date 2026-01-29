@@ -46,9 +46,7 @@ export async function POST(req) {
 
             3. If 'stats.visitors' is 0:
                - Mention that no traffic was detected and suggest checking if the tracking script is installed.
-            
-               4. use charts in jpeg format that are rendered by yourself and explain with a key or legend for the charts and attribution to cortexcart.com AI powered analytics below the chart used.
-            
+                        
                Structure:
             <div class="space-y-6">
                 <section>
