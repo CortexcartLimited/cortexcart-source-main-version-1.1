@@ -2,8 +2,12 @@
 
 import React, { useState } from 'react';
 import { useDashboard } from '@/app/context/DashboardContext';
-import { X, Plus, Search } from 'lucide-react';
+import { X, Plus, Search, Info } from 'lucide-react';
+import useSWR from 'swr';
 import { WIDGET_CATALOG } from './widgetConstants';
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 
 interface WidgetCreatorProps {
     isOpen: boolean;
@@ -14,6 +18,8 @@ export default function WidgetCreator({ isOpen, onClose }: WidgetCreatorProps) {
     const { activeDashboardId, addWidget } = useDashboard();
     const [selectedCategory, setSelectedCategory] = useState(WIDGET_CATALOG[0]?.category);
     const [searchQuery, setSearchQuery] = useState('');
+    const { data: platformStatus } = useSWR('/api/platforms/status', fetcher);
+
 
     if (!isOpen) return null;
 
@@ -77,9 +83,20 @@ export default function WidgetCreator({ isOpen, onClose }: WidgetCreatorProps) {
                                 <div key={cat.category}>
                                     <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3 px-1">{cat.category}</h3>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        {cat.items.map(widget => (
-                                            <WidgetCard key={widget.type} widget={widget} onAdd={() => handleAdd(widget)} />
-                                        ))}
+                                        {cat.items.map(widget => {
+                                            const w = widget as any;
+                                            const isConnected = !w.platform || platformStatus?.[w.platform]?.isConnected;
+                                            const isDisabled = !isConnected;
+                                            return (
+                                                <WidgetCard
+                                                    key={widget.type}
+                                                    widget={widget}
+                                                    onAdd={() => !isDisabled && handleAdd(widget)}
+                                                    isDisabled={isDisabled}
+                                                />
+                                            );
+                                        })}
+
                                     </div>
                                 </div>
                             ))}
@@ -87,9 +104,20 @@ export default function WidgetCreator({ isOpen, onClose }: WidgetCreatorProps) {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {WIDGET_CATALOG.find(c => c.category === selectedCategory)?.items.map(widget => (
-                                <WidgetCard key={widget.type} widget={widget} onAdd={() => handleAdd(widget)} />
-                            ))}
+                            {WIDGET_CATALOG.find(c => c.category === selectedCategory)?.items.map(widget => {
+                                const w = widget as any;
+                                const isConnected = !w.platform || platformStatus?.[w.platform]?.isConnected;
+                                const isDisabled = !isConnected;
+                                return (
+                                    <WidgetCard
+                                        key={widget.type}
+                                        widget={widget}
+                                        onAdd={() => !isDisabled && handleAdd(widget)}
+                                        isDisabled={isDisabled}
+                                    />
+                                );
+                            })}
+
                         </div>
                     )}
                 </div>
@@ -98,21 +126,43 @@ export default function WidgetCreator({ isOpen, onClose }: WidgetCreatorProps) {
     );
 }
 
-function WidgetCard({ widget, onAdd }: { widget: any, onAdd: () => void }) {
+function WidgetCard({ widget, onAdd, isDisabled }: { widget: any, onAdd: () => void, isDisabled: boolean }) {
     const Icon = widget.icon;
     return (
-        <button
-            onClick={onAdd}
-            className="flex flex-col items-start p-4 bg-white dark:bg-gray-750 border border-gray-200 dark:border-gray-600 rounded-xl hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500 transition-all text-left w-full group"
-        >
-            <div className="flex justify-between w-full mb-2">
-                <div className="flex items-center gap-x-2">
-                    {Icon && <Icon className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover:text-blue-500 transition" />}
-                    <span className="font-semibold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">{widget.label}</span>
+        <div className="relative group/card">
+            <button
+                onClick={onAdd}
+                disabled={isDisabled}
+                className={`flex flex-col items-start p-4 border rounded-xl transition-all text-left w-full h-full
+                    ${isDisabled
+                        ? 'bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700 opacity-60 cursor-not-allowed grayscale'
+                        : 'bg-white dark:bg-gray-750 border-gray-200 dark:border-gray-600 hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500 group-hover/card:border-blue-400'
+                    }`}
+            >
+                <div className="flex justify-between w-full mb-2">
+                    <div className="flex items-center gap-x-2">
+                        {Icon && <Icon className={`w-5 h-5 ${isDisabled ? 'text-gray-400' : 'text-gray-500 dark:text-gray-400 group-hover/card:text-blue-500'} transition`} />}
+                        <span className={`font-semibold ${isDisabled ? 'text-gray-400' : 'text-gray-800 dark:text-gray-200 group-hover/card:text-blue-600 dark:group-hover/card:text-blue-400'} transition`}>{widget.label}</span>
+                    </div>
+                    {!isDisabled && <Plus className="w-5 h-5 text-gray-400 group-hover/card:text-blue-500" />}
                 </div>
-                <Plus className="w-5 h-5 text-gray-400 group-hover:text-blue-500" />
-            </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Default Size: {widget.defaultSize}</p>
-        </button>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Default Size: {widget.defaultSize}</p>
+                {isDisabled && (
+                    <div className="flex items-center gap-1 mt-auto text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-full border border-amber-100 w-fit">
+                        <Info className="w-3 h-3" />
+                        <span>Requires Connection</span>
+                    </div>
+                )}
+            </button>
+
+            {isDisabled && (
+                <div className="absolute inset-0 z-10 hidden group-hover/card:flex items-center justify-center bg-black/5 backdrop-blur-[1px] rounded-xl">
+                    <div className="bg-gray-900 text-white text-xs py-1.5 px-3 rounded shadow-lg transform -translate-y-2">
+                        Widget disabled: please connect the account or platform in the settings menu
+                    </div>
+                </div>
+            )}
+        </div>
     );
 }
+

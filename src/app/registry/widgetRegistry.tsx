@@ -32,6 +32,11 @@ const PlatformPostsChart = dynamic(() => import('@/app/components/PlatformPostsC
 const EngagementByPlatformChart = dynamic(() => import('@/app/components/EngagementByPlatformChart'), { loading: WidgetLoader });
 const DescriptionWidget = dynamic(() => import('@/app/components/dashboard/widgets/DescriptionWidget'), { loading: WidgetLoader });
 const ListWidget = dynamic(() => import('@/app/components/dashboard/widgets/ListWidget'), { loading: WidgetLoader });
+const MailchimpStatCard = dynamic(() => import('@/app/components/dashboard/widgets/MailchimpWidgets').then(mod => mod.MailchimpStatCard), { loading: WidgetLoader });
+const MailchimpGrowthChart = dynamic(() => import('@/app/components/dashboard/widgets/MailchimpWidgets').then(mod => mod.MailchimpGrowthChart), { loading: WidgetLoader });
+const MailchimpCampaignsList = dynamic(() => import('@/app/components/dashboard/widgets/MailchimpWidgets').then(mod => mod.MailchimpCampaignsList), { loading: WidgetLoader });
+const DemographicsWidget = dynamic(() => import('@/app/components/dashboard/widgets/DemographicsWidget'), { loading: WidgetLoader });
+
 import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Box, LineChart, Share2, ThumbsUp, MessageCircle, ShoppingBag, Users } from 'lucide-react'; // Import icons for static usage if needed, though registry handles components
 
 // --- Registry Type Definition ---
@@ -326,6 +331,31 @@ export const WIDGET_REGISTRY: Record<string, RegistryItem> = {
         mapProps: (props) => ({ items: props.items, listType: 'number' }),
         wrapperClass: "p-4 bg-white dark:bg-gray-800 rounded-lg shadow h-full min-h-[150px] resize-y overflow-hidden hover:overflow-auto min-w-0"
     },
+    MailchimpStatCard: {
+        component: MailchimpStatCard,
+        mapProps: (props) => ({
+            title: props.title,
+            icon: props.icon,
+            description: props.description,
+            dataKey: props.dataKey
+        })
+    },
+    MailchimpGrowthChart: {
+        component: MailchimpGrowthChart,
+        mapProps: () => ({}),
+        wrapperClass: "h-96 min-w-0"
+    },
+    MailchimpCampaignsList: {
+        component: MailchimpCampaignsList,
+        mapProps: () => ({}),
+        wrapperClass: "h-96 min-w-0"
+    },
+    DemographicsWidget: {
+        component: DemographicsWidget,
+        mapProps: () => ({}),
+        wrapperClass: "h-96 min-w-0"
+    },
+
 
     // --- Comparison Widget Logic ---
     ComparisonWidget: {
