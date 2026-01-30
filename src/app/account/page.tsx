@@ -4,8 +4,10 @@ import Link from 'next/link';
 import Image from 'next/image'; // Import the Image component from next/image
 import { Cog, CreditCard, ShieldAlert, Zap, NotebookPen, LinkIcon, Users as UsersIcon } from 'lucide-react';
 import Layout from '@/app/components/Layout';
+import { useSession } from 'next-auth/react';
 
 const AccountPage = () => {
+  const { data: session } = useSession();
   return (
     <Layout>
       <Link href="/upgrade-plans">
@@ -61,18 +63,21 @@ const AccountPage = () => {
         </div>
 
         {/* Manage Team - New Feature */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col border border-grey-50">
-          <div className="flex items-center mb-4">
-            <UsersIcon className="h-8 w-8 text-teal-500 mr-4 flex-shrink-0" />
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Manage Team</h2>
+        {/* Manage Team - New Feature (Admins Only) */}
+        {session?.user?.role !== 'viewer' && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col border border-grey-50">
+            <div className="flex items-center mb-4">
+              <UsersIcon className="h-8 w-8 text-teal-500 mr-4 flex-shrink-0" />
+              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Manage Team</h2>
+            </div>
+            <p className="text-gray-600 dark:text-gray-300 mb-6 flex-grow">
+              Invite team members to view your dashboard with Read-Only access. Collaborate safely without sharing your admin credentials.
+            </p>
+            <Link href="/account/team" className="w-full mt-auto bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 text-center">
+              Manage Team Members
+            </Link>
           </div>
-          <p className="text-gray-600 dark:text-gray-300 mb-6 flex-grow">
-            Invite team members to view your dashboard with Read-Only access. Collaborate safely without sharing your admin credentials.
-          </p>
-          <Link href="/account/team" className="w-full mt-auto bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 text-center">
-            Manage Team Members
-          </Link>
-        </div>
+        )}
         {/* Useful links */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col  border border-grey-50 ">
           <div className="flex items-center mb-4">

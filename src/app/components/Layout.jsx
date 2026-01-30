@@ -370,6 +370,9 @@ const Layout = ({ children }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
 
+    // Auth Session for Viewer Banner
+    const { data: session } = useSession();
+
     // Note: Since we moved scrolling to the <main> tag, we need to detect scroll THERE, not on window.
     const mainRef = useRef(null);
 
@@ -390,50 +393,63 @@ const Layout = ({ children }) => {
     }, []);
 
     return (
-        <div className="relative h-screen flex bg-gray-100 dark:bg-gray-900 overflow-hidden">
-            {/* Desktop Sidebar */}
-            <aside className="hidden lg:flex lg:flex-shrink-0 w-64 bg-white dark:bg-gray-800 p-4 flex-col border-r border-gray-200 dark:border-gray-700">
-                <SidebarContent />
-            </aside>
+        <div className="relative h-screen flex bg-gray-100 dark:bg-gray-900 overflow-hidden flex-col">
+
+            {/* Global Viewer Banner */}
+            {session?.user?.role === 'viewer' && (
+                <div className="bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200 text-xs font-bold text-center py-1 border-b border-amber-200 dark:border-amber-700 z-50">
+                    👁️ You are viewing <span>{session?.user?.name ? `${session?.user?.name}'s` : 'this'}</span> workspace in <strong>Read-Only Mode</strong>.
+                </div>
+            )}
+
+            <div className="flex flex-1 overflow-hidden relative">
+
+                {/* Desktop Sidebar */}
+                <aside className="hidden lg:flex lg:flex-shrink-0 w-64 bg-white dark:bg-gray-800 p-4 flex-col border-r border-gray-200 dark:border-gray-700">
+                    <SidebarContent />
+                </aside>
 
 
-            {/* Right Side Wrapper: No Scrolling Here */}
-            <div className="flex-1 flex flex-col w-0 h-full overflow-hidden">
+                {/* Right Side Wrapper: No Scrolling Here */}
+                <div className="flex-1 flex flex-col w-0 h-full overflow-hidden">
 
-                {/* Header: Always at Top */}
-                <div className={`flex-none sticky top-0 z-10 flex h-16 bg-white dark:bg-gray-800 shadow ${isScrolled ? 'shadow-md' : 'shadow-sm'}`}>
-                    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-                        <button onClick={() => setSidebarOpen(true)} className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none lg:hidden">
-                            <span className="sr-only">Open sidebar</span>
-                            <Bars3Icon className="h-6 w-6" />
-                        </button>
-                        <div className="flex-1 flex justify-end">
-                            <TopNav />
+                    {/* Header: Always at Top */}
+                    <div className={`flex-none sticky top-0 z-10 flex h-16 bg-white dark:bg-gray-800 shadow ${isScrolled ? 'shadow-md' : 'shadow-sm'}`}>
+                        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+                            <button onClick={() => setSidebarOpen(true)} className="px-4 border-r border-gray-200 text-gray-500 focus:outline-none lg:hidden">
+                                <span className="sr-only">Open sidebar</span>
+                                <Bars3Icon className="h-6 w-6" />
+                            </button>
+                            <div className="flex-1 flex justify-end">
+                                <TopNav />
+                            </div>
                         </div>
+                    </div>
+
+                    {/* Main Content: This is the ONLY thing that scrolls */}
+                    <main ref={mainRef} className="flex-1 overflow-y-auto p-6 lg:p-10 bg-gray-100 dark:bg-gray-900 relative z-0">
+
+
+                        {children}
+                        <Footer />
+                    </main>
+
+                    {/* Footer: Always at Bottom (Outside of Main) */}
+
+
+                </div>
+
+                {/* Mobile Sidebar Flyout */}
+                <div className={`fixed inset-0 z-40 lg:hidden ${sidebarOpen ? '' : 'pointer-events-none'}`}>
+                    <div className={`fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity ${sidebarOpen ? 'opacity-100' : 'opacity-0'}`} onClick={() => setSidebarOpen(false)}></div>
+                    <div className={`relative max-w-xs w-full bg-white h-full flex flex-col p-4 transition-transform transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                        <button onClick={() => setSidebarOpen(false)} className="absolute top-2 right-2 text-gray-400"><XMarkIcon className="h-6 w-6" /></button>
+                        <SidebarContent />
                     </div>
                 </div>
 
-                {/* Main Content: This is the ONLY thing that scrolls */}
-                <main ref={mainRef} className="flex-1 overflow-y-auto p-6 lg:p-10 bg-gray-100 dark:bg-gray-900 relative z-0">
-
-
-                    {children}
-                    <Footer />
-                </main>
-
-                {/* Footer: Always at Bottom (Outside of Main) */}
-
-
             </div>
 
-            {/* Mobile Sidebar Flyout */}
-            <div className={`fixed inset-0 z-40 lg:hidden ${sidebarOpen ? '' : 'pointer-events-none'}`}>
-                <div className={`fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity ${sidebarOpen ? 'opacity-100' : 'opacity-0'}`} onClick={() => setSidebarOpen(false)}></div>
-                <div className={`relative max-w-xs w-full bg-white h-full flex flex-col p-4 transition-transform transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                    <button onClick={() => setSidebarOpen(false)} className="absolute top-2 right-2 text-gray-400"><XMarkIcon className="h-6 w-6" /></button>
-                    <SidebarContent />
-                </div>
-            </div>
             <AiChatAssistant />
             <FeedbackButton />
         </div>
