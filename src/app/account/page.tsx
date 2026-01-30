@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image'; // Import the Image component from next/image
-import { Cog, CreditCard, ShieldAlert, Zap, NotebookPen, LinkIcon } from 'lucide-react';
+import { Cog, CreditCard, ShieldAlert, Zap, NotebookPen, LinkIcon, Users as UsersIcon } from 'lucide-react';
 import Layout from '@/app/components/Layout';
 
 const AccountPage = () => {
