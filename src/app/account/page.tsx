@@ -64,7 +64,7 @@ const AccountPage = () => {
 
         {/* Manage Team - New Feature */}
         {/* Manage Team - New Feature (Admins Only) */}
-        {session?.user?.role !== 'viewer' && (
+        {(session?.user as any)?.role !== 'viewer' && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col border border-grey-50">
             <div className="flex items-center mb-4">
               <UsersIcon className="h-8 w-8 text-teal-500 mr-4 flex-shrink-0" />
