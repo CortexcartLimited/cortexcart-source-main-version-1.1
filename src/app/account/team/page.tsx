@@ -29,7 +29,7 @@ const TeamPage = () => {
         if (session) fetchMembers();
     }, [session]);
 
-    const handleInvite = async (e) => {
+    const handleInvite = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setInviteStatus(null);
