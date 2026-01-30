@@ -21,7 +21,7 @@ const TeamPage = () => {
     const [members, setMembers] = useState<TeamMember[]>([]);
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
-    const [inviteStatus, setInviteStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+    const [inviteStatus, setInviteStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null); // Typed status state
 
     // Modal State
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
