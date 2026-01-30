@@ -50,7 +50,7 @@ export async function POST(req) {
         // We might need to make sure these columns exist. standard password reset flows usually have them.
 
         await db.query(`
-            INSERT INTO users (email, password_hash, name, role, adminId, reset_token, reset_token_expiry, status, created_at)
+            INSERT INTO users (email, password_hash, name, role, adminId, reset_token, reset_token_expires, status, created_at)
             VALUES (?, ?, ?, 'viewer', ?, ?, ?, 'Pending', NOW())
         `, [
             email,
