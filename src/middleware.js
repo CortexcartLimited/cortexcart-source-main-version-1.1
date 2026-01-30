@@ -73,6 +73,34 @@ async function customMiddleware(req) {
         const status = sessionToken.stripeSubscriptionStatus;
         const isActive = status === 'active' || status === 'trialing';
 
+        // --- NEW: READ-ONLY CHECK ---
+        const isViewer = sessionToken.role === 'viewer';
+
+        // Block restricted "Write" API paths or settings pages for viewers
+        // We define what a viewer cannot touch.
+        const RESTRICTED_FOR_VIEWER = [
+            '/settings',
+            '/upgrade-plans',
+            '/billing-settings', // Assuming this exists or is part of regular settings
+            '/api/ai/generate',  // Example: Block generating new reports
+            '/api/subscription', // Block subscription changes
+            '/api/connect',      // Block adding connections
+            '/danger-zone'
+        ];
+
+        // Strict Check: specific paths that modify state
+        const isRestrictedPath = RESTRICTED_FOR_VIEWER.some(p => pathname.startsWith(p));
+
+        if (isViewer && isRestrictedPath) {
+            // If API request, return 403 JSON
+            if (pathname.startsWith('/api/')) {
+                return NextResponse.json({ error: 'Access Denied: Read-Only User' }, { status: 403 });
+            }
+            // If Page request, redirect to dashboard or show error
+            return NextResponse.redirect(new URL('/dashboard?error=readonly', appUrl));
+        }
+        // ----------------------------
+
         let plan;
         if (priceId && isActive) {
             plan = getPlanDetails(priceId);

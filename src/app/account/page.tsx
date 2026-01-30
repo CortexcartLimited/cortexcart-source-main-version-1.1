@@ -2,15 +2,15 @@
 
 import Link from 'next/link';
 import Image from 'next/image'; // Import the Image component from next/image
-import { Cog, CreditCard, ShieldAlert, Zap, NotebookPen, LinkIcon} from 'lucide-react';
+import { Cog, CreditCard, ShieldAlert, Zap, NotebookPen, LinkIcon } from 'lucide-react';
 import Layout from '@/app/components/Layout';
 
 const AccountPage = () => {
   return (
     <Layout>
       <Link href="/upgrade-plans">
-      <Image src="/cortex cart-main-banner-upgrade.jpg" alt="Cortex Cart Upgrade Banner" width={1200} height={300} className="mb-8 rounded-lg shadow-md" />
-</Link>
+        <Image src="/cortex cart-main-banner-upgrade.jpg" alt="Cortex Cart Upgrade Banner" width={1200} height={300} className="mb-8 rounded-lg shadow-md" />
+      </Link>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="lg:col-span-2">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">My Account</h1>
@@ -28,7 +28,7 @@ const AccountPage = () => {
             Manage your account details, site information, and display preferences. Here you can update your personal information and configure settings for your connected site.
           </p>
           <Link href="/general-settings" className="w-full mt-auto bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 text-center">
-            Manage General Settings 
+            Manage General Settings
           </Link>
         </div>
 
@@ -59,20 +59,34 @@ const AccountPage = () => {
             View Plans & Upgrade
           </Link>
         </div>
+
+        {/* Manage Team - New Feature */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col border border-grey-50">
+          <div className="flex items-center mb-4">
+            <UsersIcon className="h-8 w-8 text-teal-500 mr-4 flex-shrink-0" />
+            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Manage Team</h2>
+          </div>
+          <p className="text-gray-600 dark:text-gray-300 mb-6 flex-grow">
+            Invite team members to view your dashboard with Read-Only access. Collaborate safely without sharing your admin credentials.
+          </p>
+          <Link href="/account/team" className="w-full mt-auto bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 text-center">
+            Manage Team Members
+          </Link>
+        </div>
         {/* Useful links */}
-<div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col  border border-grey-50 ">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col  border border-grey-50 ">
           <div className="flex items-center mb-4">
             <LinkIcon className="h-8 w-8 text-blue-500 mr-4 flex-shrink-0" />
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Useful Links</h2>
           </div>
           <p className="text-gray-600 dark:text-gray-300 mb-6 flex-grow">
-            We have a range of additional services that you may be interested in, for example: *Shopify, *Tide and more.. 
+            We have a range of additional services that you may be interested in, for example: *Shopify, *Tide and more..
           </p>
-           <Link href="/account/useful-links" className="w-full mt-auto bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 text-center">
-             Useful Links
+          <Link href="/account/useful-links" className="w-full mt-auto bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 text-center">
+            Useful Links
           </Link>
         </div>
-      {/* GDPR Data Request */}
+        {/* GDPR Data Request */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col border border-grey-50">
           <div className="flex items-center mb-4">
             <NotebookPen className="h-8 w-8 text-orange-500 mr-4 flex-shrink-0" /> {/* Using Cog for a generic settings/data icon */}
@@ -85,7 +99,7 @@ const AccountPage = () => {
             Request My Data
           </Link>
         </div>
-       
+
         {/* Other Settings */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col border border-grey-50">
           <div className="flex items-center mb-4">
@@ -93,12 +107,12 @@ const AccountPage = () => {
             <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Are you looking for?</h2>
           </div>
           <p className="text-gray-600 dark:text-gray-300 mb-6 flex-grow">
-       <em> <b>Advanced Settings:</b></em> would you like to connect a social media account, connect a financial platform, connect Google analytics and possibly other advanced settings then please click the button below to manage or add these options.          </p>
+            <em> <b>Advanced Settings:</b></em> would you like to connect a social media account, connect a financial platform, connect Google analytics and possibly other advanced settings then please click the button below to manage or add these options.          </p>
           <Link href="/settings" className="w-full mt-auto bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 text-center">
             Go To Settings
           </Link>
         </div>
-   {/* Danger Zone */}
+        {/* Danger Zone */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-2 border-red-500/50 flex flex-col">
           <div className="flex items-center mb-4">
             <ShieldAlert className="h-8 w-8 text-red-500 mr-4 flex-shrink-0" />
@@ -111,8 +125,8 @@ const AccountPage = () => {
             Go to Danger Zone
           </Link>
         </div>
-       
- </div>
+
+      </div>
     </Layout>
   );
 };
