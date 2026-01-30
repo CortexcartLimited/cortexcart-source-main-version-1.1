@@ -74,6 +74,6 @@ export async function POST(req) {
 
     } catch (error) {
         console.error('Invite Error:', error);
-        return new Response(JSON.stringify({ error: 'Internal Server Error' }), { status: 500 });
+        return new Response(JSON.stringify({ error: error.message || 'Internal Server Error' }), { status: 500 });
     }
 }
