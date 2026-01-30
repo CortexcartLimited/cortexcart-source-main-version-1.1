@@ -1,7 +1,7 @@
 import { db } from '@/lib/db';
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { sendEmail } from '@/lib/email';
+import { sendTeamInviteEmail } from '@/lib/email';
 import crypto from 'crypto';
 
 export async function POST(req) {
@@ -23,43 +23,51 @@ export async function POST(req) {
             return new Response(JSON.stringify({ error: 'Email is required' }), { status: 400 });
         }
 
-        // Check if user already exists
-        const [existing] = await db.query('SELECT id, adminId FROM users WHERE email = ?', [email]);
+        // 1. Check if user already exists
+        const [existing] = await db.query('SELECT id, adminId, role FROM users WHERE email = ?', [email]);
+
         if (existing.length > 0) {
+            const user = existing[0];
+            // If they are an Admin (role is not 'viewer' AND adminId is NULL), reject.
+            if (user.role === 'admin' && !user.adminId) {
+                return new Response(JSON.stringify({ error: 'This user already has their own subscription.' }), { status: 400 });
+            }
+            // If they are already a viewer (invited), maybe re-invite?
+            // For now, let's say "User already registered" to keep it simple, or "Already on a team".
             return new Response(JSON.stringify({ error: 'User is already registered.' }), { status: 400 });
         }
 
-        const inviteToken = crypto.randomBytes(32).toString('hex');
-
-        // Insert new user with Pending status
-        // Password is empty initially (or random). They will set it via invite link.
-        // We might need a dummy password hash if the DB constraint requires it. 
-        // Assuming password_hash is required, we generate a random one they can't use.
+        // 2. Generate Reset Token (instead of invite_token)
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const resetExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now
 
         const dummyHash = '$2b$10$dummyhashwaitingforactivation000000000000000000000';
 
-        // The admin invoking this is the main account holder.
-        // If the invoker is already a team member (which we blocked above), they shouldn't be here.
-        // So session.user.id is the adminId for the new user.
+        // 3. Insert new user 
+        // We use 'reset_token' and 'reset_expiry' columns if they exist. (Assuming they are part of standard auth schema)
+        // If not, we might need to adjust. The prompt asks for `reset_token`.
+        // Let's check schema/task again. The user said: "adminId: [current_user_id], reset_token: [crypto_token], reset_expiry: [24_hours_from_now]"
+        // We might need to make sure these columns exist. standard password reset flows usually have them.
 
         await db.query(`
-            INSERT INTO users (email, password_hash, name, role, adminId, invite_token, status, created_at)
-            VALUES (?, ?, ?, 'viewer', ?, ?, 'Pending', NOW())
-        `, [email, dummyHash, 'Invited Member', session.user.id, inviteToken]);
+            INSERT INTO users (email, password_hash, name, role, adminId, reset_token, reset_token_expiry, status, created_at)
+            VALUES (?, ?, ?, 'viewer', ?, ?, ?, 'Pending', NOW())
+        `, [
+            email,
+            dummyHash,
+            'Invited Member',
+            session.user.id,
+            resetToken,
+            resetExpiry
+        ]);
 
-        // Send Email
-        const inviteLink = `${process.env.NEXTAUTH_URL}/register?token=${inviteToken}`;
+        // 4. Send Email
+        const inviteUrl = `${process.env.NEXTAUTH_URL}/auth/set-password?token=${resetToken}`;
 
-        await sendEmail({
+        await sendTeamInviteEmail({
             to: email,
-            subject: 'You have been invited to CortexCart',
-            html: `
-                <h3>You've been invited!</h3>
-                <p>${session.user.name} has invited you to join their CortexCart team as a Viewer.</p>
-                <p>Click the link below to accept the invite and set your password:</p>
-                <a href="${inviteLink}">${inviteLink}</a>
-                <p>This link will expire in 24 hours.</p>
-            `
+            adminName: session.user.name,
+            inviteUrl
         });
 
         return new Response(JSON.stringify({ message: 'Invitation sent successfully.' }), { status: 200 });

@@ -47,3 +47,38 @@ export const sendEmail = async ({ to, subject, html }) => {
         throw sendErr;
     }
 };
+
+export const sendTeamInviteEmail = async ({ to, adminName, inviteUrl }) => {
+    const subject = `You've been invited to join ${adminName}'s team on CortexCart`;
+
+    const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <h2 style="color: #2563EB;">CortexCart Team Invitation</h2>
+            </div>
+            
+            <p style="font-size: 16px; color: #374151;">Hello!</p>
+            
+            <p style="font-size: 16px; color: #374151;">
+                <strong>${adminName}</strong> has invited you to view their dashboard on CortexCart. 
+                Your access will be set to <strong>'Viewer' (Read-Only)</strong>.
+            </p>
+            
+            <p style="font-size: 16px; color: #374151;">
+                This allows you to see analytics, reports, and insights without making changes to the account settings.
+            </p>
+
+            <div style="text-align: center; margin: 32px 0;">
+                <a href="${inviteUrl}" style="background-color: #2563EB; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">
+                    Accept Invitation & Set Password
+                </a>
+            </div>
+
+            <p style="font-size: 14px; color: #6B7280; text-align: center;">
+                If you did not expect this invitation, you can simply ignore this email.
+            </p>
+        </div>
+    `;
+
+    await sendEmail({ to, subject, html });
+};
