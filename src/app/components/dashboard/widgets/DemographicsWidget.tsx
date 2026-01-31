@@ -12,8 +12,10 @@ export default function DemographicsWidget() {
     if (error) return <div className="p-4 text-red-500 bg-white dark:bg-gray-800 rounded-lg shadow h-full flex items-center justify-center">Failed to load demographics</div>;
     if (!data) return <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow h-full flex items-center justify-center">Loading...</div>;
 
-    // DemographicsCharts expects data={ ageData, genderData, countryData }
-    // We assume the API returns this format or we adapt it here.
+    // Check if the API returned an error object explicitly
+    if (data.error) {
+        return <div className="p-4 text-gray-500 bg-white dark:bg-gray-800 rounded-lg shadow h-full flex items-center justify-center text-center">{data.error}</div>;
+    }
 
     return (
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow h-full overflow-auto">

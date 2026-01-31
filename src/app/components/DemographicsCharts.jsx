@@ -16,19 +16,21 @@ const SimpleBarChart = ({ data, dataKey, name, color }) => (
 const DemographicsCharts = ({ data }) => {
     if (!data) return <div className="text-center text-gray-500">Loading demographics...</div>;
 
+    const { ageData = [], genderData = [], countryData = [] } = data;
+
     return (
         <div className="space-y-8">
             <div>
                 <h4 className="text-lg font-semibold mb-2">Age Distribution</h4>
-                <SimpleBarChart data={data.ageData} name="Users" color="#8884d8" />
+                <SimpleBarChart data={ageData} name="Users" color="#8884d8" />
             </div>
             <div>
                 <h4 className="text-lg font-semibold mb-2">Gender Distribution</h4>
-                <SimpleBarChart data={data.genderData} name="Users" color="#82ca9d" />
+                <SimpleBarChart data={genderData} name="Users" color="#82ca9d" />
             </div>
             <div>
                 <h4 className="text-lg font-semibold mb-2">Top Countries</h4>
-                <SimpleBarChart data={data.countryData.slice(0, 5)} name="Users" color="#ffc658" />
+                <SimpleBarChart data={countryData && countryData.slice ? countryData.slice(0, 5) : []} name="Users" color="#ffc658" />
             </div>
         </div>
     );
