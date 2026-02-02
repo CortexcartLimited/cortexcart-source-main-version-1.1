@@ -25,11 +25,11 @@ export async function POST(req) {
 
         // 2. Check Expiry
         const now = new Date();
-        const expiry = new Date(user.reset_expiry);
+        const expiry = new Date(user.reset_token_expires);
 
         console.log(`🕒 Token Validation: User: ${user.email}, Now: ${now.toISOString()}, Expiry: ${expiry.toISOString()}`);
 
-        if (user.reset_expiry && expiry < now) {
+        if (user.reset_token_expires && expiry < now) {
             console.warn(`❌ SetPassword Attempt: Token expired for ${user.email}`);
             return NextResponse.json({ message: 'Token has expired.' }, { status: 400 });
         }
@@ -42,7 +42,7 @@ export async function POST(req) {
             `UPDATE users SET 
                 password_hash = ?, 
                 reset_token = NULL, 
-                reset_expiry = NULL,
+                reset_token_expires = NULL,
                 emailVerified = NOW() -- Ensure they are verified
              WHERE id = ?`,
             [hashedPassword, user.id]
