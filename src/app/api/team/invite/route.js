@@ -43,6 +43,9 @@ export async function POST(req) {
 
         const dummyHash = '$2b$10$dummyhashwaitingforactivation000000000000000000000';
 
+        // Generate a random ID (matching the logic in register route)
+        const userId = crypto.randomUUID();
+
         // 3. Insert new user 
         // We use 'reset_token' and 'reset_expiry' columns if they exist. (Assuming they are part of standard auth schema)
         // If not, we might need to adjust. The prompt asks for `reset_token`.
@@ -50,9 +53,10 @@ export async function POST(req) {
         // We might need to make sure these columns exist. standard password reset flows usually have them.
 
         await db.query(`
-            INSERT INTO users (email, password_hash, name, role, adminId, reset_token, reset_token_expires, status, created_at)
-            VALUES (?, ?, ?, 'viewer', ?, ?, ?, 'Pending', NOW())
+            INSERT INTO users (id, email, password_hash, name, role, adminId, reset_token, reset_token_expires, status, created_at)
+            VALUES (?, ?, ?, ?, 'viewer', ?, ?, ?, 'Pending', NOW())
         `, [
+            userId,
             email,
             dummyHash,
             'Invited Member',
