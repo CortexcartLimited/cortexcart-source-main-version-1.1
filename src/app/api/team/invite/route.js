@@ -50,11 +50,11 @@ export async function POST(req) {
         // We use 'reset_token' and 'reset_expiry' columns if they exist. (Assuming they are part of standard auth schema)
         // If not, we might need to adjust. The prompt asks for `reset_token`.
         // Let's check schema/task again. The user said: "adminId: [current_user_id], reset_token: [crypto_token], reset_expiry: [24_hours_from_now]"
-        // We might need to make sure these columns exist. standard password reset flows usually have them.
+        // We must also satisfy 'invite_token' constraint.
 
         await db.query(`
-            INSERT INTO users (id, email, password_hash, name, role, adminId, reset_token, reset_token_expires, status, created_at)
-            VALUES (?, ?, ?, ?, 'viewer', ?, ?, ?, 'Pending', NOW())
+            INSERT INTO users (id, email, password_hash, name, role, adminId, reset_token, reset_token_expires, invite_token, status, created_at)
+            VALUES (?, ?, ?, ?, 'viewer', ?, ?, ?, ?, 'Pending', NOW())
         `, [
             userId,
             email,
@@ -62,7 +62,8 @@ export async function POST(req) {
             'Invited Member',
             session.user.id,
             resetToken,
-            resetExpiry
+            resetExpiry,
+            resetToken // Reuse resetToken for invite_token to satisfy constraint and link flow
         ]);
 
         // 4. Send Email
