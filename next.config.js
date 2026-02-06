@@ -9,7 +9,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'cortexcart.com',
+        hostname: 'www.cortexcart.com',
         pathname: '/images/**',
       },
       {
@@ -64,7 +64,7 @@ const nextConfig = {
             key: 'X-Frame-Options',
             // Prevents your site from being embedded in iframes (stops Clickjacking)
             // Use 'SAMEORIGIN' if you need to iframe your own pages, otherwise 'DENY' is safest.
-            value: 'SAMEORIGIN', 
+            value: 'SAMEORIGIN',
           },
           {
             key: 'X-Content-Type-Options',
@@ -74,7 +74,7 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             // (Optional Bonus) Controls how much referrer info is sent to other sites
-            value: 'strict-origin-when-cross-origin', 
+            value: 'strict-origin-when-cross-origin',
           }
         ],
       },
