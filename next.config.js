@@ -1,12 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 1. ADD THIS FOR AMPLIFY SUCCESS
+  output: 'standalone',
+
   eslint: {
-    // This prevents ESLint warnings from failing the production build. config
     ignoreDuringBuilds: true,
   },
   images: {
     dangerouslyAllowSVG: true,
     remotePatterns: [
+      // 2. ADD YOUR S3 BUCKET HERE
+      {
+        protocol: 'https',
+        hostname: 'cortexcart-uploads-2026.s3.us-east-1.amazonaws.com', // Replace with your actual bucket name
+        pathname: '/**',
+      },
       {
         protocol: 'https',
         hostname: 'cortexcart.com',
@@ -14,15 +22,16 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '**.fbcdn.net', // This allows all subdomains of fbcdn.net
+        hostname: '**.fbcdn.net',
       },
       {
         protocol: 'https',
         hostname: 'placehold.co',
         pathname: '/**',
       },
+      // Fixed this to https to match modern standards
       {
-        protocol: 'http',
+        protocol: 'https',
         hostname: 'googleusercontent.com',
         pathname: '/**',
       },
@@ -48,32 +57,25 @@ const nextConfig = {
       }
     ],
   },
-  // --- SECURITY HEADERS IMPLEMENTATION ---
   async headers() {
     return [
       {
-        // Apply these headers to all routes in your application
         source: '/:path*',
         headers: [
           {
             key: 'Strict-Transport-Security',
-            // Forces HTTPS for 2 years (63072000 seconds) and includes subdomains
             value: 'max-age=63072000; includeSubDomains; preload',
           },
           {
             key: 'X-Frame-Options',
-            // Prevents your site from being embedded in iframes (stops Clickjacking)
-            // Use 'SAMEORIGIN' if you need to iframe your own pages, otherwise 'DENY' is safest.
             value: 'SAMEORIGIN',
           },
           {
             key: 'X-Content-Type-Options',
-            // Prevents the browser from trying to guess the file type (MIME sniffing)
             value: 'nosniff',
           },
           {
             key: 'Referrer-Policy',
-            // (Optional Bonus) Controls how much referrer info is sent to other sites
             value: 'strict-origin-when-cross-origin',
           }
         ],
