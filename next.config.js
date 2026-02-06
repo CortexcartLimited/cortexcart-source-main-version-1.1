@@ -9,7 +9,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'www.cortexcart.com',
+        hostname: 'cortexcart.com',
         pathname: '/images/**',
       },
       {
