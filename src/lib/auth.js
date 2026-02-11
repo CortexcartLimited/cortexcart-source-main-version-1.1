@@ -1,7 +1,6 @@
 // src/lib/auth.js
 import GoogleProvider from 'next-auth/providers/google';
 import TwitterProvider from 'next-auth/providers/twitter';
-import TikTokProvider from 'next-auth/providers/tiktok';
 import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from '@/lib/db';
 import { encrypt } from '@/lib/crypto';
@@ -103,6 +102,40 @@ export const authOptions = {
                 }
             }
         }),
+        {
+            id: "tiktok",
+            name: "TikTok",
+            type: "oauth",
+            version: "2.0",
+            clientId: process.env.TIKTOK_CLIENT_KEY,
+            clientSecret: process.env.TIKTOK_CLIENT_SECRET,
+            authorization: {
+                url: "https://www.tiktok.com/v2/auth/authorize/",
+                params: {
+                    client_key: process.env.TIKTOK_CLIENT_KEY,
+                    scope: "user.info.basic",
+                    response_type: "code",
+                },
+            },
+            token: {
+                url: "https://open.tiktokapis.com/v2/oauth/token/",
+                params: {
+                    client_key: process.env.TIKTOK_CLIENT_KEY,
+                    client_secret: process.env.TIKTOK_CLIENT_SECRET,
+                    grant_type: "authorization_code",
+                },
+            },
+            userinfo: "https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name",
+            profile(profile) {
+                return {
+                    id: profile.data.user.open_id,
+                    name: profile.data.user.display_name,
+                    email: null, // TikTok doesn't provide email by default
+                    image: profile.data.user.avatar_url,
+                }
+            },
+            checks: ["state"],
+        },
     ],
     callbacks: {
         async signIn({ user, account }) {
