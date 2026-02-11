@@ -1,6 +1,7 @@
 // src/lib/auth.js
 import GoogleProvider from 'next-auth/providers/google';
 import TwitterProvider from 'next-auth/providers/twitter';
+import TikTokProvider from 'next-auth/providers/tiktok';
 import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from '@/lib/db';
 import { encrypt } from '@/lib/crypto';
@@ -75,7 +76,7 @@ export const authOptions = {
                     console.error("Credentials auth error:", error);
                     // NextAuth often swallows errors, so returning null is safer, 
                     // but throwing an error allows you to show specific messages if configured.
-                    throw new Error(error.message || "Login failed"); 
+                    throw new Error(error.message || "Login failed");
                 }
             }
         }),
@@ -97,10 +98,10 @@ export const authOptions = {
             clientSecret: process.env.X_CLIENT_SECRET,
             version: "2.0",
             authorization: {
-            params: { 
-            scope: "tweet.read tweet.write users.read offline.access" 
-        }
-      }
+                params: {
+                    scope: "tweet.read tweet.write users.read offline.access"
+                }
+            }
         }),
     ],
     callbacks: {
@@ -124,7 +125,7 @@ export const authOptions = {
             }
             return true; // Allow sign-in
         },
-        
+
         // --- CRITICAL FIX IS HERE ---
         async jwt({ token, user, account }) {
             // 1. Handle Initial Sign In
@@ -134,7 +135,7 @@ export const authOptions = {
                 token.name = user.name;
                 token.picture = user.image;
 
-                if (account.access_token) { 
+                if (account.access_token) {
                     try {
                         // FIX: Added 'is_active' to INSERT and UPDATE
                         const query = `
@@ -192,5 +193,5 @@ export const authOptions = {
             }
             return session;
         },
-   },
+    },
 };

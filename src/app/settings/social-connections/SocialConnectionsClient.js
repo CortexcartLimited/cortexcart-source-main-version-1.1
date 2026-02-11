@@ -26,7 +26,7 @@ const SocialConnectionsClient = () => {
     const { data: connectionsCountData, error: connectionsCountError, isLoading: connectionsLoading, mutate: mutateConnectionsCount } = useSWR('/api/user/social-connections', fetcher);
     // --- End SWR Hooks ---
 
-    const userPlan = planData; 
+    const userPlan = planData;
     const maxConnections = userPlan?.limits?.maxSocialConnections ?? 0;
     const currentConnections = connectionsCountData?.currentConnections ?? 0;
 
@@ -64,8 +64,8 @@ const SocialConnectionsClient = () => {
     // Handle standard OAuth Connects (FB, X, etc.)
     const handleConnect = (platform) => {
         if (hasReachedLimit) {
-             alert(`You have reached your limit of ${maxConnections} social platforms. Please upgrade your plan.`);
-             return;
+            alert(`You have reached your limit of ${maxConnections} social platforms. Please upgrade your plan.`);
+            return;
         }
         window.location.href = `/api/connect/${platform}`;
     };
@@ -83,11 +83,11 @@ const SocialConnectionsClient = () => {
             const res = await fetch(`/api/social/disconnect/${platform}`, { method: 'POST' });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || `Failed to disconnect ${platform}`);
-            
+
             console.log(`Successfully disconnected ${platform}`);
-            await fetchConnectionStatuses(); 
+            await fetchConnectionStatuses();
             await mutateConnectionsCount();
-            
+
         } catch (err) {
             console.error(`Disconnect error for ${platform}:`, err);
             setStatusError(err.message);
@@ -114,6 +114,7 @@ const SocialConnectionsClient = () => {
         pinterest: { name: 'Pinterest' },
         instagram: { name: 'Instagram', note: 'Managed via your Facebook connection' },
         youtube: { name: 'YouTube' },
+        tiktok: { name: 'TikTok' },
     };
 
     const isWhatsAppConnected = !!connections['whatsapp'];
@@ -131,7 +132,7 @@ const SocialConnectionsClient = () => {
             {/* 1. WHATSAPP SECTION (Custom Card) */}
             <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">Messaging Integrations</h3>
-                
+
                 {isWhatsAppConnected ? (
                     // Connected State
                     <div className="flex justify-between items-center bg-green-50 p-4 rounded-lg border border-green-100">
@@ -145,7 +146,7 @@ const SocialConnectionsClient = () => {
                                 </p>
                             </div>
                         </div>
-                        <button 
+                        <button
                             onClick={() => handleDisconnect('whatsapp')}
                             className="text-red-600 text-sm font-semibold hover:text-red-800 hover:bg-red-50 px-3 py-2 rounded-lg transition"
                         >
@@ -157,7 +158,7 @@ const SocialConnectionsClient = () => {
                     // We disable it if they hit the limit
                     hasReachedLimit ? (
                         <div className="opacity-50 pointer-events-none filter grayscale">
-                             <WhatsAppConnect onConnect={() => { fetchConnectionStatuses(); mutateConnectionsCount(); }} />
+                            <WhatsAppConnect onConnect={() => { fetchConnectionStatuses(); mutateConnectionsCount(); }} />
                         </div>
                     ) : (
                         <WhatsAppConnect onConnect={() => { fetchConnectionStatuses(); mutateConnectionsCount(); }} />
@@ -172,7 +173,7 @@ const SocialConnectionsClient = () => {
                 </div>
 
                 {Object.entries(platformConfig).map(([platform, config]) => {
-                    const isConnected = !!connections[platform]; 
+                    const isConnected = !!connections[platform];
                     const isDisabled = !isConnected && hasReachedLimit;
 
                     return (
@@ -209,7 +210,7 @@ const SocialConnectionsClient = () => {
                 })}
             </div>
 
-             {/* Modals/Managers */}
+            {/* Modals/Managers */}
             {showFacebookManager && <div className="py-6 border-t mt-4"><h3 className="text-xl font-semibold mb-4">Manage Facebook Pages</h3><FacebookPageManager /></div>}
             {showInstagramManager && <div className="py-6 border-t mt-4"><h3 className="text-xl font-semibold mb-4">Manage Instagram Accounts</h3><InstagramAccountManager /></div>}
         </div>
