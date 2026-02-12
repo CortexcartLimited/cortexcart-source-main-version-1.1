@@ -160,7 +160,6 @@ export const authOptions = {
                             refresh_token: tokens.refresh_token,
                             scope: tokens.scope,
                             token_type: 'Bearer',
-                            id_token: tokens.open_id, // storing open_id in id_token slot (hacky but useful if needed)
                         }
                     };
                 }
