@@ -24,6 +24,7 @@ const PATH_REQUIREMENTS = {
 const cspHeader = `
     default-src 'self';
     script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.tiktok.com https://*.tiktokcdn.com https://sf-security.ibytedtos.com https://*.google.com https://*.googleapis.com https://*.gstatic.com https://*.stripe.com https://*.disqus.com https://*.disquscdn.com https://tracker.cortexcart.com;
+    script-src-elem 'self' 'unsafe-inline' https://*.tiktok.com https://*.tiktokcdn.com https://sf-security.ibytedtos.com https://*.google.com https://*.googleapis.com https://*.gstatic.com https://*.stripe.com https://*.disqus.com https://*.disquscdn.com https://tracker.cortexcart.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://tracker.cortexcart.com;
     img-src 'self' blob: data: https:;
     font-src 'self' https://fonts.gstatic.com https://tracker.cortexcart.com;
