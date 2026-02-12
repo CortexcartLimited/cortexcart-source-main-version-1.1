@@ -127,13 +127,40 @@ export const authOptions = {
             ...((!process.env.TIKTOK_CLIENT_KEY || !process.env.TIKTOK_CLIENT_SECRET) && {
                 _log: console.warn("⚠️ TikTok Provider: TIKTOK_CLIENT_KEY or TIKTOK_CLIENT_SECRET is missing. Login will fail.")
             }),
+            // Custom token request to handle TikTok's nested response structure
             token: {
                 url: "https://open.tiktokapis.com/v2/oauth/token/",
-                params: {
-                    client_key: process.env.TIKTOK_CLIENT_KEY,
-                    client_secret: process.env.TIKTOK_CLIENT_SECRET,
-                    grant_type: "authorization_code",
-                },
+                async request({ client, params, checks, provider }) {
+                    const response = await fetch("https://open.tiktokapis.com/v2/oauth/token/", {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams({
+                            client_key: provider.clientId,
+                            client_secret: provider.clientSecret,
+                            code: params.code,
+                            grant_type: 'authorization_code',
+                            redirect_uri: provider.callbackUrl,
+                        }),
+                    });
+                    const data = await response.json();
+
+                    console.log('TikTok Token Response:', JSON.stringify(data, null, 2));
+
+                    if (!response.ok || data.error_code || !data.data?.access_token) {
+                        throw new Error(`TikTok Token Error: ${JSON.stringify(data)}`);
+                    }
+
+                    return {
+                        tokens: {
+                            access_token: data.data.access_token,
+                            expires_at: Math.floor(Date.now() / 1000) + data.data.expires_in,
+                            refresh_token: data.data.refresh_token,
+                            scope: data.data.scope,
+                            token_type: 'Bearer',
+                            id_token: data.data.open_id, // storing open_id in id_token slot (hacky but useful if needed)
+                        }
+                    };
+                }
             },
             userinfo: "https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name",
             profile(profile) {
