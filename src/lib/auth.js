@@ -147,6 +147,9 @@ export const authOptions = {
             if (account.provider === 'twitter' && !email) {
                 email = `${user.id}@users.twitter.com`;
             }
+            if (account.provider === 'tiktok' && !email) {
+                email = `${user.id}@users.tiktok.com`;
+            }
             if (!email) {
                 console.error(`Sign-in denied for provider ${account.provider}: email not available.`);
                 return false;
@@ -168,7 +171,8 @@ export const authOptions = {
             // 1. Handle Initial Sign In
             if (account && user) {
                 token.id = user.id;
-                token.email = user.email || `${user.id}@users.twitter.com`;
+                // Ensure we use the generated email for TikTok/Twitter if the real one isn't there
+                token.email = user.email || (account.provider === 'twitter' ? `${user.id}@users.twitter.com` : (account.provider === 'tiktok' ? `${user.id}@users.tiktok.com` : null));
                 token.name = user.name;
                 token.picture = user.image;
 
