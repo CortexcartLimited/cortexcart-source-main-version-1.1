@@ -146,18 +146,21 @@ export const authOptions = {
 
                     console.log('TikTok Token Response:', JSON.stringify(data, null, 2));
 
-                    if (!response.ok || data.error_code || !data.data?.access_token) {
+                    // TikTok responses can be nested in `data` or flat, handling both cases
+                    const tokens = data.data || data;
+
+                    if (!response.ok || data.error_code || !tokens.access_token) {
                         throw new Error(`TikTok Token Error: ${JSON.stringify(data)}`);
                     }
 
                     return {
                         tokens: {
-                            access_token: data.data.access_token,
-                            expires_at: Math.floor(Date.now() / 1000) + data.data.expires_in,
-                            refresh_token: data.data.refresh_token,
-                            scope: data.data.scope,
+                            access_token: tokens.access_token,
+                            expires_at: Math.floor(Date.now() / 1000) + tokens.expires_in,
+                            refresh_token: tokens.refresh_token,
+                            scope: tokens.scope,
                             token_type: 'Bearer',
-                            id_token: data.data.open_id, // storing open_id in id_token slot (hacky but useful if needed)
+                            id_token: tokens.open_id, // storing open_id in id_token slot (hacky but useful if needed)
                         }
                     };
                 }
