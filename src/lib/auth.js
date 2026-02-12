@@ -1,4 +1,4 @@
-// src/lib/auth.js
+// src/lib/auth.js main auth file
 import GoogleProvider from 'next-auth/providers/google';
 import TwitterProvider from 'next-auth/providers/twitter';
 import CredentialsProvider from "next-auth/providers/credentials";
