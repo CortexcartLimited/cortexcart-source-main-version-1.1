@@ -5,6 +5,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from '@/lib/db';
 import { encrypt } from '@/lib/crypto';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto'; // <--- NEW IMPORT
 import { getUserSubscription } from '@/lib/userSubscription'; // <--- NEW IMPORT
 
 // Automatically determine if we should use secure cookies.
@@ -68,6 +69,10 @@ export const authOptions = {
                         throw new Error("Please verify your email address first.");
                     }
                     // --------------------------
+
+                    // --------------------------
+
+                    if (!user.password_hash) return null; // Handle OAuth-only users
 
                     const passwordMatch = await bcrypt.compare(credentials.password, user.password_hash);
                     if (!passwordMatch) return null;
@@ -162,6 +167,21 @@ export const authOptions = {
                 return false;
             }
             try {
+                // 1. Ensure User Exists in 'users' table (Vital for Foreign Keys)
+                const [existingUser] = await db.query('SELECT id FROM users WHERE email = ?', [email]);
+
+                if (existingUser.length === 0) {
+                    console.log(`Creating new user for ${account.provider} login:`, email);
+                    const newUserId = crypto.randomUUID();
+                    // Insert new user. 
+                    // Note: password_hash is NULL for OAuth. verified is NOW() because OAuth is trusted.
+                    await db.query(
+                        `INSERT INTO users (id, email, name, emailVerified, created_at) VALUES (?, ?, ?, NOW(), NOW())`,
+                        [newUserId, email, name || 'New User']
+                    );
+                }
+
+                // 2. Ensure Site Exists
                 const [userResult] = await db.query('SELECT * FROM sites WHERE user_email = ?', [email]);
                 if (userResult.length === 0) {
                     await db.query('INSERT INTO sites (user_email, site_name) VALUES (?, ?)', [email, `${name}'s Site`]);
