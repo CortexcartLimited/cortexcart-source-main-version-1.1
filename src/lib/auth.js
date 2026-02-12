@@ -12,6 +12,7 @@ const useSecureCookies = process.env.NEXTAUTH_URL?.startsWith("https");
 
 /** @type {import('next-auth').AuthOptions} */
 export const authOptions = {
+    debug: true, // Enable debug logs to investigate TikTok issues
     pages: {
         signIn: '/login',
     },
@@ -131,18 +132,24 @@ export const authOptions = {
             },
             userinfo: "https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name",
             profile(profile) {
+                console.log("🟢 TikTok Profile Callback Received:", JSON.stringify(profile, null, 2)); // DEBUG LOG
+
+                // Safety check for expected structure
+                const userData = profile?.data?.user || {};
+
                 return {
-                    id: profile.data.user.open_id,
-                    name: profile.data.user.display_name,
+                    id: userData.open_id || "tiktok_unknown_id",
+                    name: userData.display_name || "TikTok User",
                     email: null, // TikTok doesn't provide email by default
-                    image: profile.data.user.avatar_url,
+                    image: userData.avatar_url,
                 }
             },
             checks: ["state"],
         },
     ],
     callbacks: {
-        async signIn({ user, account }) {
+        async signIn({ user, account, profile }) {
+            console.log(`🔵 SignIn Callback for ${account.provider}`, { user, account, profile }); // DEBUG LOG
             let { email, name } = user;
             if (account.provider === 'twitter' && !email) {
                 email = `${user.id}@users.twitter.com`;
