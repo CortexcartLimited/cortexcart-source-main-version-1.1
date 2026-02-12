@@ -20,6 +20,23 @@ const PATH_REQUIREMENTS = {
     '/support/support-tickets': { limitKey: 'supportTickets', minRequired: true },
 };
 
+// --- CSP Configuration ---
+const cspHeader = `
+    default-src 'self';
+    script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.tiktok.com https://*.tiktokcdn.com https://sf-security.ibytedtos.com https://*.google.com https://*.googleapis.com https://*.gstatic.com https://*.stripe.com https://*.disqus.com https://*.disquscdn.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    img-src 'self' blob: data: https:;
+    font-src 'self' https://fonts.gstatic.com;
+    connect-src 'self' https://*.tiktok.com https://libraweb-i18n.tiktok.com https://mcs-i18n.tiktok.com https://*.google.com https://*.googleapis.com https://*.stripe.com https://*.disqus.com;
+    frame-src 'self' https://*.tiktok.com https://*.google.com https://*.stripe.com https://*.disqus.com;
+    worker-src 'self' blob: https://*.tiktok.com;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    upgrade-insecure-requests;
+`
+    .replace(/\s{2,}/g, ' ').trim();
+
 const getAdminSecret = () => {
     const secret = process.env.JWT_ADMIN_SECRET;
     if (!secret) throw new Error("JWT_ADMIN_SECRET is not set.");
@@ -41,13 +58,19 @@ async function customMiddleware(req) {
     // ==============================================================
     if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
         const adminCookie = req.cookies.get('cortex-tracker-token');
-        if (!adminCookie) return NextResponse.redirect(new URL('/admin/login', appUrl));
+        if (!adminCookie) {
+            const response = NextResponse.redirect(new URL('/admin/login', appUrl));
+            response.headers.set('Content-Security-Policy', cspHeader);
+            return response;
+        }
         try {
             const { payload } = await jwtVerify(adminCookie.value, getAdminSecret());
             if (payload.role !== 'superadmin') throw new Error('Not superadmin');
             return NextResponse.next();
         } catch (e) {
-            return NextResponse.redirect(new URL('/admin/login?error=InvalidToken', appUrl));
+            const response = NextResponse.redirect(new URL('/admin/login?error=InvalidToken', appUrl));
+            response.headers.set('Content-Security-Policy', cspHeader);
+            return response;
         }
     }
 
@@ -66,7 +89,9 @@ async function customMiddleware(req) {
         if (!sessionToken?.email) {
             const loginUrl = new URL('/login', appUrl);
             loginUrl.searchParams.set('callbackUrl', req.url);
-            return NextResponse.redirect(loginUrl);
+            const response = NextResponse.redirect(loginUrl);
+            response.headers.set('Content-Security-Policy', cspHeader);
+            return response;
         }
 
         const priceId = sessionToken.stripePriceId;
@@ -97,7 +122,9 @@ async function customMiddleware(req) {
                 return NextResponse.json({ error: 'Access Denied: Read-Only User' }, { status: 403 });
             }
             // If Page request, redirect to dashboard or show error
-            return NextResponse.redirect(new URL('/dashboard?error=readonly', appUrl));
+            const response = NextResponse.redirect(new URL('/dashboard?error=readonly', appUrl));
+            response.headers.set('Content-Security-Policy', cspHeader);
+            return response;
         }
         // ----------------------------
 
@@ -122,11 +149,15 @@ async function customMiddleware(req) {
             const url = new URL('/upgrade-plans', appUrl);
             url.searchParams.set('reason', isActive ? 'limit' : 'inactive_or_free');
             url.searchParams.set('feature', requirement.limitKey);
-            return NextResponse.redirect(url);
+            const response = NextResponse.redirect(url);
+            response.headers.set('Content-Security-Policy', cspHeader);
+            return response;
         }
     }
 
-    return NextResponse.next();
+    const response = NextResponse.next();
+    response.headers.set('Content-Security-Policy', cspHeader);
+    return response;
 }
 
 // ==============================================================
