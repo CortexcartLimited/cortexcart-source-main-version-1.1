@@ -117,6 +117,10 @@ export const authOptions = {
                     response_type: "code",
                 },
             },
+            // Log warning if keys are missing
+            ...((!process.env.TIKTOK_CLIENT_KEY || !process.env.TIKTOK_CLIENT_SECRET) && {
+                _log: console.warn("⚠️ TikTok Provider: TIKTOK_CLIENT_KEY or TIKTOK_CLIENT_SECRET is missing. Login will fail.")
+            }),
             token: {
                 url: "https://open.tiktokapis.com/v2/oauth/token/",
                 params: {
