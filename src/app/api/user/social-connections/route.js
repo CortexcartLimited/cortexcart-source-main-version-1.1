@@ -20,7 +20,7 @@ export async function GET() {
             `SELECT COUNT(*) as count 
              FROM social_connect 
              WHERE user_email = ? 
-               AND platform IN ('facebook', 'pinterest', 'instagram', 'x', 'google', 'youtube')
+               AND platform IN ('facebook', 'pinterest', 'instagram', 'x', 'google', 'youtube', 'tiktok')
                AND is_active = TRUE`, // Make sure 'is_active' column exists and is correct
             [session.user.email]
         );

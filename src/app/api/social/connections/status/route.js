@@ -61,7 +61,12 @@ export async function GET() {
         if (connectedPlatforms.has('youtube')) {
             connections.push({ platform: 'youtube', status: 'connected' });
         }
-        
+
+        // Check for TikTok
+        if (connectedPlatforms.has('tiktok')) {
+            connections.push({ platform: 'tiktok', status: 'connected' });
+        }
+
         // The client component expects an array of connection objects.
         // We'll return it wrapped in a 'connections' property, as expected by the client.
         return NextResponse.json({ connections: connections });
