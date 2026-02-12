@@ -9,7 +9,7 @@ export async function GET(req) {
     }
 
     // Callback URL for the connection flow
-    const redirectUri = `${process.env.NEXTAUTH_URL}/connect/callback/tiktok`;
+    const redirectUri = `${process.env.NEXTAUTH_URL}/api/connect/callback/tiktok`;
 
     // Scopes for TikTok API V2
     // user.info.basic: get display name, avatar

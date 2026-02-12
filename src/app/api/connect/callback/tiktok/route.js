@@ -31,7 +31,7 @@ export async function GET(req) {
         params.append('client_secret', process.env.TIKTOK_CLIENT_SECRET);
         params.append('code', code);
         params.append('grant_type', 'authorization_code');
-        params.append('redirect_uri', `${process.env.NEXTAUTH_URL}/connect/callback/tiktok`);
+        params.append('redirect_uri', `${process.env.NEXTAUTH_URL}/api/connect/callback/tiktok`);
 
         const tokenRes = await axios.post(tokenUrl, params, {
             headers: {
