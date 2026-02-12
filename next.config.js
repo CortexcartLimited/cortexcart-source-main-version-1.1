@@ -54,6 +54,16 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'a.impactradius-go.com',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.tiktokcdn.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.tiktokcdn-us.com',
+        pathname: '/**',
       }
     ],
   },
