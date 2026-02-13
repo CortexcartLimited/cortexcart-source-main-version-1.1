@@ -11,6 +11,17 @@ import { getUserSubscription } from '@/lib/userSubscription'; // <--- NEW IMPORT
 // Automatically determine if we should use secure cookies.
 const useSecureCookies = process.env.NEXTAUTH_URL?.startsWith("https");
 
+// Ensure we have a base URL even if env is missing (fallback for dev)
+const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, '') || 'http://localhost:3000';
+const TIKTOK_REDIRECT_URI = `${BASE_URL}/api/auth/callback/tiktok`;
+
+console.log("----------------------------------------------------------------");
+console.log("TIKTOK AUTH CONFIG:");
+console.log("NEXTAUTH_URL:", process.env.NEXTAUTH_URL);
+console.log("BASE_URL:", BASE_URL);
+console.log("EXPECTED REDIRECT_URI:", TIKTOK_REDIRECT_URI);
+console.log("----------------------------------------------------------------");
+
 /** @type {import('next-auth').AuthOptions} */
 export const authOptions = {
     debug: true, // Enable debug logs to investigate TikTok issues
@@ -121,7 +132,7 @@ export const authOptions = {
                     client_key: process.env.TIKTOK_CLIENT_KEY,
                     scope: "user.info.basic,video.upload,user.info.stats", // Removed video.list per user request (Sandbox issue)
                     response_type: "code",
-                    redirect_uri: process.env.NEXTAUTH_URL + "/api/auth/callback/tiktok",
+                    redirect_uri: TIKTOK_REDIRECT_URI,
                 },
             },
             // Log warning if keys are missing
@@ -132,7 +143,9 @@ export const authOptions = {
             token: {
                 url: "https://open.tiktokapis.com/v2/oauth/token/",
                 async request({ client, params, checks, provider }) {
-                    console.log("TikTok Token Request Callback URL:", provider.callbackUrl);
+                    console.log("TikTok Token Request Callback URL (Prior):", provider.callbackUrl);
+                    console.log("TikTok Token Request Callback URL (Used):", TIKTOK_REDIRECT_URI);
+
                     const response = await fetch("https://open.tiktokapis.com/v2/oauth/token/", {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -141,7 +154,7 @@ export const authOptions = {
                             client_secret: provider.clientSecret,
                             code: params.code,
                             grant_type: 'authorization_code',
-                            redirect_uri: provider.callbackUrl,
+                            redirect_uri: TIKTOK_REDIRECT_URI, // Explicitly use our constructed URI
                         }),
                     });
                     const data = await response.json();
