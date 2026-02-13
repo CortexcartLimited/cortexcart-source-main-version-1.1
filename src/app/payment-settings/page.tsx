@@ -76,7 +76,9 @@ const PaymentSettingsPage = () => {
       </p>
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
-      {!hasSubscription ? (
+      {isLoading ? (
+        <div className="p-8 text-center text-gray-500">Loading subscription settings...</div>
+      ) : !hasSubscription ? (
         <UpgradePlanCTA
           title="Active Subscription Required"
           description="You need an active subscription to manage payment settings. Upgrade now to unlock full access."

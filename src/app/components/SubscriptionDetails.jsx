@@ -52,7 +52,7 @@ const SubscriptionDetails = () => {
       <div className="space-y-3">
         <div className="flex justify-between">
           <span className="text-gray-600">Plan:</span>
-          <span className="font-medium text-gray-800">{subscription.name}</span>
+          <span className="font-medium text-gray-800">{subscription.name || 'Unknown Plan'}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">Price:</span>
@@ -61,13 +61,13 @@ const SubscriptionDetails = () => {
         <div className="flex justify-between items-center">
           <span className="text-gray-600">Status:</span>
           <span className={`px-2 py-1 text-xs font-semibold rounded-full ${statusStyles[subscription.status] || statusStyles.canceled}`}>
-            {subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)}
+            {subscription.status ? (subscription.status.charAt(0).toUpperCase() + subscription.status.slice(1)) : 'Unknown'}
           </span>
         </div>
         {subscription.status === 'active' || subscription.status === 'trialing' ? (
           <div className="flex justify-between">
             <span className="text-gray-600">{subscription.status === 'trialing' ? 'Trial ends on:' : 'Next renewal:'}</span>
-            <span className="font-medium text-gray-800">{subscription.current_period_end}</span>
+            <span className="font-medium text-gray-800">{subscription.current_period_end || 'N/A'}</span>
           </div>
         ) : null}
       </div>
