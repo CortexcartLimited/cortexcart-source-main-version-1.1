@@ -205,6 +205,17 @@ export const authOptions = {
                     scope: "email,public_profile",
                 },
             },
+            userinfo: {
+                url: "https://graph.facebook.com/v19.0/me?fields=id,name,email,picture",
+            },
+            profile(profile) {
+                return {
+                    id: profile.id,
+                    name: profile.name,
+                    email: profile.email,
+                    image: profile.picture?.data?.url,
+                }
+            },
         }),
     ],
     callbacks: {
