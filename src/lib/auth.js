@@ -233,6 +233,7 @@ export const authOptions = {
                 token.picture = user.image;
 
                 if (account.access_token) {
+                    console.log("TikTok JWT Callback: scopes received:", account.scope); // LOG SCOPES
                     try {
                         // FIX: Added 'is_active' to INSERT and UPDATE
                         const query = `
