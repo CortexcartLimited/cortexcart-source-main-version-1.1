@@ -142,7 +142,7 @@ const SocialNav = ({ activeTab, setActiveTab }) => {
 };
 
 // --- START: MODIFIED ComposerTabContent ---
-const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setPostContent, selectedPlatform, setSelectedPlatform, instagramAccounts, pinterestBoards, userEmail, loading, ...props }) => {
+const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setPostContent, selectedPlatform, setSelectedPlatform, instagramAccounts, pinterestBoards, userEmail, loading, connectedPlatforms, setActiveTab, ...props }) => {
 
     const [topic, setTopic] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
@@ -631,14 +631,18 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
     display: none;
 }
 `}</style>
-                            {Object.values(PLATFORMS).map(platform => {
+                            {Object.values(PLATFORMS).filter(platform => {
+                                const platformKey = platform.name.toLowerCase().split(' ')[0].replace('(twitter)', '');
+                                // Always show x/twitter if connected, etc.
+                                // If connectedPlatforms is empty/loading, maybe show all or show none?
+                                // Let's show only connected ones.
+                                return connectedPlatforms[platformKey];
+                            }).map(platform => {
                                 const Icon = platform.icon;
-                                // Generate a stable key for the platform button
                                 const platformKey = platform.name.toLowerCase().split(' ')[0].replace('(twitter)', '');
                                 return (
                                     <button
                                         key={platformKey}
-                                        // Use the platform key for setting state and checking active
                                         onClick={() => setSelectedPlatform(platformKey)}
                                         className={`flex items-center px-4 py-2 text-sm font-medium rounded-md flex-shrink-0 ${selectedPlatform === platformKey ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'} `}
                                         disabled={platform.disabled}
@@ -974,7 +978,7 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
 // --- END: MODIFIED ComposerTabContent ---
 
 
-const AnalyticsTabContent = () => {
+const AnalyticsTabContent = ({ connectedPlatforms = {} }) => {
     // ... (Existing Analytics Code - Should be OK) ...
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -998,6 +1002,7 @@ const AnalyticsTabContent = () => {
             const res = await fetch('/api/social/analytics');
             if (!res.ok) throw new Error('Failed to load analytics data.');
             setData(await res.json());
+            // ... (rest of fetch logic) ... 
         } catch (err) {
             setError(err.message);
         } finally {
@@ -1073,27 +1078,37 @@ const AnalyticsTabContent = () => {
             <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
                 <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Analytics Overview</h3>
                 <div className="flex flex-wrap gap-2">
-                    {/* Dynamically create sync buttons based on PLATFORMS might be better */}
-                    <button onClick={() => handleSync('x')} disabled={isSyncing.x} className="inline-flex items-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 disabled:bg-gray-400">
-                        <ArrowPathIcon className={`-ml-0.5 mr-1.5 h-5 w-5 ${isSyncing.x ? 'animate-spin' : ''}`} />
-                        {isSyncing.x ? 'Syncing...' : 'Sync with X'}
-                    </button>
-                    <button onClick={() => handleSync('facebook')} disabled={isSyncing.facebook} className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 disabled:bg-blue-400">
-                        <ArrowPathIcon className={`-ml-0.5 mr-1.5 h-5 w-5 ${isSyncing.facebook ? 'animate-spin' : ''}`} />
-                        {isSyncing.facebook ? 'Syncing...' : 'Sync with Facebook'}
-                    </button>
-                    <button onClick={() => handleSync('pinterest')} disabled={isSyncing.pinterest} className="inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700 disabled:bg-red-400">
-                        <ArrowPathIcon className={`-ml-0.5 mr-1.5 h-5 w-5 ${isSyncing.pinterest ? 'animate-spin' : ''}`} />
-                        {isSyncing.pinterest ? 'Syncing...' : 'Sync with Pinterest'}
-                    </button>
-                    <button onClick={() => handleSync('youtube')} disabled={isSyncing.youtube} className="inline-flex items-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600 disabled:bg-red-400">
-                        <ArrowPathIcon className={`-ml-0.5 mr-1.5 h-5 w-5 ${isSyncing.youtube ? 'animate-spin' : ''}`} />
-                        {isSyncing.youtube ? 'Syncing...' : 'Sync with YouTube'}
-                    </button>
-                    <button onClick={() => handleSync('tiktok')} disabled={isSyncing.tiktok} className="inline-flex items-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 disabled:bg-gray-600">
-                        <ArrowPathIcon className={`-ml-0.5 mr-1.5 h-5 w-5 ${isSyncing.tiktok ? 'animate-spin' : ''}`} />
-                        {isSyncing.tiktok ? 'Syncing...' : 'Sync with TikTok'}
-                    </button>
+                    {/* Synchronize Buttons - Only show connected */}
+                    {connectedPlatforms.x && (
+                        <button onClick={() => handleSync('x')} disabled={isSyncing.x} className="inline-flex items-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 disabled:bg-gray-400">
+                            <ArrowPathIcon className={`-ml-0.5 mr-1.5 h-5 w-5 ${isSyncing.x ? 'animate-spin' : ''}`} />
+                            {isSyncing.x ? 'Syncing...' : 'Sync with X'}
+                        </button>
+                    )}
+                    {connectedPlatforms.facebook && (
+                        <button onClick={() => handleSync('facebook')} disabled={isSyncing.facebook} className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 disabled:bg-blue-400">
+                            <ArrowPathIcon className={`-ml-0.5 mr-1.5 h-5 w-5 ${isSyncing.facebook ? 'animate-spin' : ''}`} />
+                            {isSyncing.facebook ? 'Syncing...' : 'Sync with Facebook'}
+                        </button>
+                    )}
+                    {connectedPlatforms.pinterest && (
+                        <button onClick={() => handleSync('pinterest')} disabled={isSyncing.pinterest} className="inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700 disabled:bg-red-400">
+                            <ArrowPathIcon className={`-ml-0.5 mr-1.5 h-5 w-5 ${isSyncing.pinterest ? 'animate-spin' : ''}`} />
+                            {isSyncing.pinterest ? 'Syncing...' : 'Sync with Pinterest'}
+                        </button>
+                    )}
+                    {connectedPlatforms.youtube && (
+                        <button onClick={() => handleSync('youtube')} disabled={isSyncing.youtube} className="inline-flex items-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600 disabled:bg-red-400">
+                            <ArrowPathIcon className={`-ml-0.5 mr-1.5 h-5 w-5 ${isSyncing.youtube ? 'animate-spin' : ''}`} />
+                            {isSyncing.youtube ? 'Syncing...' : 'Sync with YouTube'}
+                        </button>
+                    )}
+                    {connectedPlatforms.tiktok && (
+                        <button onClick={() => handleSync('tiktok')} disabled={isSyncing.tiktok} className="inline-flex items-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 disabled:bg-gray-600">
+                            <ArrowPathIcon className={`-ml-0.5 mr-1.5 h-5 w-5 ${isSyncing.tiktok ? 'animate-spin' : ''}`} />
+                            {isSyncing.tiktok ? 'Syncing...' : 'Sync with TikTok'}
+                        </button>
+                    )}
                 </div>
                 {syncMessage && (
                     <div className={`text-center text-sm p-3 rounded-md mt-4 ${syncMessageType === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
@@ -1563,6 +1578,9 @@ export default function SocialMediaManagerPage() {
     }, [status]); // Add status dependency
 
 
+    // State for connected platforms
+    const [connectedPlatforms, setConnectedPlatforms] = useState({});
+
     // Fetch Instagram accounts and Pinterest boards
     useEffect(() => {
         const fetchSocialConnectionData = async () => {
@@ -1572,6 +1590,20 @@ export default function SocialMediaManagerPage() {
             }
             try {
                 setLoadingSocialData(true);
+
+                // Fetch general connection statuses
+                const statusRes = await fetch('/api/social/connections/status');
+                if (statusRes.ok) {
+                    const statusData = await statusRes.json();
+                    const statuses = {};
+                    if (statusData.connections && Array.isArray(statusData.connections)) {
+                        statusData.connections.forEach(conn => {
+                            statuses[conn.platform.toLowerCase()] = conn.status === 'connected';
+                        });
+                    }
+                    setConnectedPlatforms(statuses);
+                }
+
                 const [igRes, pinRes] = await Promise.all([
                     fetch('/api/social/instagram/accounts'),
                     fetch('/api/social/pinterest/boards')
@@ -1653,9 +1685,11 @@ export default function SocialMediaManagerPage() {
                         pinterestBoards={pinterestBoards}
                         loading={loadingSocialData} // Use renamed loading state
                         userEmail={session?.user?.email} // <-- Correctly passing userEmail
+                        connectedPlatforms={connectedPlatforms}
+                        setActiveTab={setActiveTab} // Pass setActiveTab
                     />
                 )}
-                {activeTab === 'Analytics' && <AnalyticsTabContent />}
+                {activeTab === 'Analytics' && <AnalyticsTabContent connectedPlatforms={connectedPlatforms} />}
                 {activeTab === 'Schedule' && (
                     <ScheduleTabWithNoSSR
                         scheduledPosts={scheduledPosts}
