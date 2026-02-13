@@ -53,7 +53,7 @@ export default function SortableWidget({ id, size, children }: SortableWidgetPro
             style={style}
             className={`${colSpanClass} relative group h-full`}
         >
-            <div className={`h-full transition-all ${isEditMode ? 'ring-2 ring-dashed ring-gray-300 dark:ring-gray-700 rounded-lg p-1' : ''}`}>
+            <div className={`h-full transition-all bg-white dark:bg-gray-800 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden ${isEditMode ? 'ring-2 ring-dashed ring-gray-300 dark:ring-gray-700 p-1' : ''}`}>
 
                 {/* Overlay Controls (Only in Edit Mode) */}
                 {isEditMode && (

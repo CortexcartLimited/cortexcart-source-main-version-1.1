@@ -18,7 +18,7 @@ export default function DemographicsWidget() {
     }
 
     return (
-        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow h-full overflow-auto">
+        <div className="h-full w-full overflow-auto p-4">
             <div className="mb-4">
                 <h3 className="font-semibold text-gray-800 dark:text-gray-100">Audience Demographics</h3>
                 <p className="text-xs text-gray-500">Aggregated from connected social platforms</p>

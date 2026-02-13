@@ -121,6 +121,7 @@ export const authOptions = {
                     client_key: process.env.TIKTOK_CLIENT_KEY,
                     scope: "user.info.basic,video.upload,user.info.stats", // Removed video.list per user request (Sandbox issue)
                     response_type: "code",
+                    redirect_uri: process.env.NEXTAUTH_URL + "/api/auth/callback/tiktok",
                 },
             },
             // Log warning if keys are missing
@@ -131,6 +132,7 @@ export const authOptions = {
             token: {
                 url: "https://open.tiktokapis.com/v2/oauth/token/",
                 async request({ client, params, checks, provider }) {
+                    console.log("TikTok Token Request Callback URL:", provider.callbackUrl);
                     const response = await fetch("https://open.tiktokapis.com/v2/oauth/token/", {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
