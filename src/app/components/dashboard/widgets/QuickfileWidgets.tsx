@@ -7,18 +7,26 @@ import Link from 'next/link';
 import { Button } from "@/app/components/ui/button";
 
 // Utility to format currency
-const formatCurrency = (amount, currency = 'GBP') => {
+const formatCurrency = (amount: number | null, currency: string = 'GBP') => {
+    if (amount === null) return '£0.00';
     return new Intl.NumberFormat('en-GB', {
         style: 'currency',
         currency: currency,
     }).format(amount);
 };
 
+interface QuickfileWidgetProps {
+    title: string;
+    icon: React.ComponentType<any>;
+    type: 'revenue' | 'expenses' | 'profit';
+    className?: string;
+}
+
 // Generic Quickfile Widget Component
-const QuickfileWidgetBase = ({ title, icon: Icon, type, className }) => {
-    const [data, setData] = useState(null);
+const QuickfileWidgetBase = ({ title, icon: Icon, type, className }: QuickfileWidgetProps) => {
+    const [data, setData] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
     const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
@@ -50,8 +58,8 @@ const QuickfileWidgetBase = ({ title, icon: Icon, type, className }) => {
                 }
 
                 setData(value);
-            } catch (err) {
-                setError(err.message);
+            } catch (err: any) {
+                setError(err.message || 'An error occurred');
             } finally {
                 setLoading(false);
             }
