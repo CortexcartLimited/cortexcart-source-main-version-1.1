@@ -6,12 +6,17 @@ import { NextResponse } from 'next/server';
 import axios from 'axios';
 
 export async function POST(req) {
+    console.log("TikTok Sync: Request received");
     const session = await getServerSession(authOptions);
+    console.log("TikTok Sync: Session Result:", JSON.stringify(session, null, 2));
+
     if (!session?.user?.email) {
+        console.error("TikTok Sync: No session or email found. Returning 401.");
         return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
     }
 
     const userEmail = session.user.email;
+    console.log("TikTok Sync: Authenticated as", userEmail);
     const connection = await db.getConnection();
 
     try {
