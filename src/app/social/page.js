@@ -1,11 +1,32 @@
-// src/app/social/page.js
 'use client';
 import UploadProgressModal from '@/app/components/UploadProgressModal'
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Layout from '@/app/components/Layout';
-import { ArrowUpTrayIcon, ArrowPathIcon, SparklesIcon, StarIcon, CalendarIcon, PaperAirplaneIcon, InformationCircleIcon, CakeIcon, UserIcon, GlobeAltIcon, ClipboardDocumentIcon, ChartBarIcon, PencilSquareIcon, XCircleIcon } from '@heroicons/react/24/solid';
+import {
+    ArrowUpTrayIcon,
+    SparklesIcon,
+    StarIcon,
+    PaperAirplaneIcon,
+    CakeIcon,
+    UserIcon,
+    GlobeAltIcon,
+    PencilSquareIcon,
+    XCircleIcon
+} from '@heroicons/react/24/solid';
+import {
+    PhotoIcon,
+    VideoCameraIcon,
+    CalendarIcon,
+    ChartBarIcon,
+    InformationCircleIcon,
+    Cog6ToothIcon,
+    ClipboardDocumentIcon,
+    ArrowPathIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon
+} from '@heroicons/react/24/outline';
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -108,7 +129,7 @@ const SocialNav = ({ activeTab, setActiveTab }) => {
             <nav className="-mb-px flex space-x-8" aria-label="Tabs">
                 {tabs.map((tab) => (
                     <button key={tab.name} onClick={() => setActiveTab(tab.name)}
-                        className={`whitespace-nowrap flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === tab.name ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}>
+                        className={`whitespace-nowrap flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors ${ activeTab === tab.name ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' } `}>
                         <tab.icon className="mr-2 h-5 w-5" /> {tab.name}
                     </button>
                 ))}
@@ -146,6 +167,21 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
     const [disableDuet, setDisableDuet] = useState(false);
     const [disableStitch, setDisableStitch] = useState(false);
     const [disableComment, setDisableComment] = useState(false);
+
+    // Scroll Logic for Platform Selector
+    const scrollContainerRef = useRef(null);
+
+    const scrollLeft = () => {
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollBy({ left: -200, behavior: 'smooth' });
+        }
+    };
+
+    const scrollRight = () => {
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+        }
+    };
 
     useEffect(() => {
         // Set default selection when data becomes available
@@ -199,7 +235,7 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
             if (selectedImageUrl) {
                 console.log("Fetching thumbnail image:", selectedImageUrl);
                 const response = await fetch(selectedImageUrl);
-                if (!response.ok) throw new Error(`Failed to load thumbnail image. Status: ${response.status}`);
+                if (!response.ok) throw new Error(`Failed to load thumbnail image.Status: ${ response.status } `);
                 const blob = await response.blob();
                 formData.append('thumbnail', blob, 'thumbnail.jpg'); // Adjust filename as needed
                 console.log("Thumbnail added to form data.");
@@ -211,7 +247,7 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                     if (event.lengthComputable) {
                         const percentComplete = (event.loaded / event.total) * 100;
                         setUploadProgress(percentComplete);
-                        setUploadMessage(`Uploading video file... ${Math.round(percentComplete)}%`);
+                        setUploadMessage(`Uploading video file... ${ Math.round(percentComplete) }% `);
                     }
                 });
 
@@ -227,12 +263,12 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                             reject(new Error("Received invalid response from server after upload."));
                         }
                     } else {
-                        let errorMsg = `Upload failed with status ${xhr.status}`;
+                        let errorMsg = `Upload failed with status ${xhr.status} `;
                         try {
                             const errorJson = JSON.parse(xhr.responseText);
-                            errorMsg += `: ${errorJson.message || errorJson.error || 'Unknown error'}`;
+                            errorMsg += `: ${errorJson.message || errorJson.error || "Unknown error"} `;
                         } catch {
-                            errorMsg += `: ${xhr.statusText}`;
+                            errorMsg += `: ${xhr.statusText} `;
                         }
                         reject(new Error(errorMsg));
                     }
@@ -243,9 +279,6 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                 };
 
                 xhr.open('POST', currentPlatform.apiEndpoint, true); // Use apiEndpoint from PLATFORMS
-                // Note: Don't set Content-Type header when sending FormData, browser does it.
-                // Include auth headers if your YouTube API requires them
-                // xhr.setRequestHeader('Authorization', `Bearer YOUR_AUTH_TOKEN`);
                 xhr.send(formData);
                 console.log("XHR request sent to:", currentPlatform.apiEndpoint);
             });
@@ -296,7 +329,7 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                     if (event.lengthComputable) {
                         const percentComplete = (event.loaded / event.total) * 100;
                         setUploadProgress(percentComplete);
-                        setUploadMessage(`Uploading to TikTok... ${Math.round(percentComplete)}%`);
+                        setUploadMessage(`Uploading to TikTok... ${ Math.round(percentComplete) }% `);
                     }
                 });
 
@@ -313,7 +346,7 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                             const err = JSON.parse(xhr.responseText);
                             reject(new Error(err.error || err.message || "Upload failed"));
                         } catch {
-                            reject(new Error(`Upload failed with status ${xhr.status}`));
+                            reject(new Error(`Upload failed with status ${xhr.status} `));
                         }
                     }
                 };
@@ -441,12 +474,12 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
         // Check if apiEndpoint is defined for the selected platform before proceeding
         if (!apiEndpoint) {
             console.error("API endpoint is not defined for platform:", selectedPlatform);
-            setPostStatus({ message: `Cannot post: API endpoint not configured for ${currentPlatform?.name || selectedPlatform}.`, type: 'error' });
+            setPostStatus({ message: `Cannot post: API endpoint not configured for ${ currentPlatform?.name || selectedPlatform}.`, type: 'error' });
             setIsPosting(false);
             return;
         }
 
-        console.log(`Sending POST request to ${apiEndpoint} with body:`, JSON.stringify(requestBody));
+        console.log(`Sending POST request to ${ apiEndpoint } with body: `, JSON.stringify(requestBody));
 
         try {
             const res = await fetch(apiEndpoint, {
@@ -458,9 +491,9 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
             const result = await res.json();
             // Check based on status code first, then look for error/message in body
             if (!res.ok) {
-                console.error(`API Error (${res.status}) from ${apiEndpoint}:`, result);
+                console.error(`API Error(${ res.status }) from ${ apiEndpoint }: `, result);
                 // Try to get a meaningful message
-                let errorMsg = result.details || result.error || result.message || `Request failed with status ${res.status}`;
+                let errorMsg = result.details || result.error || result.message || `Request failed with status ${ res.status } `;
                 throw new Error(errorMsg);
             }
 
@@ -472,7 +505,7 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
 
         } catch (err) {
             setPostStatus({ message: err.message, type: 'error' });
-            console.error(`Error posting to ${selectedPlatform} at ${apiEndpoint}:`, err);
+            console.error(`Error posting to ${ selectedPlatform } at ${ apiEndpoint }: `, err);
         } finally {
             setIsPosting(false);
         }
@@ -579,23 +612,50 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                 {/* Left Column (Composer) */}
                 <div className="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
                     {/* Platform Tabs */}
-                    <div className="flex items-center border-b pb-4 overflow-x-auto whitespace-nowrap">
-                        {Object.values(PLATFORMS).map(platform => {
-                            const Icon = platform.icon;
-                            // Generate a stable key for the platform button
-                            const platformKey = platform.name.toLowerCase().split(' ')[0].replace('(twitter)', '');
-                            return (
-                                <button
-                                    key={platformKey}
-                                    // Use the platform key for setting state and checking active
-                                    onClick={() => setSelectedPlatform(platformKey)}
-                                    className={`flex items-center px-4 py-2 text-sm font-medium rounded-md mr-2 ${selectedPlatform === platformKey ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
-                                    disabled={platform.disabled}
-                                >
-                                    {Icon && <Icon className="h-5 w-5 mr-2" />} {platform.name}
-                                </button>
-                            );
-                        })}
+                    <div className="relative flex items-center border-b pb-4">
+                        <button
+                            onClick={scrollLeft}
+                            className="p-2 mr-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 focus:outline-none flex-shrink-0"
+                            aria-label="Scroll left"
+                        >
+                            <ChevronLeftIcon className="h-5 w-5" />
+                        </button>
+
+                        <div
+                            ref={scrollContainerRef}
+                            className="flex overflow-x-auto whitespace-nowrap scrollbar-hide space-x-2 flex-grow"
+                            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} // Hide scrollbar for Firefox/IE
+                        >
+                             <style jsx>{`
+                                div:: -webkit - scrollbar {
+    display: none;
+}
+`}</style>
+                            {Object.values(PLATFORMS).map(platform => {
+                                const Icon = platform.icon;
+                                // Generate a stable key for the platform button
+                                const platformKey = platform.name.toLowerCase().split(' ')[0].replace('(twitter)', '');
+                                return (
+                                    <button
+                                        key={platformKey}
+                                        // Use the platform key for setting state and checking active
+                                        onClick={() => setSelectedPlatform(platformKey)}
+                                         className={`flex items-center px-4 py-2 text-sm font-medium rounded-md flex-shrink-0 ${ selectedPlatform === platformKey ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600' } `}
+                                        disabled={platform.disabled}
+                                    >
+                                        {Icon && <Icon className="h-5 w-5 mr-2" />} {platform.name}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        <button
+                            onClick={scrollRight}
+                            className="p-2 ml-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 focus:outline-none flex-shrink-0"
+                            aria-label="Scroll right"
+                        >
+                            <ChevronRightIcon className="h-5 w-5" />
+                        </button>
                     </div>
 
                     {/* Platform Specific Inputs */}
@@ -751,157 +811,163 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
 
                     {/* Character Count and Post Buttons */}
                     <div className="mt-4 flex justify-between items-center">
-                        <span className={`text-sm font-medium ${isOverLimit ? 'text-red-600' : 'text-gray-500'}`}>
+                        <span className={`text-sm font-medium ${ isOverLimit ? 'text-red-600' : 'text-gray-500' } `}>
                             {currentPlatform?.maxLength ? `${postContent.length}/${currentPlatform.maxLength < Infinity ? currentPlatform.maxLength : '∞'}` : ''}
                         </span>
-                        <div className="flex items-center gap-x-2">
-                            {/* Copy button can be added here if needed */}
-                            <button
-                                onClick={handleSubmit}
-                                disabled={
-                                    isPosting || isUploading ||
-                                    (selectedPlatform !== 'pinterest' && !postContent.trim()) || // Check trimmed content
-                                    isOverLimit ||
-                                    (selectedPlatform === 'facebook' && !selectedImageUrl) || // Added FB image check
-                                    (selectedPlatform === 'instagram' && (!selectedImageUrl || !selectedInstagramId)) ||
-                                    (selectedPlatform === 'pinterest' && (!selectedImageUrl || !selectedBoardId || !pinTitle.trim())) || // Check trimmed title
-                                    (selectedPlatform === 'youtube' && (!videoFile || !videoTitle.trim())) || // Check trimmed title
-                                    (selectedPlatform === 'tiktok' && !videoFile)
-                                }
-                                className="flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                            >
-                                <PaperAirplaneIcon className="h-5 w-5 mr-2" />
-                                {isPosting || isUploading ? 'Processing...' : ((selectedPlatform === 'youtube' || selectedPlatform === 'tiktok') ? 'Upload Now' : 'Post Now')}
-                            </button>
-                        </div>
+    <div className="flex items-center gap-x-2">
+        {/* Copy button can be added here if needed */}
+        <button
+            onClick={handleSubmit}
+            disabled={
+                isPosting || isUploading ||
+                (selectedPlatform !== 'pinterest' && !postContent.trim()) || // Check trimmed content
+                isOverLimit ||
+                (selectedPlatform === 'facebook' && !selectedImageUrl) || // Added FB image check
+                (selectedPlatform === 'instagram' && (!selectedImageUrl || !selectedInstagramId)) ||
+                (selectedPlatform === 'pinterest' && (!selectedImageUrl || !selectedBoardId || !pinTitle.trim())) || // Check trimmed title
+                (selectedPlatform === 'youtube' && (!videoFile || !videoTitle.trim())) || // Check trimmed title
+                (selectedPlatform === 'tiktok' && !videoFile)
+            }
+            className="flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+            <PaperAirplaneIcon className="h-5 w-5 mr-2" />
+            {isPosting || isUploading ? 'Processing...' : ((selectedPlatform === 'youtube' || selectedPlatform === 'tiktok') ? 'Upload Now' : 'Post Now')}
+        </button>
+    </div>
                     </div>
 
-                    {/* Post Status Message */}
-                    {postStatus.message && (
-                        <div className={`mt-4 text-sm p-2 rounded-md text-center ${postStatus.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                            {postStatus.message}
-                        </div>
-                    )}
+    {/* Post Status Message */ }
+{
+    postStatus.message && (
+        <div className={`mt-4 text-sm p-2 rounded-md text-center ${postStatus.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+            {postStatus.message}
+        </div>
+    )
+}
 
-                    {/* Schedule Form - Only show if not YouTube (or if YouTube scheduling is added later) */}
-                    {(selectedPlatform !== 'youtube' && selectedPlatform !== 'tiktok') && (
-                        <form onSubmit={handleSchedulePost} className="mt-6 border-t pt-4">
-                            <h4 className="text-lg font-semibold text-gray-800 mb-4">Schedule Post</h4>
-                            {error && <p className="text-sm text-red-600 mb-2">{error}</p>} {/* Show schedule error */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label htmlFor="scheduleDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
-                                    <input type="date" id="scheduleDate" name="scheduleDate" onChange={(e) => setScheduleDate(e.target.value)} value={scheduleDate} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white" min={moment().format('YYYY-MM-DD')} required />
-                                </div>
-                                <div>
-                                    <label htmlFor="scheduleTime" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Time</label>
-                                    <input type="time" id="scheduleTime" name="scheduleTime" value={scheduleTime} onChange={(e) => setScheduleTime(e.target.value)} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white" required />
-                                </div>
-                            </div>
-                            <div className="mt-6">
-                                <button
-                                    type="submit"
-                                    disabled={
-                                        isPosting || isUploading || // Disable if posting/uploading
-                                        (selectedPlatform !== 'pinterest' && !postContent.trim()) ||
-                                        isOverLimit || !scheduleDate || !scheduleTime ||
-                                        (selectedPlatform === 'facebook' && !selectedImageUrl) || // Added FB image check
-                                        (selectedPlatform === 'instagram' && (!selectedImageUrl || !selectedInstagramId)) ||
-                                        (selectedPlatform === 'pinterest' && (!selectedImageUrl || !selectedBoardId || !pinTitle.trim()))
-                                    }
-                                    className="flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                                >
-                                    <CalendarIcon className="h-5 w-5 mr-2" />Schedule Post
-                                </button>
-                            </div>
-                        </form>
-                    )}
+{/* Schedule Form - Only show if not YouTube (or if YouTube scheduling is added later) */ }
+{
+    (selectedPlatform !== 'youtube' && selectedPlatform !== 'tiktok') && (
+        <form onSubmit={handleSchedulePost} className="mt-6 border-t pt-4">
+            <h4 className="text-lg font-semibold text-gray-800 mb-4">Schedule Post</h4>
+            {error && <p className="text-sm text-red-600 mb-2">{error}</p>} {/* Show schedule error */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label htmlFor="scheduleDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
+                    <input type="date" id="scheduleDate" name="scheduleDate" onChange={(e) => setScheduleDate(e.target.value)} value={scheduleDate} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white" min={moment().format('YYYY-MM-DD')} required />
+                </div>
+                <div>
+                    <label htmlFor="scheduleTime" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Time</label>
+                    <input type="time" id="scheduleTime" name="scheduleTime" value={scheduleTime} onChange={(e) => setScheduleTime(e.target.value)} className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white" required />
+                </div>
+            </div>
+            <div className="mt-6">
+                <button
+                    type="submit"
+                    disabled={
+                        isPosting || isUploading || // Disable if posting/uploading
+                        (selectedPlatform !== 'pinterest' && !postContent.trim()) ||
+                        isOverLimit || !scheduleDate || !scheduleTime ||
+                        (selectedPlatform === 'facebook' && !selectedImageUrl) || // Added FB image check
+                        (selectedPlatform === 'instagram' && (!selectedImageUrl || !selectedInstagramId)) ||
+                        (selectedPlatform === 'pinterest' && (!selectedImageUrl || !selectedBoardId || !pinTitle.trim()))
+                    }
+                    className="flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                >
+                    <CalendarIcon className="h-5 w-5 mr-2" />Schedule Post
+                </button>
+            </div>
+        </form>
+    )
+}
                 </div>
 
-                {/* Right Column */}
-                <div className="lg:col-span-1 space-y-8">
-                    {/* AI Assistant */}
-                    {currentPlatform && ( // Only show AI if a platform is selected
-                        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md space-y-4 border border-gray-200 dark:border-gray-700">
-                            <h3 className="font-semibold text-lg text-gray-900 dark:text-white">AI Assistant</h3>
-                            <input type="text" value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="e.g., 'New Summer T-Shirt Sale'" className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
-                            <button onClick={handleGeneratePost} disabled={isGenerating || !topic.trim()} className="w-full flex items-center justify-center px-4 py-2 border rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400">
-                                <SparklesIcon className="h-5 w-5 mr-2" />
-                                {isGenerating ? 'Generating...' : `Generate for ${currentPlatform.name}`}
-                            </button>
-                            {/* Display AI generation error if needed */}
-                        </div>
-                    )}
+    {/* Right Column */ }
+    < div className = "lg:col-span-1 space-y-8" >
+        {/* AI Assistant */ }
+{
+    currentPlatform && ( // Only show AI if a platform is selected
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md space-y-4 border border-gray-200 dark:border-gray-700">
+            <h3 className="font-semibold text-lg text-gray-900 dark:text-white">AI Assistant</h3>
+            <input type="text" value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="e.g., 'New Summer T-Shirt Sale'" className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+            <button onClick={handleGeneratePost} disabled={isGenerating || !topic.trim()} className="w-full flex items-center justify-center px-4 py-2 border rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400">
+                <SparklesIcon className="h-5 w-5 mr-2" />
+                {isGenerating ? 'Generating...' : `Generate for ${currentPlatform.name}`}
+            </button>
+            {/* Display AI generation error if needed */}
+        </div>
+    )
+}
 
-                    {/* Upcoming Posts */}
-                    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Upcoming Posts</h3>
-                            {/* Link to full schedule view? */}
-                            <Link href="#" onClick={(e) => { e.preventDefault(); setActiveTab('Schedule'); }} className="text-sm text-blue-600 hover:underline">
-                                View Calendar
-                            </Link>
+{/* Upcoming Posts */ }
+<div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+    <div className="flex justify-between items-center mb-4">
+        <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Upcoming Posts</h3>
+        {/* Link to full schedule view? */}
+        <Link href="#" onClick={(e) => { e.preventDefault(); setActiveTab('Schedule'); }} className="text-sm text-blue-600 hover:underline">
+            View Calendar
+        </Link>
+    </div>
+    <div className="space-y-3 max-h-96 overflow-y-auto">
+        {scheduledPosts.length > 0 ? scheduledPosts.slice(0, 5).map(post => {
+            const postPlatformKey = post.resource?.platform;
+            const platformConfig = PLATFORMS[postPlatformKey];
+            const Icon = platformConfig?.icon;
+            return (
+                <div key={post.id} className={`p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border-l-4`} style={{ borderColor: platformConfig?.color || '#9CA3AF' }}>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            {Icon && <Icon className="h-4 w-4 text-gray-600 dark:text-gray-300" />}
+                            <span className="font-semibold text-sm text-gray-800 dark:text-white">{platformConfig?.name || postPlatformKey}</span>
                         </div>
-                        <div className="space-y-3 max-h-96 overflow-y-auto">
-                            {scheduledPosts.length > 0 ? scheduledPosts.slice(0, 5).map(post => {
-                                const postPlatformKey = post.resource?.platform;
-                                const platformConfig = PLATFORMS[postPlatformKey];
-                                const Icon = platformConfig?.icon;
-                                return (
-                                    <div key={post.id} className={`p-3 bg-gray-50 dark:bg-gray-700 rounded-lg border-l-4`} style={{ borderColor: platformConfig?.color || '#9CA3AF' }}>
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                {Icon && <Icon className="h-4 w-4 text-gray-600 dark:text-gray-300" />}
-                                                <span className="font-semibold text-sm text-gray-800 dark:text-white">{platformConfig?.name || postPlatformKey}</span>
-                                            </div>
-                                            <span className="text-xs text-blue-600 font-medium">{moment(post.start).format('MMM D, h:mm a')}</span>
-                                        </div>
-                                        <p className="text-sm text-gray-600 dark:text-gray-300 truncate mt-1">{post.title && typeof post.title === 'string' ? post.title.split(': ')[1] || post.title : '(No Content/Title)'}</p>
-                                    </div>
-                                );
-                            }) : (
-                                <p className="text-sm text-center text-gray-500 py-4">No posts scheduled.</p>
-                            )}
-                        </div>
+                        <span className="text-xs text-blue-600 font-medium">{moment(post.start).format('MMM D, h:mm a')}</span>
                     </div>
-
-                    {/* Pixel Perfect AI Banner */}
-                    <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg shadow-lg p-5 text-white relative overflow-hidden group">
-                        <div className="relative z-10">
-                            <h3 className="text-lg font-bold flex items-center gap-2 text-gray-100">
-                                <SparklesIcon className="h-5 w-5 text-yellow-300" />
-                                Pixel Perfect AI
-                            </h3>
-                            <p className="text-purple-100 text-sm mt-1 mb-4 max-w-[90%]">
-                                Create stunning visuals with our free AI-powered image editor and generator.
-                            </p>
-                            <a
-                                href="https://cortexcart.com/pixel-perfect-ai/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center px-4 py-2 bg-white text-purple-700 text-sm font-bold rounded-lg hover:bg-purple-50 transition-colors shadow-sm"
-                            >
-                                Try it Free
-                                <ArrowUpTrayIcon className="h-4 w-4 ml-2 transform rotate-90" />
-                            </a>
-                        </div>
-                        {/* Decorative Background Element */}
-                        <div className="absolute -right-4 -bottom-8 opacity-20 transform rotate-12">
-                            <SparklesIcon className="h-32 w-32 text-white" />
-                        </div>
-                    </div>
-
-                    {/* Image Manager */}
-                    <ImageManager
-                        onImageSelect={(url) => {
-                            console.log("Image selected in ImageManager:", url); // Added log
-                            setSelectedImageUrl(url);
-                        }}
-                        selectedImageUrl={selectedImageUrl}
-                    // Add required props like user_email or userId if needed by ImageManager API calls
-                    />
+                    <p className="text-sm text-gray-600 dark:text-gray-300 truncate mt-1">{post.title && typeof post.title === 'string' ? post.title.split(': ')[1] || post.title : '(No Content/Title)'}</p>
                 </div>
-            </div >
+            );
+        }) : (
+            <p className="text-sm text-center text-gray-500 py-4">No posts scheduled.</p>
+        )}
+    </div>
+</div>
+
+{/* Pixel Perfect AI Banner */ }
+<div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg shadow-lg p-5 text-white relative overflow-hidden group">
+    <div className="relative z-10">
+        <h3 className="text-lg font-bold flex items-center gap-2 text-gray-100">
+            <SparklesIcon className="h-5 w-5 text-yellow-300" />
+            Pixel Perfect AI
+        </h3>
+        <p className="text-purple-100 text-sm mt-1 mb-4 max-w-[90%]">
+            Create stunning visuals with our free AI-powered image editor and generator.
+        </p>
+        <a
+            href="https://cortexcart.com/pixel-perfect-ai/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center px-4 py-2 bg-white text-purple-700 text-sm font-bold rounded-lg hover:bg-purple-50 transition-colors shadow-sm"
+        >
+            Try it Free
+            <ArrowUpTrayIcon className="h-4 w-4 ml-2 transform rotate-90" />
+        </a>
+    </div>
+    {/* Decorative Background Element */}
+    <div className="absolute -right-4 -bottom-8 opacity-20 transform rotate-12">
+        <SparklesIcon className="h-32 w-32 text-white" />
+    </div>
+</div>
+
+{/* Image Manager */ }
+<ImageManager
+    onImageSelect={(url) => {
+        console.log("Image selected in ImageManager:", url); // Added log
+        setSelectedImageUrl(url);
+    }}
+    selectedImageUrl={selectedImageUrl}
+// Add required props like user_email or userId if needed by ImageManager API calls
+/>
+                </div>
+            </div>
         </>
     );
 };
