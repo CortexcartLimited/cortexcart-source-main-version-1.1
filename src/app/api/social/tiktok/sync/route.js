@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { db } from '@/lib/db';
-import { decrypt } from '@/lib/crypto';
+import { decrypt, encrypt } from '@/lib/crypto';
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
@@ -31,7 +31,7 @@ export async function POST(req) {
 
         // 1. Get TikTok Access Token
         const [rows] = await connection.query(
-            `SELECT access_token_encrypted FROM social_connect WHERE user_email = ? AND platform = 'tiktok' AND is_active = TRUE`,
+            `SELECT access_token_encrypted, refresh_token_encrypted FROM social_connect WHERE user_email = ? AND platform = 'tiktok' AND is_active = TRUE`,
             [userEmail]
         );
 
@@ -47,23 +47,70 @@ export async function POST(req) {
             throw new Error('TikTok account not found. Please connect your account.');
         }
 
-        const accessToken = decrypt(rows[0].access_token_encrypted);
+        let accessToken = decrypt(rows[0].access_token_encrypted);
+        const refreshToken = rows[0].refresh_token_encrypted ? decrypt(rows[0].refresh_token_encrypted) : null;
 
-        // 2. Fetch Videos from TikTok API
-        // https://developers.tiktok.com/doc/tiktok-api-v2-video-list/
-        // Fields: id, title, cover_image_url, create_time, like_count, comment_count, share_count, view_count
-        const url = 'https://open.tiktokapis.com/v2/video/list/';
-        const body = {
-            max_count: 20, // Sync last 20 videos
-            fields: ['id', 'title', 'cover_image_url', 'create_time', 'like_count', 'comment_count', 'share_count', 'view_count']
+        // Helper to fetch videos
+        const fetchVideos = async (token) => {
+            const url = 'https://open.tiktokapis.com/v2/video/list/';
+            const body = {
+                max_count: 20,
+                fields: ['id', 'title', 'cover_image_url', 'create_time', 'like_count', 'comment_count', 'share_count', 'view_count']
+            };
+            return await axios.post(url, body, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
         };
 
-        const response = await axios.post(url, body, {
-            headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json'
+        let response;
+        try {
+            response = await fetchVideos(accessToken);
+        } catch (initialError) {
+            // If 401 and we have a refresh token, try to refresh
+            if (initialError.response?.status === 401 && refreshToken) {
+                console.log("TikTok Sync: 401 received. Attempting token refresh...");
+                try {
+                    const refreshUrl = 'https://open.tiktokapis.com/v2/oauth/token/';
+                    const refreshParams = new URLSearchParams({
+                        client_key: process.env.TIKTOK_CLIENT_KEY,
+                        client_secret: process.env.TIKTOK_CLIENT_SECRET,
+                        grant_type: 'refresh_token',
+                        refresh_token: refreshToken
+                    });
+
+                    const refreshRes = await axios.post(refreshUrl, refreshParams, {
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                    });
+
+                    const newData = refreshRes.data.data || refreshRes.data; // TikTok response variance
+                    if (newData.access_token) {
+                        accessToken = newData.access_token;
+                        const newRefreshToken = newData.refresh_token || refreshToken;
+
+                        // Update DB with new tokens
+                        const expiresAt = new Date(Date.now() + (newData.expires_in * 1000));
+                        await connection.query(
+                            `UPDATE social_connect SET access_token_encrypted = ?, refresh_token_encrypted = ?, expires_at = ? WHERE user_email = ? AND platform = 'tiktok'`,
+                            [encrypt(accessToken), encrypt(newRefreshToken), expiresAt, userEmail]
+                        );
+                        console.log("TikTok Sync: Token refreshed and saved. Retrying fetch...");
+
+                        // Retry fetch with new token
+                        response = await fetchVideos(accessToken);
+                    } else {
+                        throw initialError; // Refresh failed to give token
+                    }
+                } catch (refreshErr) {
+                    console.error("TikTok Token Refresh Failed:", refreshErr.response?.data || refreshErr.message);
+                    throw initialError; // Throw original error to trigger failure handling
+                }
+            } else {
+                throw initialError;
             }
-        });
+        }
 
         if (response.data.error && response.data.error.code !== 0) {
             throw new Error(`TikTok API Error: ${response.data.error.message}`);
@@ -117,21 +164,23 @@ export async function POST(req) {
         const errorMsg = JSON.stringify(error.response?.data || error.message || '');
 
         if (status === 401 || errorMsg.includes('scope_not_authorized') || errorMsg.includes('invalid_grant')) {
-            console.warn(`TikTok Auth Error (${status}): Deactivating connection for ${userEmail}`);
-            // TEMPORARILY DISABLED DEACTIVATION FOR DEBUGGING
-            /*
-            try {
-                // Use global db to ensure this runs outside the failed transaction
-                await db.query(`UPDATE social_connect SET is_active = 0 WHERE user_email = ? AND platform = 'tiktok'`, [userEmail]);
-            } catch (dbErr) {
-                console.error("Failed to deactivate TikTok connection:", dbErr);
-            }
-            */
-            // return NextResponse.json({ message: 'TikTok authorization failed. Please reconnect your account.' }, { status: 401 });
-            // Fallthrough to show the actual error to the user
+            console.warn(`TikTok Auth Error (${status}): ${errorMsg}`);
+
+            // Re-enable deactivation if desired, or keep it off for debugging.
+            // For now, we return a specific error code the UI can recognize.
+            return NextResponse.json({
+                error: true,
+                code: 'TIKTOK_AUTH_ERROR',
+                message: 'TikTok access denied. The token may be expired or scopes are missing. Please reconnect.',
+                details: error.response?.data || error.message
+            }, { status: 401 });
         }
 
-        return NextResponse.json({ message: error.message || 'Failed to sync with TikTok' }, { status: 500 });
+        return NextResponse.json({
+            error: true,
+            message: `TikTok Sync Failed: ${error.message}`,
+            details: error.response?.data
+        }, { status: 500 });
     } finally {
         if (connection) connection.release();
     }
