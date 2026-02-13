@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import {db} from "@/lib/db";
+import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import Stripe from 'stripe';
 
@@ -14,14 +14,14 @@ export async function GET(request) {
     }
 
     try {
-        const [userRows] = await db.query('SELECT stripe_subscription_id FROM sites WHERE email = ? LIMIT 1', [session.user.email]);
+        const [userRows] = await db.query('SELECT stripe_subscription_id FROM sites WHERE user_email = ? LIMIT 1', [session.user.email]);
         const user = userRows[0];
 
-        if (!user || !user.stripeSubscriptionId) {
+        if (!user || !user.stripe_subscription_id) {
             return NextResponse.json({ message: 'Subscription not found.' }, { status: 404 });
         }
 
-        const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+        const subscription = await stripe.subscriptions.retrieve(user.stripe_subscription_id);
 
         // If cancel_at_period_end is true, it means auto-payment is OFF.
         // We return the opposite for our "auto-payment enabled" toggle.
@@ -43,17 +43,17 @@ export async function POST(request) {
     try {
         const { autoPaymentEnabled } = await request.json();
 
-        const [userRows] = await db.query('SELECT stripe_subscription_id FROM sites WHERE email = ? LIMIT 1', [session.user.email]);
+        const [userRows] = await db.query('SELECT stripe_subscription_id FROM sites WHERE user_email = ? LIMIT 1', [session.user.email]);
         const user = userRows[0];
-        
-        if (!user || !user.stripeSubscriptionId) {
-             return NextResponse.json({ message: 'Subscription not found.' }, { status: 404 });
+
+        if (!user || !user.stripe_subscription_id) {
+            return NextResponse.json({ message: 'Subscription not found.' }, { status: 404 });
         }
 
         // Set cancel_at_period_end to the opposite of what the toggle says
         const cancel_at_period_end = !autoPaymentEnabled;
 
-        await stripe.subscriptions.update(user.stripeSubscriptionId, {
+        await stripe.subscriptions.update(user.stripe_subscription_id, {
             cancel_at_period_end: cancel_at_period_end,
         });
 
