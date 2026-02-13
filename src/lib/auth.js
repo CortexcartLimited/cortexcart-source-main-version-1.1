@@ -119,7 +119,7 @@ export const authOptions = {
                 url: "https://www.tiktok.com/v2/auth/authorize/",
                 params: {
                     client_key: process.env.TIKTOK_CLIENT_KEY,
-                    scope: "user.info.basic",
+                    scope: "user.info.basic,video.list,video.upload,user.info.stats",
                     response_type: "code",
                 },
             },
