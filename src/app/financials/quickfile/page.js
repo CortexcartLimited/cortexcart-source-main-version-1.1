@@ -12,18 +12,86 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/ca
 import { Button } from "@/app/components/ui/button";
 import FriendlyError from '@/app/components/FriendlyError';
 
-const ConnectQuickfilePrompt = () => (
-    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed shadow-sm p-8 text-center mt-4">
-        <DollarSign className="h-12 w-12 text-gray-400" />
-        <h3 className="mt-4 text-lg font-semibold">Connect to Quickfile</h3>
-        <p className="mt-2 mb-4 text-sm text-muted-foreground">
-            To view your financial dashboard, please connect your Quickfile account.
-        </p>
-        <Button asChild>
-            <Link href="/api/connect/quickfile">Connect Quickfile</Link>
-        </Button>
-    </div>
-);
+const ConnectQuickfilePrompt = ({ onConnect }) => {
+    const [accountNumber, setAccountNumber] = useState('');
+    const [apiKey, setApiKey] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState('');
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        setError('');
+
+        try {
+            const res = await fetch('/api/connect/quickfile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ accountNumber, apiKey }),
+            });
+
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || 'Failed to connect');
+            }
+
+            onConnect();
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <Card className="max-w-md mx-auto mt-8">
+            <CardHeader>
+                <div className="flex justify-center mb-4">
+                    <DollarSign className="h-12 w-12 text-blue-600" />
+                </div>
+                <CardTitle className="text-center">Connect Quickfile</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <p className="text-sm text-gray-500 text-center mb-4">
+                        Enter your Quickfile credentials to sync your financial data.
+                        You can find these in Account Settings {'>'} 3rd Party Integration.
+                    </p>
+                    {error && (
+                        <div className="bg-red-50 text-red-600 text-sm p-3 rounded-md">
+                            {error}
+                        </div>
+                    )}
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Account Number</label>
+                        <input
+                            type="text"
+                            required
+                            className="w-full p-2 border rounded-md"
+                            value={accountNumber}
+                            onChange={(e) => setAccountNumber(e.target.value)}
+                            placeholder="e.g. 6131234567"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">API Key</label>
+                        <input
+                            type="password"
+                            required
+                            className="w-full p-2 border rounded-md"
+                            value={apiKey}
+                            onChange={(e) => setApiKey(e.target.value)}
+                            placeholder="Your Quickfile API Key"
+                        />
+                    </div>
+                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        {isSubmitting ? 'Connecting...' : 'Connect Quickfile'}
+                    </Button>
+                </form>
+            </CardContent>
+        </Card>
+    );
+};
 
 const FinancialsPageSkeleton = () => (
     <div className="space-y-4">
@@ -50,13 +118,44 @@ export default function QuickfilePage() {
 
     const currencySymbols = { USD: '$', EUR: '€', GBP: '£', JPY: '¥', CAD: '$', AUD: '$', INR: '₹' };
 
+    const fetchFinancials = async () => {
+        try {
+            const [financialsRes, settingsRes] = await Promise.all([
+                fetch('/api/quickfile/financial-summary'),
+                fetch('/api/site-settings') // Fetch settings
+            ]);
+
+            if (!financialsRes.ok) {
+                // Check if it's an auth error (401)
+                if (financialsRes.status === 401) {
+                    setIsConnected(false);
+                    return;
+                }
+                const data = await financialsRes.json();
+                throw new Error(data.message || 'Failed to fetch financial data');
+            }
+            setFinancialData(await financialsRes.json());
+            setIsConnected(true);
+
+            if (settingsRes.ok) {
+                const settings = await settingsRes.json();
+                if (settings.currency && currencySymbols[settings.currency]) {
+                    setCurrencySymbol(currencySymbols[settings.currency]);
+                }
+            }
+
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     useEffect(() => {
         const checkStatus = async () => {
             try {
-                // Placeholder API endpoints - assuming they will be implemented or mocking response for now
                 const response = await fetch('/api/quickfile/status');
 
-                // If endpoint doesn't exist yet, we simulate not connected to avoid crash
                 if (!response.ok) {
                     setIsConnected(false);
                     setIsLoading(false);
@@ -64,41 +163,15 @@ export default function QuickfilePage() {
                 }
 
                 const data = await response.json();
-                setIsConnected(data.isConnected);
                 if (data.isConnected) {
+                    setIsConnected(true);
                     fetchFinancials();
                 } else {
+                    setIsConnected(false);
                     setIsLoading(false);
                 }
             } catch (err) {
                 setError(err.message);
-                setIsLoading(false);
-            }
-        };
-
-        const fetchFinancials = async () => {
-            try {
-                const [financialsRes, settingsRes] = await Promise.all([
-                    fetch('/api/quickfile/financial-summary'),
-                    fetch('/api/site-settings') // Fetch settings
-                ]);
-
-                if (!financialsRes.ok) {
-                    const data = await financialsRes.json();
-                    throw new Error(data.message || 'Failed to fetch financial data');
-                }
-                setFinancialData(await financialsRes.json());
-
-                if (settingsRes.ok) {
-                    const settings = await settingsRes.json();
-                    if (settings.currency && currencySymbols[settings.currency]) {
-                        setCurrencySymbol(currencySymbols[settings.currency]);
-                    }
-                }
-
-            } catch (err) {
-                setError(err.message);
-            } finally {
                 setIsLoading(false);
             }
         };
@@ -117,7 +190,7 @@ export default function QuickfilePage() {
         if (error) {
             return <FriendlyError message={error} onRetry={() => window.location.reload()} />;
         }
-        if (!isConnected) return <ConnectQuickfilePrompt />;
+        if (!isConnected) return <ConnectQuickfilePrompt onConnect={fetchFinancials} />;
         if (isConnected && !financialData) return <p>Could not load financial data. Please try again.</p>;
 
         return (
