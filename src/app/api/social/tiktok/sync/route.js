@@ -70,6 +70,13 @@ export async function POST(req) {
         }
 
         const videos = response.data.data?.videos || [];
+
+        if (videos.length === 0) {
+            console.log("TikTok Sync: No videos found.");
+            await connection.commit();
+            return NextResponse.json({ message: 'Sync complete. No posts found on TikTok account.' });
+        }
+
         let postsUpserted = 0;
 
         for (const video of videos) {
@@ -111,13 +118,17 @@ export async function POST(req) {
 
         if (status === 401 || errorMsg.includes('scope_not_authorized') || errorMsg.includes('invalid_grant')) {
             console.warn(`TikTok Auth Error (${status}): Deactivating connection for ${userEmail}`);
+            // TEMPORARILY DISABLED DEACTIVATION FOR DEBUGGING
+            /*
             try {
                 // Use global db to ensure this runs outside the failed transaction
                 await db.query(`UPDATE social_connect SET is_active = 0 WHERE user_email = ? AND platform = 'tiktok'`, [userEmail]);
             } catch (dbErr) {
                 console.error("Failed to deactivate TikTok connection:", dbErr);
             }
-            return NextResponse.json({ message: 'TikTok authorization failed. Please reconnect your account.' }, { status: 401 });
+            */
+            // return NextResponse.json({ message: 'TikTok authorization failed. Please reconnect your account.' }, { status: 401 });
+            // Fallthrough to show the actual error to the user
         }
 
         return NextResponse.json({ message: error.message || 'Failed to sync with TikTok' }, { status: 500 });
