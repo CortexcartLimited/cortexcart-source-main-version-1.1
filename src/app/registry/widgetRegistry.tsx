@@ -36,6 +36,9 @@ const MailchimpStatCard = dynamic(() => import('@/app/components/dashboard/widge
 const MailchimpGrowthChart = dynamic(() => import('@/app/components/dashboard/widgets/MailchimpWidgets').then(mod => mod.MailchimpGrowthChart), { loading: WidgetLoader });
 const MailchimpCampaignsList = dynamic(() => import('@/app/components/dashboard/widgets/MailchimpWidgets').then(mod => mod.MailchimpCampaignsList), { loading: WidgetLoader });
 const DemographicsWidget = dynamic(() => import('@/app/components/dashboard/widgets/DemographicsWidget'), { loading: WidgetLoader });
+const QuickfileRevenueWidget = dynamic(() => import('@/app/components/dashboard/widgets/QuickfileWidgets').then(mod => mod.QuickfileRevenueWidget), { loading: WidgetLoader });
+const QuickfileExpensesWidget = dynamic(() => import('@/app/components/dashboard/widgets/QuickfileWidgets').then(mod => mod.QuickfileExpensesWidget), { loading: WidgetLoader });
+const QuickfileProfitWidget = dynamic(() => import('@/app/components/dashboard/widgets/QuickfileWidgets').then(mod => mod.QuickfileProfitWidget), { loading: WidgetLoader });
 
 import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Box, LineChart, Share2, ThumbsUp, MessageCircle, ShoppingBag, Users } from 'lucide-react'; // Import icons for static usage if needed, though registry handles components
 
@@ -354,6 +357,18 @@ export const WIDGET_REGISTRY: Record<string, RegistryItem> = {
         component: DemographicsWidget,
         mapProps: () => ({}),
         wrapperClass: "h-96 min-w-0"
+    },
+    QuickfileRevenueWidget: {
+        component: QuickfileRevenueWidget,
+        mapProps: () => ({})
+    },
+    QuickfileExpensesWidget: {
+        component: QuickfileExpensesWidget,
+        mapProps: () => ({})
+    },
+    QuickfileProfitWidget: {
+        component: QuickfileProfitWidget,
+        mapProps: () => ({})
     },
 
 

@@ -1098,7 +1098,7 @@ const AnalyticsTabContent = ({ connectedPlatforms = {} }) => {
         labels: platformStats.map(item => PLATFORMS[item.platform]?.name || item.platform),
         datasets: [{
             label: 'Number of Posts',
-            data: platformStats.map(item => item.postCount || 0), // Default to 0 if null
+            data: (platformStats || []).map(item => item?.postCount || 0), // Default to 0 if null
             backgroundColor: backgroundColors,
             borderWidth: 1,
         }]
@@ -1188,15 +1188,15 @@ const AnalyticsTabContent = ({ connectedPlatforms = {} }) => {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="bg-blue-50 dark:bg-blue-900/20 p-5 rounded-lg border border-blue-200 dark:border-blue-800">
                                 <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Total Posts</p>
-                                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.totalPosts || 0}</p>
+                                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats?.totalPosts || 0}</p>
                             </div>
                             <div className="bg-green-50 dark:bg-green-900/20 p-5 rounded-lg border border-green-200 dark:border-green-800">
                                 <p className="text-sm font-medium text-green-600 dark:text-green-400">Total Reach (Impressions)</p>
-                                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{(stats.totalReach || 0).toLocaleString()}</p>
+                                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{(stats?.totalReach || 0).toLocaleString()}</p>
                             </div>
                             <div className="bg-purple-50 dark:bg-purple-900/20 p-5 rounded-lg border border-purple-200 dark:border-purple-800">
                                 <p className="text-sm font-medium text-purple-600 dark:text-purple-400">Avg. Engagement Rate</p>
-                                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{parseFloat(stats.engagementRate || 0).toFixed(2)}%</p>
+                                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{parseFloat(stats?.engagementRate || 0).toFixed(2)}%</p>
                             </div>
                         </div>
                     </div>

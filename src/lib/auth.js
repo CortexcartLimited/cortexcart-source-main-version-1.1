@@ -1,5 +1,6 @@
 // src/lib/auth.js main auth file updated
 import GoogleProvider from 'next-auth/providers/google';
+import FacebookProvider from 'next-auth/providers/facebook';
 import TwitterProvider from 'next-auth/providers/twitter';
 import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from '@/lib/db';
@@ -195,6 +196,10 @@ export const authOptions = {
             },
             checks: ["state"],
         },
+        FacebookProvider({
+            clientId: process.env.FACEBOOK_CLIENT_ID,
+            clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+        }),
     ],
     callbacks: {
         async signIn({ user, account, profile }) {

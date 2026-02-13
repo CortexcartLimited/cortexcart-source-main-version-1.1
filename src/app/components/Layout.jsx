@@ -232,6 +232,7 @@ const SidebarContent = () => {
                                     {isFinancialsMenuOpen && (
                                         <ul className="pt-2 pl-7 mt-1 space-y-2 border-l-2 border-gray-200 ml-4">
                                             <li><a href="/financials/quickbooks" className={getSubLinkClass('/financials/quickbooks')}><span>QuickBooks</span></a></li>
+                                            <li><a href="/financials/quickfile" className={getSubLinkClass('/financials/quickfile')}><span>Quickfile</span></a></li>
                                             <li><a href="/financials/shopify" className={getSubLinkClass('/financials/shopify')}><span>Shopify</span></a></li>
                                         </ul>
                                     )}

@@ -40,8 +40,11 @@ export async function GET() {
             mailchimp: {
                 isConnected: connectionsMap.has('mailchimp'),
             },
+            quickfile: {
+                isConnected: connectionsMap.has('quickfile'),
+            },
         };
-        
+
         return NextResponse.json(connections);
 
     } catch (error) {

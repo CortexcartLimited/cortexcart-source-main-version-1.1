@@ -15,6 +15,10 @@ export const WIDGET_CATALOG = [
             { type: 'QuickBooksStatCard', label: 'QB Total Revenue', icon: Receipt, defaultSize: '1/3', defaultProps: { title: 'QB Revenue', description: 'Fiscal Year', dataKey: 'totalRevenue' }, platform: 'quickbooks' },
             { type: 'QuickBooksStatCard', label: 'QB Total Expenses', icon: Receipt, defaultSize: '1/3', defaultProps: { title: 'QB Expenses', description: 'Fiscal Year', dataKey: 'totalExpenses' }, platform: 'quickbooks' },
             { type: 'QuickBooksStatCard', label: 'QB Net Profit', icon: TrendingUp, defaultSize: '1/3', defaultProps: { title: 'QB Net Profit', description: 'Fiscal Year', dataKey: 'netProfit' }, platform: 'quickbooks' },
+            // Quickfile Widgets
+            { type: 'QuickfileRevenueWidget', label: 'QF Revenue', icon: DollarSign, defaultSize: '1/3', defaultProps: {}, platform: 'quickfile' },
+            { type: 'QuickfileExpensesWidget', label: 'QF Expenses', icon: TrendingDown, defaultSize: '1/3', defaultProps: {}, platform: 'quickfile' },
+            { type: 'QuickfileProfitWidget', label: 'QF Net Profit', icon: TrendingUp, defaultSize: '1/3', defaultProps: {}, platform: 'quickfile' },
             { type: 'ShopifyStatCard', label: 'Shopify Sales', icon: ShoppingBag, defaultSize: '1/3', defaultProps: { title: 'Store Sales', description: 'All-time Net', dataKey: 'totalSales', className: 'bg-blue-50 dark:bg-blue-900/20' }, platform: 'shopify' },
             { type: 'ShopifyStatCard', label: 'Shopify Visits', icon: Users, defaultSize: '1/3', defaultProps: { title: 'Total Visits', description: 'All-time Sessions', dataKey: 'totalVisits', className: 'bg-green-50 dark:bg-green-900/20' }, platform: 'shopify' },
             { type: 'SocialStatCard', label: 'Social Posts', icon: Share2, defaultSize: '1/3', defaultProps: { title: 'Total Posts', description: 'All Platforms', dataKey: 'totalPosts' } },

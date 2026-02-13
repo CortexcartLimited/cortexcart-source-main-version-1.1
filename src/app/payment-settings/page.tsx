@@ -26,7 +26,7 @@ const PaymentSettingsPage = () => {
           }
         } else {
           const data = await res.json();
-          setAutoPaymentEnabled(data.autoPaymentEnabled);
+          setAutoPaymentEnabled(data?.autoPaymentEnabled || false);
         }
       } catch (err) {
         // FIX: Check the type of 'err' before using it
