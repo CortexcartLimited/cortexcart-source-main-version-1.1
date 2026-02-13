@@ -87,7 +87,8 @@ export async function POST(req) {
 
     } catch (error) {
         if (connection) await connection.rollback();
-        console.error("Error syncing TikTok posts:", error.response?.data || error.message);
+        const errorDetail = error.response?.data || error.message;
+        console.error("Error syncing TikTok posts:", JSON.stringify(errorDetail, null, 2));
 
         // Check for Auth/Scope Errors
         const status = error.response?.status;
