@@ -913,7 +913,7 @@ const AnalyticsTabContent = () => {
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
-    const [isSyncing, setIsSyncing] = useState({ x: false, facebook: false, pinterest: false, youtube: false });
+    const [isSyncing, setIsSyncing] = useState({ x: false, facebook: false, pinterest: false, youtube: false, tiktok: false });
     const [syncMessage, setSyncMessage] = useState('');
     const [syncMessageType, setSyncMessageType] = useState('info');
     const platformColors = {
@@ -921,6 +921,7 @@ const AnalyticsTabContent = () => {
         facebook: 'rgba(37, 99, 235, 0.7)', // blue-600
         pinterest: 'rgba(220, 38, 38, 0.7)', // red-600
         youtube: 'rgba(239, 68, 68, 0.7)', // red-500
+        tiktok: 'rgba(0, 0, 0, 0.7)', // black
         default: 'rgba(107, 114, 128, 0.7)' // gray-500
     };
 
@@ -1022,6 +1023,10 @@ const AnalyticsTabContent = () => {
                     <button onClick={() => handleSync('youtube')} disabled={isSyncing.youtube} className="inline-flex items-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600 disabled:bg-red-400">
                         <ArrowPathIcon className={`-ml-0.5 mr-1.5 h-5 w-5 ${isSyncing.youtube ? 'animate-spin' : ''}`} />
                         {isSyncing.youtube ? 'Syncing...' : 'Sync with YouTube'}
+                    </button>
+                    <button onClick={() => handleSync('tiktok')} disabled={isSyncing.tiktok} className="inline-flex items-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 disabled:bg-gray-600">
+                        <ArrowPathIcon className={`-ml-0.5 mr-1.5 h-5 w-5 ${isSyncing.tiktok ? 'animate-spin' : ''}`} />
+                        {isSyncing.tiktok ? 'Syncing...' : 'Sync with TikTok'}
                     </button>
                 </div>
                 {syncMessage && (
