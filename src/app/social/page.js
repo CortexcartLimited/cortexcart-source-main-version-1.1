@@ -27,6 +27,10 @@ import FriendlyError from '@/app/components/FriendlyError';
 const PinterestIcon = (props) => (
     <svg {...props} fill="#E60023" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.14 2.686 7.66 6.357 8.94.02-.19.03-.4.05-.61l.33-1.4a.12.12 0 0 1 .1-.1c.36-.18 1.15-.56 1.15-.56s-.3-.91-.25-1.79c.06-.9.65-2.12 1.46-2.12.68 0 1.2.51 1.2 1.12 0 .68-.43 1.7-.65 2.64-.18.78.38 1.42.92 1.42 1.58 0 2.63-2.1 2.63-4.22 0-1.8-.95-3.26-2.7-3.26-2.12 0-3.32 1.58-3.32 3.16 0 .6.22 1.25.5 1.62.03.04.04.05.02.13l-.15.65c-.05.2-.14.24-.32.08-1.05-.9-1.5-2.3-1.5-3.82 0-2.78 2.04-5.38 5.8-5.38 3.1 0 5.2 2.25 5.2 4.67 0 3.1-1.95 5.42-4.62 5.42-.9 0-1.75-.46-2.05-1l-.52 2.1c-.24 1-.92 2.25-.92 2.25s-.28.1-.32.08c-.46-.38-.68-1.2-.55-1.88l.38-1.68c.12-.55-.03-1.2-.5-1.52-1.32-.9-1.9-2.6-1.9-4.22 0-2.28 1.6-4.3 4.6-4.3 2.5 0 4.2 1.8 4.2 4.15 0 2.5-1.55 4.5-3.8 4.5-.75 0-1.45-.38-1.7-.82l-.28-.9c-.1-.4-.2-.8-.2-1.22 0-.9.42-1.68 1.12-1.68.9 0 1.5.8 1.5 1.88 0 .8-.25 1.88-.58 2.8-.25.7-.5 1.4-.5 1.4s-.3.12-.35.1c-.2-.1-.3-.2-.3-.4l.02-1.12z" /></svg>
 );
+
+const TikTokIcon = (props) => (
+    <svg {...props} fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" /></svg>
+);
 const YouTubeIcon = (props) => (
     <svg
         {...props}
@@ -86,6 +90,15 @@ const PLATFORMS = {
         disabled: false,
         color: '#FF0000',
         apiEndpoint: '/api/social/youtube/upload-video' // <-- FIX: Leave this one, as it's a special multipart/form-data upload
+    },
+    tiktok: {
+        name: 'TikTok',
+        maxLength: 2200,
+        icon: TikTokIcon,
+        placeholder: "Describe your video... #fyp",
+        disabled: false,
+        color: '#000000',
+        apiEndpoint: '/api/social/tiktok/post'
     }
 };
 const SocialNav = ({ activeTab, setActiveTab }) => {
@@ -129,6 +142,11 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
     const [uploadMessage, setUploadMessage] = useState('');
     const [selectedImageUrl, setSelectedImageUrl] = useState(''); // Keep this
 
+    // TikTok Options
+    const [disableDuet, setDisableDuet] = useState(false);
+    const [disableStitch, setDisableStitch] = useState(false);
+    const [disableComment, setDisableComment] = useState(false);
+
     useEffect(() => {
         // Set default selection when data becomes available
         if (selectedPlatform === 'pinterest' && pinterestBoards && pinterestBoards.length > 0 && !selectedBoardId) {
@@ -149,6 +167,8 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
     const handleSubmit = () => {
         if (selectedPlatform === 'youtube') {
             handleUploadToYouTube();
+        } else if (selectedPlatform === 'tiktok') {
+            handleUploadToTikTok();
         } else {
             handlePostNow();
         }
@@ -250,6 +270,76 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
 
     // REMOVED: handleImageAdded function - Check if needed, maybe related to postImages state
     // REMOVED: handleRemoveImage function - Check if needed, maybe related to postImages state
+
+    const handleUploadToTikTok = async () => {
+        if (!videoFile) {
+            setPostStatus({ message: 'A video file is required.', type: 'error' });
+            return;
+        }
+
+        setIsUploading(true);
+        setUploadProgress(0);
+        setUploadMessage('Preparing TikTok upload...');
+
+        try {
+            const formData = new FormData();
+            formData.append('video', videoFile);
+            formData.append('caption', postContent);
+            formData.append('privacy', privacyStatus === 'unlisted' ? 'FRIENDS_ONLY' : (privacyStatus === 'private' ? 'SELF_ONLY' : 'PUBLIC_TO_EVERYONE'));
+            formData.append('disableDuet', disableDuet);
+            formData.append('disableStitch', disableStitch);
+            formData.append('disableComment', disableComment);
+
+            const result = await new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.upload.addEventListener('progress', (event) => {
+                    if (event.lengthComputable) {
+                        const percentComplete = (event.loaded / event.total) * 100;
+                        setUploadProgress(percentComplete);
+                        setUploadMessage(`Uploading to TikTok... ${Math.round(percentComplete)}%`);
+                    }
+                });
+
+                xhr.onload = () => {
+                    setUploadMessage('Finalizing TikTok post...');
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        try {
+                            resolve(JSON.parse(xhr.responseText));
+                        } catch (e) {
+                            reject(new Error("Invalid JSON response"));
+                        }
+                    } else {
+                        try {
+                            const err = JSON.parse(xhr.responseText);
+                            reject(new Error(err.error || err.message || "Upload failed"));
+                        } catch {
+                            reject(new Error(`Upload failed with status ${xhr.status}`));
+                        }
+                    }
+                };
+
+                xhr.onerror = () => reject(new Error('Network error during upload'));
+
+                xhr.open('POST', '/api/social/tiktok/post', true);
+                xhr.send(formData);
+            });
+
+            setPostStatus({ message: 'Posted to TikTok successfully!', type: 'success' });
+            setVideoFile(null);
+            setPostContent('');
+            setDisableDuet(false);
+            setDisableStitch(false);
+            setDisableComment(false);
+
+        } catch (err) {
+            setPostStatus({ message: err.message, type: 'error' });
+            console.error(err);
+        } finally {
+            setIsUploading(false);
+            setUploadProgress(0);
+            setUploadMessage('');
+        }
+    };
 
     const handleGeneratePost = async () => {
         if (!topic.trim() || !currentPlatform) return; // Check if currentPlatform exists
@@ -509,6 +599,38 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                     </div>
 
                     {/* Platform Specific Inputs */}
+                    {selectedPlatform === 'tiktok' && (
+                        <div className="mt-4 space-y-4 p-4 border bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                            <div>
+                                <label htmlFor="video-file" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Select Video File <span className="text-red-500">*</span></label>
+                                <input type="file" id="video-file" accept="video/*" onChange={(e) => setVideoFile(e.target.files?.[0] || null)} className="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-gray-600 dark:file:text-white" />
+                            </div>
+
+                            <div>
+                                <label htmlFor="privacy-status" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Privacy</label>
+                                <select id="privacy-status" value={privacyStatus} onChange={(e) => setPrivacyStatus(e.target.value)} className="mt-1 block w-full py-2 px-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md shadow-sm">
+                                    <option value="public">Public (Everyone)</option>
+                                    <option value="unlisted">Friends (Mutual Followers)</option>
+                                    <option value="private">Private (Self Only)</option>
+                                </select>
+                            </div>
+
+                            <div className="flex flex-col gap-2">
+                                <label className="flex items-center space-x-2">
+                                    <input type="checkbox" checked={disableComment} onChange={(e) => setDisableComment(e.target.checked)} className="rounded text-blue-600 focus:ring-blue-500" />
+                                    <span className="text-sm text-gray-700 dark:text-gray-300">Disable Comments</span>
+                                </label>
+                                <label className="flex items-center space-x-2">
+                                    <input type="checkbox" checked={disableDuet} onChange={(e) => setDisableDuet(e.target.checked)} className="rounded text-blue-600 focus:ring-blue-500" />
+                                    <span className="text-sm text-gray-700 dark:text-gray-300">Disable Duet</span>
+                                </label>
+                                <label className="flex items-center space-x-2">
+                                    <input type="checkbox" checked={disableStitch} onChange={(e) => setDisableStitch(e.target.checked)} className="rounded text-blue-600 focus:ring-blue-500" />
+                                    <span className="text-sm text-gray-700 dark:text-gray-300">Disable Stitch</span>
+                                </label>
+                            </div>
+                        </div>
+                    )}
                     {selectedPlatform === 'youtube' && (
                         <div className="mt-4 space-y-4 p-4 border bg-gray-50 rounded-lg">
                             <div>
@@ -643,12 +765,13 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                                     (selectedPlatform === 'facebook' && !selectedImageUrl) || // Added FB image check
                                     (selectedPlatform === 'instagram' && (!selectedImageUrl || !selectedInstagramId)) ||
                                     (selectedPlatform === 'pinterest' && (!selectedImageUrl || !selectedBoardId || !pinTitle.trim())) || // Check trimmed title
-                                    (selectedPlatform === 'youtube' && (!videoFile || !videoTitle.trim())) // Check trimmed title
+                                    (selectedPlatform === 'youtube' && (!videoFile || !videoTitle.trim())) || // Check trimmed title
+                                    (selectedPlatform === 'tiktok' && !videoFile)
                                 }
                                 className="flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
                             >
                                 <PaperAirplaneIcon className="h-5 w-5 mr-2" />
-                                {isPosting || isUploading ? 'Processing...' : (selectedPlatform === 'youtube' ? 'Upload Now' : 'Post Now')}
+                                {isPosting || isUploading ? 'Processing...' : ((selectedPlatform === 'youtube' || selectedPlatform === 'tiktok') ? 'Upload Now' : 'Post Now')}
                             </button>
                         </div>
                     </div>
@@ -661,7 +784,7 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                     )}
 
                     {/* Schedule Form - Only show if not YouTube (or if YouTube scheduling is added later) */}
-                    {selectedPlatform !== 'youtube' && (
+                    {(selectedPlatform !== 'youtube' && selectedPlatform !== 'tiktok') && (
                         <form onSubmit={handleSchedulePost} className="mt-6 border-t pt-4">
                             <h4 className="text-lg font-semibold text-gray-800 mb-4">Schedule Post</h4>
                             {error && <p className="text-sm text-red-600 mb-2">{error}</p>} {/* Show schedule error */}
