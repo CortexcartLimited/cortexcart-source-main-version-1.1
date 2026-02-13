@@ -1,5 +1,6 @@
 'use client';
-import UploadProgressModal from '@/app/components/UploadProgressModal'
+import UploadProgressModal from '@/app/components/UploadProgressModal';
+import UpgradePlanCTA from '@/app/components/UpgradePlanCTA';
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -1085,30 +1086,52 @@ const AnalyticsTabContent = ({ connectedPlatforms = {} }) => {
     }
 
     // Safety check for data
-    if (!data) return <div className="text-center py-8">No analytics data available.</div>;
+    if (!data) {
+        return (
+            <div className="p-8">
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+                    <div className="flex">
+                        <div className="flex-shrink-0">
+                            <InformationCircleIcon className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+                        </div>
+                        <div className="ml-3">
+                            <p className="text-sm text-yellow-700">
+                                No analytics data found. This could be because no social accounts are connected or your plan doesn't include advanced analytics.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {/* Fallback CTA if data is missing - assuming might be plan related */}
+                <UpgradePlanCTA
+                    title="Unlock Advanced Analytics"
+                    description="Get deep insights into your social media performance with our Premium plan."
+                />
+            </div>
+        );
+    }
 
     const { stats = {}, dailyReach = [], platformStats = [] } = data || {};
 
-    const reachChartData = (dailyReach || []).map(item => ({ date: item.date, pageviews: item.reach, conversions: 0 }));
+    const reachChartData = Array.isArray(dailyReach) ? dailyReach.map(item => ({ date: item.date, pageviews: item.reach, conversions: 0 })) : [];
 
-    const platformLabels = (platformStats || []).map(p => p.platform);
-    const backgroundColors = (platformStats || []).map(p => platformColors[p.platform] || platformColors.default);
+    const platformLabels = Array.isArray(platformStats) ? platformStats.map(p => p.platform) : [];
+    const backgroundColors = Array.isArray(platformStats) ? platformStats.map(p => platformColors[p.platform] || platformColors.default) : [];
 
     const postsByPlatformData = {
-        labels: platformStats.map(item => PLATFORMS[item.platform]?.name || item.platform),
+        labels: Array.isArray(platformStats) ? platformStats.map(item => PLATFORMS[item.platform]?.name || item.platform) : [],
         datasets: [{
             label: 'Number of Posts',
-            data: (platformStats || []).map(item => item?.postCount || 0), // Default to 0 if null
+            data: Array.isArray(platformStats) ? platformStats.map(item => item?.postCount || 0) : [],
             backgroundColor: backgroundColors,
             borderWidth: 1,
         }]
     };
 
     const engagementByPlatformData = {
-        labels: platformLabels.map(label => PLATFORMS[label]?.name || label), // Use platform name for labels
+        labels: platformLabels.map(label => PLATFORMS[label]?.name || label),
         datasets: [{
             label: 'Engagement Rate',
-            data: (platformStats || []).map(p => p.engagementRate || 0), // Default to 0
+            data: Array.isArray(platformStats) ? platformStats.map(p => p.engagementRate || 0) : [],
             backgroundColor: backgroundColors,
         }],
     };
@@ -1119,6 +1142,7 @@ const AnalyticsTabContent = ({ connectedPlatforms = {} }) => {
 
     return (
         <div className="space-y-8">
+
             {/* Sub-tab Navigation */}
             <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
                 <nav className="-mb-px flex space-x-8">

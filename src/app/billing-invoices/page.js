@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowDownTrayIcon, ArrowLeftCircle } from '@heroicons/react/24/outline';
 import Layout from '@/app/components/Layout';
+import UpgradePlanCTA from '@/app/components/UpgradePlanCTA';
 
 const StatusBadge = ({ status }) => {
   const styles = {
@@ -22,11 +23,18 @@ export default function BillingInvoicesPage() {
   const [invoices, setInvoices] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [hasSubscription, setHasSubscription] = useState(true); // Default to true, verify with API
 
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
         const response = await fetch('/api/billing/invoices');
+        if (response.status === 404) {
+          setHasSubscription(false);
+          setIsLoading(false);
+          return;
+        }
+
         if (!response.ok) {
           const data = await response.json();
           throw new Error(data.message || 'Failed to fetch invoices.');
@@ -66,6 +74,11 @@ export default function BillingInvoicesPage() {
 
         {isLoading ? (
           <p>Loading invoices...</p>
+        ) : !hasSubscription ? (
+          <UpgradePlanCTA
+            title="No Billing History"
+            description="It looks like you don't have an active subscription yet. Upgrade to a plan to start generating invoices."
+          />
         ) : error ? (
           <div className="p-4 bg-red-100 text-red-700 rounded-lg">{error}</div>
         ) : (

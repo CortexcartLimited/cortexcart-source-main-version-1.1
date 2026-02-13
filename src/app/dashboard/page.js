@@ -328,6 +328,13 @@ function DashboardContent() {
             {/* Dynamic Grid */}
             {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6"><SkeletonCard /><SkeletonCard /><SkeletonCard /><SkeletonCard /></div>
+            ) : !stats ? (
+                <div className="mt-8">
+                    <UpgradePlanCTA
+                        title="Dashboard Unavailable"
+                        description="We couldn't load your dashboard data. This might be due to an inactive subscription or connection issue."
+                    />
+                </div>
             ) : (
                 <div className="transition-opacity duration-300">
                     <DynamicGrid dataContext={dataContext} />

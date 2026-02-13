@@ -5,6 +5,7 @@ import Layout from '@/app/components/Layout';
 import { useRouter } from 'next/navigation';
 import ManageBillingButton from '@/app/components/ManageBillingButton';
 import SubscriptionDetails from '@/app/components/SubscriptionDetails';
+import UpgradePlanCTA from '@/app/components/UpgradePlanCTA';
 import Image from 'next/image';
 
 const PaymentSettingsPage = () => {
@@ -12,6 +13,7 @@ const PaymentSettingsPage = () => {
   const [autoPaymentEnabled, setAutoPaymentEnabled] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [hasSubscription, setHasSubscription] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -20,16 +22,18 @@ const PaymentSettingsPage = () => {
       try {
         const res = await fetch('/api/stripe/manage-subscription');
         if (!res.ok) {
-          const data = await res.json();
-          if (res.status !== 404) {
-            throw new Error(data.message || 'Could not fetch subscription status.');
+          if (res.status === 404) {
+            setHasSubscription(false);
+            setIsLoading(false);
+            return;
           }
+          const data = await res.json();
+          throw new Error(data.message || 'Could not fetch subscription status.');
         } else {
           const data = await res.json();
           setAutoPaymentEnabled(data?.autoPaymentEnabled || false);
         }
       } catch (err) {
-        // FIX: Check the type of 'err' before using it
         if (err instanceof Error) {
           setError(err.message);
         } else {
@@ -43,6 +47,7 @@ const PaymentSettingsPage = () => {
   }, []);
 
   const handleManageBilling = async () => {
+    // ... existing logic
     setIsPortalLoading(true);
     setError('');
     try {
@@ -53,7 +58,6 @@ const PaymentSettingsPage = () => {
       const { url } = await res.json();
       router.push(url);
     } catch (err) {
-      // FIX: Check the type of 'err' here as well
       if (err instanceof Error) {
         setError(err.message);
       } else {
@@ -72,14 +76,21 @@ const PaymentSettingsPage = () => {
       </p>
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
-      <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-8 border border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Billing Information</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-          Here is a quick view of your existing plan with us, you can update your payment method and view your invoice history on our secure Stripe portal.
-        </p>
-        <SubscriptionDetails />
-        <ManageBillingButton />
-      </div>
+      {!hasSubscription ? (
+        <UpgradePlanCTA
+          title="Active Subscription Required"
+          description="You need an active subscription to manage payment settings. Upgrade now to unlock full access."
+        />
+      ) : (
+        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-8 border border-gray-200 dark:border-gray-700">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Billing Information</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            Here is a quick view of your existing plan with us, you can update your payment method and view your invoice history on our secure Stripe portal.
+          </p>
+          <SubscriptionDetails />
+          <ManageBillingButton />
+        </div>
+      )}
     </Layout>
   );
 };
