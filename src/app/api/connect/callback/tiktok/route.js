@@ -17,7 +17,10 @@ export async function GET(req) {
     const code = searchParams.get('code');
     const state = searchParams.get('state');
     const userEmail = session.user.email;
-    const redirectUrl = process.env.NEXTAUTH_URL + '/settings/social-connections';
+
+    // Ensure we have a base URL even if env is missing (fallback for dev)
+    const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, '') || 'http://localhost:3000';
+    const redirectUrl = BASE_URL + '/settings/social-connections';
 
     if (!code) {
         return NextResponse.redirect(`${redirectUrl}?error=tiktok_denied`);
@@ -31,7 +34,7 @@ export async function GET(req) {
         params.append('client_secret', process.env.TIKTOK_CLIENT_SECRET);
         params.append('code', code);
         params.append('grant_type', 'authorization_code');
-        params.append('redirect_uri', `${process.env.NEXTAUTH_URL}/api/connect/callback/tiktok`);
+        params.append('redirect_uri', `${BASE_URL}/api/connect/callback/tiktok`);
 
         const tokenRes = await axios.post(tokenUrl, params, {
             headers: {

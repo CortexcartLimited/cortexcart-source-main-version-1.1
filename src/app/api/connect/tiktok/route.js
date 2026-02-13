@@ -8,8 +8,11 @@ export async function GET(req) {
         return NextResponse.redirect(new URL('/login', req.url));
     }
 
+    // Ensure we have a base URL even if env is missing (fallback for dev)
+    const BASE_URL = process.env.NEXTAUTH_URL?.replace(/\/$/, '') || 'http://localhost:3000';
+
     // Callback URL for the connection flow
-    const redirectUri = `${process.env.NEXTAUTH_URL}/api/connect/callback/tiktok`;
+    const redirectUri = `${BASE_URL}/api/connect/callback/tiktok`;
 
     // Scopes for TikTok API V2
     // user.info.basic: get display name, avatar
