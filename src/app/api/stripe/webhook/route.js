@@ -235,6 +235,29 @@ export async function POST(req) {
       break;
 
     // --- Optional: Handle Payment Failures ---
+    case 'invoice.payment_succeeded':
+      const invoice = event.data.object;
+      if (!invoice.customer) break;
+
+      try {
+        if (invoice.subscription) {
+          // Retrieve subscription to get latest price ID for limit calculation
+          const subscription = await stripe.subscriptions.retrieve(invoice.subscription);
+          const priceId = subscription.items.data[0].price.id;
+          const plan = getPlanDetails(priceId);
+          const tokenLimit = plan.limits?.geminiTokens || 100000;
+
+          await db.query(
+            `UPDATE sites SET gemini_tokens_used = 0, gemini_token_limit = ? WHERE stripe_customer_id = ?`,
+            [tokenLimit, invoice.customer]
+          );
+          console.log(`✅ Token limit reset (Monthly Anniversary) for ${invoice.customer}. Limit: ${tokenLimit}`);
+        }
+      } catch (err) {
+        console.error('Error handling invoice.payment_succeeded:', err);
+      }
+      break;
+
     case 'invoice.payment_failed':
       const invoiceFailed = event.data.object;
       console.log(`⚠️ Invoice payment failed for customer ${invoiceFailed.customer}.`);

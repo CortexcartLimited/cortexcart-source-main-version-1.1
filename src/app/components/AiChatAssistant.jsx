@@ -16,6 +16,13 @@ export default function AiChatAssistant({ contextData }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Listen for external open triggers (e.g., from Onboarding Modal)
+  useEffect(() => {
+    const handleOpenChat = () => setIsOpen(true);
+    window.addEventListener('open-ai-chat', handleOpenChat);
+    return () => window.removeEventListener('open-ai-chat', handleOpenChat);
+  }, []);
+
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -72,8 +79,8 @@ export default function AiChatAssistant({ contextData }) {
             {messages.map((msg, idx) => (
               <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[80%] rounded-2xl p-3 text-sm ${msg.role === 'user'
-                    ? 'bg-blue-600 text-white rounded-tr-none'
-                    : 'bg-white text-gray-800 border border-gray-200 rounded-tl-none shadow-sm'
+                  ? 'bg-blue-600 text-white rounded-tr-none'
+                  : 'bg-white text-gray-800 border border-gray-200 rounded-tl-none shadow-sm'
                   }`}>
                   {msg.content}
                 </div>

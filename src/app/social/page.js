@@ -146,6 +146,7 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
 
     const [topic, setTopic] = useState('');
     const [isGenerating, setIsGenerating] = useState(false);
+    const [showTokenLimitAlert, setShowTokenLimitAlert] = useState(false); // Token Limit Alert State
     const [scheduleDate, setScheduleDate] = useState(moment().add(1, 'day').format('YYYY-MM-DD'));
     const [scheduleTime, setScheduleTime] = useState('10:00');
     const [isPosting, setIsPosting] = useState(false);
@@ -389,10 +390,20 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                 })
             });
             const result = await res.json();
+
+            // Check for 403 Token Limit
+            if (res.status === 403) {
+                setShowTokenLimitAlert(true);
+                throw new Error('Token limit reached.');
+            }
+
             if (!res.ok) throw new Error(result.message || 'Failed to generate post.');
             setPostContent(result.postContent);
         } catch (err) {
-            setError(err.message);
+            // Only set general error if it's not the token limit (which has its own modal)
+            if (err.message !== 'Token limit reached.') {
+                setError(err.message);
+            }
         } finally {
             setIsGenerating(false);
         }
@@ -885,6 +896,35 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
                         )
                     }
                 </div>
+
+                {/* Token Limit Alert Modal */}
+                {showTokenLimitAlert && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 shadow-xl border border-gray-200 dark:border-gray-700">
+                            <div className="text-center">
+                                <SparklesIcon className="mx-auto h-12 w-12 text-yellow-500 mb-4" />
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Out of AI Tokens</h3>
+                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+                                    You've used all your AI tokens for this month. Upgrade your plan or purchase a token pack to keep generating amazing content!
+                                </p>
+                                <div className="flex gap-3 justify-center">
+                                    <button
+                                        onClick={() => setShowTokenLimitAlert(false)}
+                                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <Link
+                                        href="/upgrade-plans"
+                                        className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-indigo-600 rounded-md hover:from-purple-700 hover:to-indigo-700 shadow-sm"
+                                    >
+                                        Upgrade Plan
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Right Column */}
                 < div className="lg:col-span-1 space-y-8" >
