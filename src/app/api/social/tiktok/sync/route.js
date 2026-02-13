@@ -5,7 +5,7 @@ import { decrypt } from '@/lib/crypto';
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
-export async function POST() {
+export async function POST(req) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
         return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
