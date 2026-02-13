@@ -22,6 +22,13 @@ export async function POST(req) {
     try {
         await connection.beginTransaction();
 
+        // DEBUG: Check what rows exist for this user
+        const [allRows] = await connection.query(
+            `SELECT id, platform, is_active, user_email FROM social_connect WHERE user_email = ?`,
+            [userEmail]
+        );
+        console.log(`TikTok Sync DEBUG: Found ${allRows.length} rows for ${userEmail}:`, JSON.stringify(allRows, null, 2));
+
         // 1. Get TikTok Access Token
         const [rows] = await connection.query(
             `SELECT access_token_encrypted FROM social_connect WHERE user_email = ? AND platform = 'tiktok' AND is_active = TRUE`,
@@ -29,7 +36,15 @@ export async function POST(req) {
         );
 
         if (rows.length === 0 || !rows[0].access_token_encrypted) {
-            throw new Error('TikTok account not connected.');
+            // Check for inactive connection to give better error
+            const [inactive] = await connection.query(
+                `SELECT id FROM social_connect WHERE user_email = ? AND platform = 'tiktok'`,
+                [userEmail]
+            );
+            if (inactive.length > 0) {
+                throw new Error('TikTok connection is inactive. Please reconnect your account.');
+            }
+            throw new Error('TikTok account not found. Please connect your account.');
         }
 
         const accessToken = decrypt(rows[0].access_token_encrypted);
