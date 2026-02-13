@@ -119,7 +119,7 @@ export const authOptions = {
                 url: "https://www.tiktok.com/v2/auth/authorize/",
                 params: {
                     client_key: process.env.TIKTOK_CLIENT_KEY,
-                    scope: "user.info.basic,video.list,video.upload,user.info.stats",
+                    scope: "user.info.basic,video.upload,user.info.stats", // Removed video.list per user request (Sandbox issue)
                     response_type: "code",
                 },
             },
@@ -235,16 +235,15 @@ export const authOptions = {
                 if (account.access_token) {
                     console.log("TikTok JWT Callback: scopes received:", account.scope); // LOG SCOPES
 
-                    // --- SCOPE VALIDATION ---
+                    // --- SCOPE VALIDATION REMOVED (User Request: Sandbox/Posting Only) ---
+                    /*
                     if (account.provider === 'tiktok') {
                         const scopes = account.scope || "";
                         if (!scopes.includes('video.list')) {
-                            console.error("TikTok Login Failed: Missing 'video.list' scope. Received:", scopes);
-                            // This error might be swallowed by NextAuth, but it prints to server logs
-                            // We can also opt to NOT save the connection
-                            throw new Error("TikTok configuration error: Missing 'video.list' scope. Verify Developer Portal.");
+                             // console.warn("TikTok Login: Missing 'video.list'. Sync will be limited.");
                         }
                     }
+                    */
                     // ------------------------
 
                     try {

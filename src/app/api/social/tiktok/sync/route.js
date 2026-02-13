@@ -166,6 +166,17 @@ export async function POST(req) {
         if (status === 401 || errorMsg.includes('scope_not_authorized') || errorMsg.includes('invalid_grant')) {
             console.warn(`TikTok Auth Error (${status}): ${errorMsg}`);
 
+            // SPECIAL HANDLING: If scope is missing (e.g. video.list), don't fail, just warn.
+            if (errorMsg.includes('scope_not_authorized')) {
+                // We commit because the connection is technically "valid" for posting (assuming video.upload works)
+                // even if we can't sync history.
+                await connection.commit();
+                console.log("TikTok Sync: Scope error ignored for 'Posting Only' mode.");
+                return NextResponse.json({
+                    message: 'TikTok connected (Posting Only). History sync requires "video.list" scope.'
+                });
+            }
+
             // Re-enable deactivation if desired, or keep it off for debugging.
             // For now, we return a specific error code the UI can recognize.
             return NextResponse.json({
