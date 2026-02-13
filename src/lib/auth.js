@@ -199,6 +199,26 @@ export const authOptions = {
         FacebookProvider({
             clientId: process.env.FACEBOOK_CLIENT_ID,
             clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+            authorization: {
+                url: "https://www.facebook.com/v19.0/dialog/oauth",
+                params: {
+                    scope: "email,public_profile",
+                },
+            },
+            token: {
+                url: "https://graph.facebook.com/v19.0/oauth/access_token",
+            },
+            userinfo: {
+                url: "https://graph.facebook.com/v19.0/me?fields=id,name,email,picture",
+            },
+            profile(profile) {
+                return {
+                    id: profile.id,
+                    name: profile.name,
+                    email: profile.email,
+                    image: profile.picture?.data?.url,
+                }
+            },
         }),
     ],
     callbacks: {
