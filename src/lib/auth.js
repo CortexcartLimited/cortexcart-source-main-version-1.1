@@ -234,6 +234,19 @@ export const authOptions = {
 
                 if (account.access_token) {
                     console.log("TikTok JWT Callback: scopes received:", account.scope); // LOG SCOPES
+
+                    // --- SCOPE VALIDATION ---
+                    if (account.provider === 'tiktok') {
+                        const scopes = account.scope || "";
+                        if (!scopes.includes('video.list')) {
+                            console.error("TikTok Login Failed: Missing 'video.list' scope. Received:", scopes);
+                            // This error might be swallowed by NextAuth, but it prints to server logs
+                            // We can also opt to NOT save the connection
+                            throw new Error("TikTok configuration error: Missing 'video.list' scope. Verify Developer Portal.");
+                        }
+                    }
+                    // ------------------------
+
                     try {
                         // FIX: Added 'is_active' to INSERT and UPDATE
                         const query = `
