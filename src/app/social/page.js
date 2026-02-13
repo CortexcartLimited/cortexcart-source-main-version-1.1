@@ -26,7 +26,8 @@ import {
     ClipboardDocumentIcon,
     ArrowPathIcon,
     ChevronLeftIcon,
-    ChevronRightIcon
+    ChevronRightIcon,
+    PlusIcon
 } from '@heroicons/react/24/outline';
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
 import moment from 'moment';
@@ -1086,31 +1087,40 @@ const AnalyticsTabContent = ({ connectedPlatforms = {} }) => {
     }
 
     // Safety check for data
-    if (!data) {
+    const { stats = {}, dailyReach = [], platformStats = [] } = data || {};
+
+    // Check if data is effectively empty (user hasn't connected accounts or no data yet)
+    const hasData = (platformStats && platformStats.length > 0) || (dailyReach && dailyReach.length > 0) || (stats && stats.totalReach !== null);
+
+    if (!data || !hasData) {
         return (
             <div className="p-8">
-                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
+                <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
                     <div className="flex">
                         <div className="flex-shrink-0">
-                            <InformationCircleIcon className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+                            <InformationCircleIcon className="h-5 w-5 text-blue-400" aria-hidden="true" />
                         </div>
                         <div className="ml-3">
-                            <p className="text-sm text-yellow-700">
-                                No analytics data found. This could be because no social accounts are connected or your plan doesn't include advanced analytics.
+                            <p className="text-sm text-blue-700">
+                                No analytics data found. Connect your social media accounts to start seeing insights.
                             </p>
                         </div>
                     </div>
                 </div>
-                {/* Fallback CTA if data is missing - assuming might be plan related */}
-                <UpgradePlanCTA
-                    title="Unlock Advanced Analytics"
-                    description="Get deep insights into your social media performance with our Premium plan."
-                />
+                {/* Redirect to connections tab or show general empty state */}
+                <div className="text-center mt-8">
+                    <h3 className="mt-2 text-sm font-semibold text-gray-900">No social data</h3>
+                    <p className="mt-1 text-sm text-gray-500">Get started by connecting a social media account.</p>
+                    <div className="mt-6">
+                        <Link href="/settings?tab=social" className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                            <PlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
+                            Connect Accounts
+                        </Link>
+                    </div>
+                </div>
             </div>
         );
     }
-
-    const { stats = {}, dailyReach = [], platformStats = [] } = data || {};
 
     const reachChartData = Array.isArray(dailyReach) ? dailyReach.map(item => ({ date: item.date, pageviews: item.reach, conversions: 0 })) : [];
 
@@ -1542,64 +1552,28 @@ const DemographicsTabContent = () => {
                             onChange={handleAgeSliderChange} // Use the new handler
                             className="mt-1 block w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
                         />
-                        <div className="flex justify-between text-xs text-gray-500 mt-1 px-1">
-                            <span>13</span><span>18</span><span>25</span><span>35</span><span>45</span><span>55</span><span>65+</span>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Sex Selection */}
-                        <div className="bg-gray-50 dark:bg-gray-700 p-5 rounded-lg border border-gray-200 dark:border-gray-600">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Target Sex</label>
-                            <div className="mt-2 space-y-2">
-                                {['any', 'male', 'female', 'other'].map((option) => ( // Added 'any'
-                                    <div key={option} className="flex items-center">
-                                        <input
-                                            id={`sex-${option}`}
-                                            name="sex"
-                                            type="radio" // Use radio buttons for single selection
-                                            value={option}
-                                            checked={sex === option}
-                                            onChange={() => setSex(option)}
-                                            className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
-                                        />
-                                        <label htmlFor={`sex-${option}`} className="ml-2 block text-sm text-gray-900 dark:text-gray-200 capitalize">
-                                            {option === 'any' ? 'Any' : option}
-                                        </label>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Country Selection */}
-                        <div className="bg-gray-50 dark:bg-gray-700 p-5 rounded-lg border border-gray-200 dark:border-gray-600">
-                            <label htmlFor="country" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Target Country</label>
-                            {/* Consider using a searchable dropdown component for better UX */}
-                            <input
-                                type="text"
-                                id="country"
-                                name="country"
-                                value={country}
-                                onChange={(e) => setCountry(e.target.value)}
-                                placeholder="e.g., United States (or leave blank for Any)"
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-500 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-600 dark:text-white"
+                        name="country"
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                        placeholder="e.g., United States (or leave blank for Any)"
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-500 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-600 dark:text-white"
                             />
-                            {/* Basic datalist example for suggestions */}
-                            {/* <datalist id="country-suggestions">
+                        {/* Basic datalist example for suggestions */}
+                        {/* <datalist id="country-suggestions">
                                  <option value="United States"/>
                                  <option value="United Kingdom"/>
                                  <option value="Canada"/>
                                  Add more common countries
                              </datalist>
                              <input list="country-suggestions" ... /> */}
-                        </div>
                     </div>
-                    <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Save Preferences
-                    </button>
-                </form>
             </div>
-        </div>
+            <button type="submit" className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Save Preferences
+            </button>
+        </form>
+            </div >
+        </div >
     );
 };
 
