@@ -1,6 +1,6 @@
 // src/lib/auth.js main auth file updated
 import GoogleProvider from 'next-auth/providers/google';
-import FacebookProvider from 'next-auth/providers/facebook';
+// import FacebookProvider from 'next-auth/providers/facebook';
 import TwitterProvider from 'next-auth/providers/twitter';
 import CredentialsProvider from "next-auth/providers/credentials";
 import { db } from '@/lib/db';
@@ -196,27 +196,27 @@ export const authOptions = {
             },
             checks: ["state"],
         },
-        FacebookProvider({
-            clientId: process.env.FACEBOOK_CLIENT_ID,
-            clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-            version: "19.0",
-            authorization: {
-                params: {
-                    scope: "email,public_profile",
-                },
-            },
-            userinfo: {
-                url: "https://graph.facebook.com/v19.0/me?fields=id,name,email,picture",
-            },
-            profile(profile) {
-                return {
-                    id: profile.id,
-                    name: profile.name,
-                    email: profile.email,
-                    image: profile.picture?.data?.url,
-                }
-            },
-        }),
+        // FacebookProvider({
+        //     clientId: process.env.FACEBOOK_CLIENT_ID,
+        //     clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+        //     version: "19.0",
+        //     authorization: {
+        //         params: {
+        //             scope: "email,public_profile",
+        //         },
+        //     },
+        //     userinfo: {
+        //         url: "https://graph.facebook.com/v19.0/me?fields=id,name,email,picture",
+        //     },
+        //     profile(profile) {
+        //         return {
+        //             id: profile.id,
+        //             name: profile.name,
+        //             email: profile.email,
+        //             image: profile.picture?.data?.url,
+        //         }
+        //     },
+        // }),
     ],
     callbacks: {
         async signIn({ user, account, profile }) {
