@@ -19,10 +19,13 @@ import DashboardSwitcher from '@/app/components/dashboard/DashboardSwitcher';
 
 const currencySymbols = { USD: '$', EUR: '€', GBP: '£', JPY: '¥', CAD: '$', AUD: '$', INR: '₹' };
 
+import AutoSyncHandler from '@/app/components/social/AutoSyncHandler';
+
 // Wrapper to provide context
 export default function DashboardPage() {
     return (
         <DashboardProvider>
+            <AutoSyncHandler />
             <DashboardContent />
         </DashboardProvider>
     );
