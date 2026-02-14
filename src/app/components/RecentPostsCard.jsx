@@ -8,8 +8,9 @@ import { HandThumbUpIcon, ArrowUturnRightIcon, EyeIcon } from '@heroicons/react/
 const TABS = {
     'x': 'X (Twitter)',
     'facebook': 'Facebook',
-    'pinterest': 'Pinterest', // Add this line
-    'youtube': 'YouTube'
+    'pinterest': 'Pinterest',
+    'youtube': 'YouTube',
+    'tiktok': 'TikTok'
 
 };
 

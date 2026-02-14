@@ -162,6 +162,7 @@ export const WIDGET_REGISTRY: Record<string, RegistryItem> = {
                 facebook: 'rgba(37, 99, 235, 0.7)',
                 pinterest: 'rgba(220, 38, 38, 0.7)',
                 youtube: 'rgba(239, 68, 68, 0.7)',
+                tiktok: '#000000',
                 default: 'rgba(107, 114, 128, 0.7)'
             };
             const backgroundColors = platformStats.map((p: any) => platformColors[p.platform] || platformColors.default);
@@ -188,6 +189,7 @@ export const WIDGET_REGISTRY: Record<string, RegistryItem> = {
                 facebook: 'rgba(37, 99, 235, 0.7)',
                 pinterest: 'rgba(220, 38, 38, 0.7)',
                 youtube: 'rgba(239, 68, 68, 0.7)',
+                tiktok: '#000000',
                 default: 'rgba(107, 114, 128, 0.7)'
             };
             const backgroundColors = platformStats.map((p: any) => platformColors[p.platform] || platformColors.default);
