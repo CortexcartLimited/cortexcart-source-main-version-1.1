@@ -211,9 +211,7 @@ export const WIDGET_REGISTRY: Record<string, RegistryItem> = {
     },
     SocialReachChart: {
         component: SocialReachChart,
-        mapProps: (_, contextData) => ({
-            data: contextData.socialAnalytics?.dailyReach || []
-        }),
+        mapProps: () => ({}),
         wrapperClass: "p-6 bg-white dark:bg-gray-800 rounded-lg shadow h-96 overflow-hidden min-w-0" // Using p-6 to match others
     },
     SocialStatCard: { // Generic social stat wrapper
