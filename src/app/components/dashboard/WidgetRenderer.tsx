@@ -25,6 +25,15 @@ export default function WidgetRenderer({ id, type, props, contextData }: WidgetR
 
     const { component: Component, mapProps, wrapperClass } = registryItem;
 
+    // Safety check: Ensure Component is defined to prevent React error #130
+    if (!Component) {
+        return (
+            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700">
+                Widget type "{type}" is registered but component is undefined
+            </div>
+        );
+    }
+
     // Pass an onUpdate function to the component
     const handleUpdate = (updates: any) => {
         updateWidget(activeDashboardId, id, { props: { ...props, ...updates } });

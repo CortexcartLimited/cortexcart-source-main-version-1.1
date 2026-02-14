@@ -12,30 +12,31 @@ const WidgetLoader = () => (
 );
 
 // --- Component Imports with Lazy Loading ---
+// --- Component Imports with Lazy Loading ---
 const StatCard = dynamic(() => import('@/app/components/StatCard'), { loading: WidgetLoader });
-const SalesBarChart = dynamic(() => import('@/app/components/SalesBarChart'), { loading: WidgetLoader });
+const SalesBarChart = dynamic(() => import('@/app/components/SalesBarChart'), { loading: WidgetLoader, ssr: false });
 const ActivityTimeline = dynamic(() => import('@/app/components/ActivityTimeline'), { loading: WidgetLoader });
-const TopPagesChart = dynamic(() => import('@/app/components/TopPagesChart'), { loading: WidgetLoader });
+const TopPagesChart = dynamic(() => import('@/app/components/TopPagesChart'), { loading: WidgetLoader, ssr: false });
 const TopReferrersList = dynamic(() => import('@/app/components/TopReferrersList'), { loading: WidgetLoader });
-const SocialPlatformPie = dynamic(() => import('@/app/components/SocialPlatformPie'), { loading: WidgetLoader });
-const SocialReachChart = dynamic(() => import('@/app/components/SocialReachChart'), { loading: WidgetLoader });
+const SocialPlatformPie = dynamic(() => import('@/app/components/SocialPlatformPie'), { loading: WidgetLoader, ssr: false });
+const SocialReachChart = dynamic(() => import('@/app/components/SocialReachChart'), { loading: WidgetLoader, ssr: false });
 const TrafficSourceTable = dynamic(() => import('@/app/components/TrafficSourceTable'), { loading: WidgetLoader });
 const TopSocialPosts = dynamic(() => import('@/app/components/TopSocialPosts'), { loading: WidgetLoader });
-const Ga4LineChart = dynamic(() => import('@/app/components/Ga4LineChart'), { loading: WidgetLoader });
-const GoogleAdsCharts = dynamic(() => import('@/app/components/GoogleAdsCharts'), { loading: WidgetLoader });
+const Ga4LineChart = dynamic(() => import('@/app/components/Ga4LineChart'), { loading: WidgetLoader, ssr: false });
+const GoogleAdsCharts = dynamic(() => import('@/app/components/GoogleAdsCharts'), { loading: WidgetLoader, ssr: false });
 const QuickBooksStatCard = dynamic(() => import('@/app/components/QuickBooksStatCard'), { loading: WidgetLoader });
-const QuickBooksChart = dynamic(() => import('@/app/components/QuickBooksChart'), { loading: WidgetLoader });
+const QuickBooksChart = dynamic(() => import('@/app/components/QuickBooksChart'), { loading: WidgetLoader, ssr: false });
 const ShopifyStatCard = dynamic(() => import('@/app/components/ShopifyStatCard'), { loading: WidgetLoader });
 const ShopifyProductList = dynamic(() => import('@/app/components/ShopifyProductList'), { loading: WidgetLoader });
 const RecentPostsCard = dynamic(() => import('@/app/components/RecentPostsCard'), { loading: WidgetLoader });
-const PlatformPostsChart = dynamic(() => import('@/app/components/PlatformPostsChart'), { loading: WidgetLoader });
-const EngagementByPlatformChart = dynamic(() => import('@/app/components/EngagementByPlatformChart'), { loading: WidgetLoader });
+const PlatformPostsChart = dynamic(() => import('@/app/components/PlatformPostsChart'), { loading: WidgetLoader, ssr: false });
+const EngagementByPlatformChart = dynamic(() => import('@/app/components/EngagementByPlatformChart'), { loading: WidgetLoader, ssr: false });
 const DescriptionWidget = dynamic(() => import('@/app/components/dashboard/widgets/DescriptionWidget'), { loading: WidgetLoader });
 const ListWidget = dynamic(() => import('@/app/components/dashboard/widgets/ListWidget'), { loading: WidgetLoader });
 const MailchimpStatCard = dynamic(() => import('@/app/components/dashboard/widgets/MailchimpWidgets').then(mod => mod.MailchimpStatCard), { loading: WidgetLoader });
-const MailchimpGrowthChart = dynamic(() => import('@/app/components/dashboard/widgets/MailchimpWidgets').then(mod => mod.MailchimpGrowthChart), { loading: WidgetLoader });
+const MailchimpGrowthChart = dynamic(() => import('@/app/components/dashboard/widgets/MailchimpWidgets').then(mod => mod.MailchimpGrowthChart), { loading: WidgetLoader, ssr: false });
 const MailchimpCampaignsList = dynamic(() => import('@/app/components/dashboard/widgets/MailchimpWidgets').then(mod => mod.MailchimpCampaignsList), { loading: WidgetLoader });
-const DemographicsWidget = dynamic(() => import('@/app/components/dashboard/widgets/DemographicsWidget'), { loading: WidgetLoader });
+const DemographicsWidget = dynamic(() => import('@/app/components/dashboard/widgets/DemographicsWidget'), { loading: WidgetLoader, ssr: false });
 const QuickfileRevenueWidget = dynamic(() => import('@/app/components/dashboard/widgets/QuickfileWidgets').then(mod => mod.QuickfileRevenueWidget), { loading: WidgetLoader });
 const QuickfileExpensesWidget = dynamic(() => import('@/app/components/dashboard/widgets/QuickfileWidgets').then(mod => mod.QuickfileExpensesWidget), { loading: WidgetLoader });
 const QuickfileProfitWidget = dynamic(() => import('@/app/components/dashboard/widgets/QuickfileWidgets').then(mod => mod.QuickfileProfitWidget), { loading: WidgetLoader });
@@ -113,11 +114,13 @@ export const WIDGET_REGISTRY: Record<string, RegistryItem> = {
     },
     SocialPlatformPie: {
         component: SocialPlatformPie,
-        mapProps: () => ({})
+        mapProps: () => ({}),
+        wrapperClass: "p-6 bg-white dark:bg-gray-800 rounded-lg shadow h-96 overflow-hidden min-w-0"
     },
     ShopifyProductList: {
         component: ShopifyProductList,
-        mapProps: () => ({})
+        mapProps: () => ({}),
+        wrapperClass: "p-6 bg-white dark:bg-gray-800 rounded-lg shadow h-full overflow-hidden min-w-0"
     },
     ShopifyStatCard: {
         component: ShopifyStatCard,
@@ -206,16 +209,12 @@ export const WIDGET_REGISTRY: Record<string, RegistryItem> = {
         },
         wrapperClass: "p-4 bg-white dark:bg-gray-800 rounded-lg shadow h-96 overflow-hidden min-w-0" // Added overflow fix
     },
-    SocialReachChart: { // Re-defining to use real data
-        component: Ga4LineChart, // Re-using LineChart component but mapping social data
-        mapProps: (_, contextData) => {
-            const data = contextData.socialAnalytics || {};
-            const dailyReach = data.dailyReach || [];
-            return {
-                data: dailyReach.map((item: any) => ({ date: item.date, pageviews: item.reach, conversions: 0 })) // Mapping reach to 'pageviews' prop of Ga4LineChart
-            };
-        },
-        wrapperClass: "p-4 bg-white dark:bg-gray-800 rounded-lg shadow h-96 overflow-hidden min-w-0" // Added overflow fix
+    SocialReachChart: {
+        component: SocialReachChart,
+        mapProps: (_, contextData) => ({
+            data: contextData.socialAnalytics?.dailyReach || []
+        }),
+        wrapperClass: "p-6 bg-white dark:bg-gray-800 rounded-lg shadow h-96 overflow-hidden min-w-0" // Using p-6 to match others
     },
     SocialStatCard: { // Generic social stat wrapper
         component: StatCard,

@@ -15,7 +15,7 @@ async function fetchMetricsFromX(accessToken, posts) {
     return updatedPosts;
 }
 
-export async function POST() {
+export async function POST(request) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
         return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
@@ -23,11 +23,24 @@ export async function POST() {
 
     const { user } = session;
 
+    let targetPlatform = null;
     try {
-        const [connections] = await db.query(
-            'SELECT platform, access_token, api_key_encrypted, api_secret_encrypted FROM social_connections WHERE user_email = ?',
-            [user.email]
-        );
+        const body = await request.json();
+        targetPlatform = body.platform;
+    } catch (e) {
+        // Request body might be empty if syncing all
+    }
+
+    try {
+        let query = 'SELECT platform, access_token, api_key_encrypted, api_secret_encrypted FROM social_connections WHERE user_email = ?';
+        const params = [user.email];
+
+        if (targetPlatform) {
+            query += ' AND platform = ?';
+            params.push(targetPlatform);
+        }
+
+        const [connections] = await db.query(query, params);
 
         if (connections.length === 0) {
             return NextResponse.json({ message: 'No social accounts connected.' }, { status: 404 });
@@ -44,7 +57,7 @@ export async function POST() {
             if (postsToUpdate.length === 0) continue;
 
             let updatedMetrics = [];
-            
+
             // TODO: Uncomment and use these when implementing the actual API calls.
             // const apiKey = conn.api_key_encrypted ? decrypt(conn.api_key_encrypted) : null;
             // const apiSecret = conn.api_secret_encrypted ? decrypt(conn.api_secret_encrypted) : null;
@@ -52,23 +65,27 @@ export async function POST() {
             if (conn.platform === 'x') {
                 updatedMetrics = await fetchMetricsFromX(conn.access_token, postsToUpdate);
             }
-            
-            const connection = await db.getConnection();
-            await connection.beginTransaction();
-            try {
-                for (const post of updatedMetrics) {
-                    await connection.query(
-                        'UPDATE social_posts SET likes = ?, shares = ?, impressions = ? WHERE id = ?',
-                        [post.likes, post.shares, post.impressions, post.id]
-                    );
-                    totalUpdated++;
+
+            // Note: For other platforms, we would have similar blocks or a generic fetcher
+
+            if (updatedMetrics.length > 0) {
+                const connection = await db.getConnection();
+                await connection.beginTransaction();
+                try {
+                    for (const post of updatedMetrics) {
+                        await connection.query(
+                            'UPDATE social_posts SET likes = ?, shares = ?, impressions = ? WHERE id = ?',
+                            [post.likes, post.shares, post.impressions, post.id]
+                        );
+                        totalUpdated++;
+                    }
+                    await connection.commit();
+                } catch (err) {
+                    await connection.rollback();
+                    throw err;
+                } finally {
+                    connection.release();
                 }
-                await connection.commit();
-            } catch (err) {
-                await connection.rollback();
-                throw err;
-            } finally {
-                connection.release();
             }
         }
 
