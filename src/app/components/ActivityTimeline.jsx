@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react'; 
+import { useSession } from 'next-auth/react';
 import { EyeIcon, CursorArrowRaysIcon, BanknotesIcon, QuestionMarkCircleIcon } from '@heroicons/react/24/outline';
 import SkeletonCard from './SkeletonCard';
 
@@ -25,13 +25,13 @@ const timeSince = (date) => {
     return Math.floor(seconds) + " seconds ago";
 };
 
-const ActivityTimeline = ({ dateRange }) => { 
-    const { data: session, status } = useSession(); 
+const ActivityTimeline = ({ dateRange }) => {
+    const { data: session, status } = useSession();
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
-  useEffect(() => {
+
+    useEffect(() => {
         if (status === 'authenticated' && session?.user?.email) {
             const fetchEvents = async () => {
                 setLoading(true);
@@ -41,11 +41,15 @@ const ActivityTimeline = ({ dateRange }) => {
 
                     // --- FIX: Check if dateRange and its properties exist ---
                     if (dateRange && dateRange.startDate && dateRange.endDate) {
-                        url += `&startDate=${dateRange.startDate.toISOString().split('T')[0]}`;
-                        url += `&endDate=${dateRange.endDate.toISOString().split('T')[0]}`;
+                        const start = new Date(dateRange.startDate);
+                        const end = new Date(dateRange.endDate);
+                        if (!isNaN(start.getTime()) && !isNaN(end.getTime())) {
+                            url += `&startDate=${start.toISOString().split('T')[0]}`;
+                            url += `&endDate=${end.toISOString().split('T')[0]}`;
+                        }
                     }
-                    
-                    const response = await fetch(url); 
+
+                    const response = await fetch(url);
                     if (!response.ok) {
                         const errorData = await response.json();
                         throw new Error(errorData.message || 'A data fetch failed: Bad Request');
@@ -71,41 +75,41 @@ const ActivityTimeline = ({ dateRange }) => {
 
     return (
         // The JSX for the timeline remains the same
-         <div className="h-96 overflow-y-auto pr-4 -mr-4">
-             <div className="flow-root">
-            <ul className="-mb-8">
-                {events.map((event, eventIdx) => {
-                    const { Icon, color, bgColor } = getEventVisuals(event.event_name);
-                    const path = event.event_data ? JSON.parse(event.event_data).path : 'N/A';
-                    return (
-                        <li key={event.id}>
-                            <div className="relative pb-8">
-                                {eventIdx !== events.length - 1 ? (
-                                    <span className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
-                                ) : null}
-                                <div className="relative flex space-x-3">
-                                    <div>
-                                        <span className={`h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white ${bgColor}`}>
-                                            <Icon className={`h-5 w-5 ${color}`} aria-hidden="true" />
-                                        </span>
-                                    </div>
-                                    <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
+        <div className="h-96 overflow-y-auto pr-4 -mr-4">
+            <div className="flow-root">
+                <ul className="-mb-8">
+                    {events.map((event, eventIdx) => {
+                        const { Icon, color, bgColor } = getEventVisuals(event.event_name);
+                        const path = event.event_data ? JSON.parse(event.event_data).path : 'N/A';
+                        return (
+                            <li key={event.id}>
+                                <div className="relative pb-8">
+                                    {eventIdx !== events.length - 1 ? (
+                                        <span className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true" />
+                                    ) : null}
+                                    <div className="relative flex space-x-3">
                                         <div>
-                                            <p className="text-sm text-gray-500">
-                                                New <span className="font-medium text-gray-900">{event.event_name}</span> on {path}
-                                            </p>
+                                            <span className={`h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white ${bgColor}`}>
+                                                <Icon className={`h-5 w-5 ${color}`} aria-hidden="true" />
+                                            </span>
                                         </div>
-                                        <div className="whitespace-nowrap text-right text-sm text-gray-500">
-                                            <time dateTime={event.created_at}>{timeSince(event.created_at)}</time>
+                                        <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
+                                            <div>
+                                                <p className="text-sm text-gray-500">
+                                                    New <span className="font-medium text-gray-900">{event.event_name}</span> on {path}
+                                                </p>
+                                            </div>
+                                            <div className="whitespace-nowrap text-right text-sm text-gray-500">
+                                                <time dateTime={event.created_at}>{timeSince(event.created_at)}</time>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </li>
-                    );
-                })}
-            </ul>
-        </div>
+                            </li>
+                        );
+                    })}
+                </ul>
+            </div>
         </div>
 
     );
