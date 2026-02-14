@@ -65,38 +65,35 @@ export default function RecentPostsCard({ platform }) { // Accept platform prop
     );
 
     return (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-sm border border-gray-200 dark:border-gray-700">
-            <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Recent Posts</h3>
-            <div>
-                {/* Only show tabs if NO specific platform is passed */}
-                {!platform && (
-                    <div className="border-b border-gray-200">
-                        <nav className="-mb-px flex space-x-6" aria-label="Tabs">
-                            {Object.entries(TABS).map(([key, name]) => (
-                                <button
-                                    key={key}
-                                    onClick={() => setActiveTab(key)}
-                                    className={`whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm ${activeTab === key
-                                        ? 'border-blue-500 text-blue-600'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                        }`}
-                                >
-                                    {name}
-                                </button>
-                            ))}
-                        </nav>
-                    </div>
-                )}
-                <div className="mt-4">
-                    {isLoading ? <p className="text-center py-4 text-gray-500">Loading posts...</p> :
-                        error ? <p className="text-center py-4 text-red-600">{error}</p> :
-                            posts.length > 0 ? (
-                                <ul role="list" className="divide-y divide-gray-200">
-                                    {posts.map((post) => <Post key={post.platform_post_id} post={post} />)}
-                                </ul>
-                            ) : <p className="text-center py-4 text-gray-500">No posts found for this platform.</p>
-                    }
+        <div className="h-full flex flex-col min-h-0">
+            {/* Only show tabs if NO specific platform is passed */}
+            {!platform && (
+                <div className="border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+                    <nav className="-mb-px flex space-x-6" aria-label="Tabs">
+                        {Object.entries(TABS).map(([key, name]) => (
+                            <button
+                                key={key}
+                                onClick={() => setActiveTab(key)}
+                                className={`whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm ${activeTab === key
+                                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200'
+                                    }`}
+                            >
+                                {name}
+                            </button>
+                        ))}
+                    </nav>
                 </div>
+            )}
+            <div className="mt-4 flex-1 overflow-y-auto min-h-0">
+                {isLoading ? <p className="text-center py-4 text-gray-500">Loading posts...</p> :
+                    error ? <p className="text-center py-4 text-red-600">{error}</p> :
+                        posts.length > 0 ? (
+                            <ul role="list" className="divide-y divide-gray-200 dark:divide-gray-700 pr-2">
+                                {posts.map((post) => <Post key={post.platform_post_id} post={post} />)}
+                            </ul>
+                        ) : <p className="text-center py-4 text-gray-500">No posts found for this platform.</p>
+                }
             </div>
         </div>
     );

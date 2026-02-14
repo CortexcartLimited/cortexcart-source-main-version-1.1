@@ -149,7 +149,7 @@ export const WIDGET_REGISTRY: Record<string, RegistryItem> = {
     RecentPostsCard: {
         component: RecentPostsCard,
         mapProps: () => ({}),
-        wrapperClass: "p-0 bg-transparent shadow-none" // Contains its own card style
+        wrapperClass: "p-6 bg-white dark:bg-gray-800 rounded-lg shadow h-96 overflow-hidden min-w-0 flex flex-col"
     },
     PlatformPostsChart: {
         component: PlatformPostsChart,
