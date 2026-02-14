@@ -17,10 +17,8 @@ import {
     XCircleIcon
 } from '@heroicons/react/24/solid';
 import {
-    PhotoIcon,
     VideoCameraIcon,
     CalendarIcon,
-    ChartBarIcon,
     InformationCircleIcon,
     Cog6ToothIcon,
     ClipboardDocumentIcon,
@@ -32,14 +30,9 @@ import {
 import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import ImageManager from '@/app/components/ImageManager';
-import Ga4LineChart from '@/app/components/Ga4LineChart';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
 import Image from 'next/image';
-import RecentPostsCard from '@/app/components/RecentPostsCard';
-import EngagementByPlatformChart from '@/app/components/EngagementByPlatformChart';
-import PlatformPostsChart from '@/app/components/PlatformPostsChart';
 
 import MailchimpTabContent from '@/app/components/social/MailchimpTabContent';
 import dynamic from 'next/dynamic';
@@ -64,7 +57,6 @@ const YouTubeIcon = (props) => (
         <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
     </svg>
 );
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement);
 const localizer = momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(Calendar);
 
@@ -125,7 +117,7 @@ const PLATFORMS = {
     }
 };
 const SocialNav = ({ activeTab, setActiveTab }) => {
-    const tabs = [{ name: 'Composer', icon: PencilSquareIcon }, { name: 'Analytics', icon: ChartBarIcon }, { name: 'Schedule', icon: CalendarIcon }, { name: 'Demographics', icon: InformationCircleIcon }, { name: 'Mailchimp', icon: ClipboardDocumentIcon }];
+    const tabs = [{ name: 'Composer', icon: PencilSquareIcon }, { name: 'Schedule', icon: CalendarIcon }, { name: 'Demographics', icon: InformationCircleIcon }, { name: 'Mailchimp', icon: ClipboardDocumentIcon }];
     return (
         <div className="border-b border-gray-200 mb-8">
             <nav className="-mb-px flex space-x-8" aria-label="Tabs">
@@ -1020,253 +1012,6 @@ const ComposerTabContent = ({ scheduledPosts, onPostScheduled, postContent, setP
 // --- END: MODIFIED ComposerTabContent ---
 
 
-const AnalyticsTabContent = ({ connectedPlatforms = {} }) => {
-    // ... (Existing Analytics Code - Should be OK) ...
-    const [data, setData] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [isSyncing, setIsSyncing] = useState({ x: false, facebook: false, pinterest: false, youtube: false, tiktok: false });
-    const [syncMessage, setSyncMessage] = useState('');
-    const [syncMessageType, setSyncMessageType] = useState('info');
-    const platformColors = {
-        x: 'rgba(0, 0, 0, 0.7)',
-        facebook: 'rgba(37, 99, 235, 0.7)', // blue-600
-        pinterest: 'rgba(220, 38, 38, 0.7)', // red-600
-        youtube: 'rgba(239, 68, 68, 0.7)', // red-500
-        tiktok: 'rgba(0, 0, 0, 0.7)', // black
-        default: 'rgba(107, 114, 128, 0.7)' // gray-500
-    };
-
-
-    const fetchAnalytics = useCallback(async () => {
-        setIsLoading(true);
-        try {
-            const res = await fetch('/api/social/analytics');
-            if (!res.ok) throw new Error('Failed to load analytics data.');
-            setData(await res.json());
-            // ... (rest of fetch logic) ... 
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchAnalytics();
-    }, [fetchAnalytics]);
-
-    const handleSync = async (platform) => {
-        setIsSyncing(prev => ({ ...prev, [platform]: true }));
-        setSyncMessage('');
-        try {
-            const res = await fetch(`/api/social/${platform}/sync`, { method: 'POST' });
-            const result = await res.json();
-            if (!res.ok) {
-                setSyncMessageType('error');
-                throw new Error(result.message || `An unknown error occurred during ${platform} sync.`);
-            }
-            setSyncMessageType('success');
-            setSyncMessage(result.message);
-            fetchAnalytics(); // Refresh analytics after sync
-        } catch (err) {
-            setSyncMessageType('error');
-            setSyncMessage(err.message);
-        } finally {
-            setIsSyncing(prev => ({ ...prev, [platform]: false }));
-        }
-    };
-
-    if (isLoading) return <div className="text-center py-8">Loading analytics...</div>;
-    if (error) {
-        let msg = error;
-        if (msg.includes('invalid_grant') || msg.includes('access_token')) {
-            msg = "Sorry, the app is experiencing an issue syncing with one of your social accounts. Please try reconnecting in Settings > Social Connections. (Error Code: 500)";
-        }
-        return <FriendlyError message={msg} onRetry={fetchAnalytics} />;
-    }
-
-    // Safety check for data
-    const { stats = {}, dailyReach = [], platformStats = [] } = data || {};
-
-    // Check if data is effectively empty (user hasn't connected accounts or no data yet)
-    const hasData = (platformStats && platformStats.length > 0) || (dailyReach && dailyReach.length > 0) || (stats && stats.totalReach !== null);
-
-    if (!data || !hasData) {
-        return (
-            <div className="p-8">
-                <div className="bg-blue-50 border-l-4 border-blue-400 p-4 mb-4">
-                    <div className="flex">
-                        <div className="flex-shrink-0">
-                            <InformationCircleIcon className="h-5 w-5 text-blue-400" aria-hidden="true" />
-                        </div>
-                        <div className="ml-3">
-                            <p className="text-sm text-blue-700">
-                                No analytics data found. Connect your social media accounts to start seeing insights.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                {/* Redirect to connections tab or show general empty state */}
-                <div className="text-center mt-8">
-                    <h3 className="mt-2 text-sm font-semibold text-gray-900">No social data</h3>
-                    <p className="mt-1 text-sm text-gray-500">Get started by connecting a social media account.</p>
-                    <div className="mt-6">
-                        <Link href="/settings?tab=social" className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                            <PlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" aria-hidden="true" />
-                            Connect Accounts
-                        </Link>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    const reachChartData = Array.isArray(dailyReach) ? dailyReach.map(item => ({ date: item.date, pageviews: item.reach, conversions: 0 })) : [];
-
-    const platformLabels = Array.isArray(platformStats) ? platformStats.map(p => p.platform) : [];
-    const backgroundColors = Array.isArray(platformStats) ? platformStats.map(p => platformColors[p.platform] || platformColors.default) : [];
-
-    const postsByPlatformData = {
-        labels: Array.isArray(platformStats) ? platformStats.map(item => PLATFORMS[item.platform]?.name || item.platform) : [],
-        datasets: [{
-            label: 'Number of Posts',
-            data: Array.isArray(platformStats) ? platformStats.map(item => item?.postCount || 0) : [],
-            backgroundColor: backgroundColors,
-            borderWidth: 1,
-        }]
-    };
-
-    const engagementByPlatformData = {
-        labels: platformLabels.map(label => PLATFORMS[label]?.name || label),
-        datasets: [{
-            label: 'Engagement Rate',
-            data: Array.isArray(platformStats) ? platformStats.map(p => p.engagementRate || 0) : [],
-            backgroundColor: backgroundColors,
-        }],
-    };
-
-    // Sub-tab state
-    const [subTab, setSubTab] = useState('overview');
-    const SHOW_TIKTOK_ANALYTICS = false; // Hidden feature flag
-
-    return (
-        <div className="space-y-8">
-
-            {/* Sub-tab Navigation */}
-            <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
-                <nav className="-mb-px flex space-x-8">
-                    <button
-                        onClick={() => setSubTab('overview')}
-                        className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${subTab === 'overview'
-                            ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
-                            }`}
-                    >
-                        Overview
-                    </button>
-                    {SHOW_TIKTOK_ANALYTICS && (
-                        <button
-                            onClick={() => setSubTab('tiktok')}
-                            className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${subTab === 'tiktok'
-                                ? 'border-black text-black dark:border-white dark:text-white'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
-                                }`}
-                        >
-                            <span className="flex items-center">
-                                <TikTokIcon className="h-4 w-4 mr-2" />
-                                TikTok
-                            </span>
-                        </button>
-                    )}
-                </nav>
-            </div>
-
-            {subTab === 'overview' && (
-                <>
-                    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-                        <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Analytics Overview</h3>
-                        <div className="flex flex-wrap gap-2">
-                            {/* Synchronize Buttons */}
-                            <button onClick={() => handleSync('x')} disabled={isSyncing.x} className="inline-flex items-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 disabled:bg-gray-400">
-                                <ArrowPathIcon className={`-ml-0.5 mr-1.5 h-5 w-5 ${isSyncing.x ? 'animate-spin' : ''}`} />
-                                {isSyncing.x ? 'Syncing...' : 'Sync with X'}
-                            </button>
-                            <button onClick={() => handleSync('facebook')} disabled={isSyncing.facebook} className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 disabled:bg-blue-400">
-                                <ArrowPathIcon className={`-ml-0.5 mr-1.5 h-5 w-5 ${isSyncing.facebook ? 'animate-spin' : ''}`} />
-                                {isSyncing.facebook ? 'Syncing...' : 'Sync with Facebook'}
-                            </button>
-                            <button onClick={() => handleSync('pinterest')} disabled={isSyncing.pinterest} className="inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700 disabled:bg-red-400">
-                                <ArrowPathIcon className={`-ml-0.5 mr-1.5 h-5 w-5 ${isSyncing.pinterest ? 'animate-spin' : ''}`} />
-                                {isSyncing.pinterest ? 'Syncing...' : 'Sync with Pinterest'}
-                            </button>
-                            <button onClick={() => handleSync('youtube')} disabled={isSyncing.youtube} className="inline-flex items-center rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-600 disabled:bg-red-400">
-                                <ArrowPathIcon className={`-ml-0.5 mr-1.5 h-5 w-5 ${isSyncing.youtube ? 'animate-spin' : ''}`} />
-                                {isSyncing.youtube ? 'Syncing...' : 'Sync with YouTube'}
-                            </button>
-                            <button onClick={() => handleSync('tiktok')} disabled={isSyncing.tiktok} className="inline-flex items-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 disabled:bg-gray-600">
-                                <ArrowPathIcon className={`-ml-0.5 mr-1.5 h-5 w-5 ${isSyncing.tiktok ? 'animate-spin' : ''}`} />
-                                {isSyncing.tiktok ? 'Syncing...' : 'Sync with TikTok'}
-                            </button>
-                        </div>
-                        {syncMessage && (
-                            <div className={`text-center text-sm p-3 rounded-md mt-4 ${syncMessageType === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                {syncMessage}
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Key Metrics */}
-                    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-                        <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Key Metrics</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="bg-blue-50 dark:bg-blue-900/20 p-5 rounded-lg border border-blue-200 dark:border-blue-800">
-                                <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Total Posts</p>
-                                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats?.totalPosts || 0}</p>
-                            </div>
-                            <div className="bg-green-50 dark:bg-green-900/20 p-5 rounded-lg border border-green-200 dark:border-green-800">
-                                <p className="text-sm font-medium text-green-600 dark:text-green-400">Total Reach (Impressions)</p>
-                                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{(stats?.totalReach || 0).toLocaleString()}</p>
-                            </div>
-                            <div className="bg-purple-50 dark:bg-purple-900/20 p-5 rounded-lg border border-purple-200 dark:border-purple-800">
-                                <p className="text-sm font-medium text-purple-600 dark:text-purple-400">Avg. Engagement Rate</p>
-                                <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{parseFloat(stats?.engagementRate || 0).toFixed(2)}%</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Charts */}
-                    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-                        <h4 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Daily Reach (Last 30 Days)</h4>
-                        <div className="h-80"><Ga4LineChart data={reachChartData} /></div>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700"> {/* Added border */}
-                            <h4 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Posts by Platform</h4>
-                            <div className="h-80 flex justify-center"> {/* Centering might affect bar chart */}
-                                <PlatformPostsChart chartData={postsByPlatformData} />
-                            </div>
-                        </div>
-                        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-                            <h4 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Engagement Rate by Platform</h4>
-                            <div className="h-80 flex justify-center"><EngagementByPlatformChart data={engagementByPlatformData} /></div>
-                        </div>
-                    </div>
-
-                    <RecentPostsCard />
-                </>
-            )}
-
-            {subTab === 'tiktok' && (
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-                    <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">TikTok Analytics</h3>
-                    <p className="text-gray-500 mb-4">Recent TikTok Posts</p>
-                    <RecentPostsCard platform="tiktok" />
-                </div>
-            )}
-        </div>
-    );
-};
 
 
 const CustomEvent = ({ event }) => (
@@ -1768,7 +1513,6 @@ export default function SocialMediaManagerPage() {
                         setActiveTab={setActiveTab} // Pass setActiveTab
                     />
                 )}
-                {activeTab === 'Analytics' && <AnalyticsTabContent connectedPlatforms={connectedPlatforms} />}
                 {activeTab === 'Schedule' && (
                     <ScheduleTabWithNoSSR
                         scheduledPosts={scheduledPosts}
