@@ -255,7 +255,7 @@ export const WIDGET_REGISTRY: Record<string, RegistryItem> = {
         mapProps: (_, contextData) => ({
             data: contextData.ga4ChartData
         }),
-        wrapperClass: "p-6 bg-white dark:bg-gray-800 rounded-lg shadow h-[604px] overflow-hidden min-w-0" // Adjusted height to 704px and padding to p-6
+        wrapperClass: "p-6 bg-white dark:bg-gray-800 rounded-lg shadow h-[564px] overflow-hidden min-w-0" // Adjusted height to 564px (516px canvas + 48px padding)
     },
     GoogleAdsCharts: {
         component: GoogleAdsCharts,
