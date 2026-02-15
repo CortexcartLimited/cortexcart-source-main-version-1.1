@@ -5,7 +5,7 @@ import { Cog6ToothIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outl
 import FacebookPageManager from '@/app/components/social/FacebookPageManager';
 import InstagramAccountManager from '@/app/components/social/InstagramAccountManager';
 import WhatsAppConnect from './WhatsAppConnect'; // <--- IMPORTED HERE
-import SocialSyncButton from '@/app/components/social/SocialSyncButton'; // <--- Added
+import WhatsAppConnect from './WhatsAppConnect'; // <--- IMPORTED HERE
 import useSWR from 'swr';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation'; // <--- Added
@@ -191,9 +191,8 @@ const SocialConnectionsClient = () => {
 
             {/* 2. STANDARD SOCIAL MEDIA SECTION (Switch List) */}
             <div className="divide-y divide-gray-200 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                <div className="p-4 bg-gray-50 border-b border-gray-200">
                     <h3 className="text-lg font-bold text-gray-900">Social Media Accounts</h3>
-                    <SocialSyncButton />
                 </div>
 
                 {Object.entries(platformConfig).map(([platform, config]) => {
