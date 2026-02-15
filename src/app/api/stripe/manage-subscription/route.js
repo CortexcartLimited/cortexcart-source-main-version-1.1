@@ -21,7 +21,18 @@ export async function GET(request) {
             return NextResponse.json({ message: 'Subscription not found.' }, { status: 404 });
         }
 
-        const subscription = await stripe.subscriptions.retrieve(user.stripe_subscription_id);
+        let subscription;
+        try {
+            subscription = await stripe.subscriptions.retrieve(user.stripe_subscription_id);
+        } catch (stripeError) {
+            if (stripeError.code === 'resource_missing') {
+                console.warn(`Stripe subscription ${user.stripe_subscription_id} not found. Treating as canceled.`);
+                // Return default state (auto-payment OFF / cancel_at_period_end TRUE)
+                // This prevents the page from crashing.
+                return NextResponse.json({ autoPaymentEnabled: false });
+            }
+            throw stripeError; // Re-throw other errors
+        }
 
         // If cancel_at_period_end is true, it means auto-payment is OFF.
         // We return the opposite for our "auto-payment enabled" toggle.

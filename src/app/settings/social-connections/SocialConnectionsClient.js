@@ -5,8 +5,10 @@ import { Cog6ToothIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outl
 import FacebookPageManager from '@/app/components/social/FacebookPageManager';
 import InstagramAccountManager from '@/app/components/social/InstagramAccountManager';
 import WhatsAppConnect from './WhatsAppConnect'; // <--- IMPORTED HERE
+import SocialSyncButton from '@/app/components/social/SocialSyncButton'; // <--- Added
 import useSWR from 'swr';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation'; // <--- Added
 
 // Fetcher function should be defined *outside* the component
 const fetcher = (url) => fetch(url).then((res) => res.json());
@@ -20,6 +22,27 @@ const SocialConnectionsClient = () => {
     // State for modals/managers
     const [showFacebookManager, setShowFacebookManager] = useState(false);
     const [showInstagramManager, setShowInstagramManager] = useState(false);
+
+    // --- Added Auto-Sync Logic ---
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const successParam = searchParams.get('success');
+
+    useEffect(() => {
+        if (successParam === 'tiktok_connected') {
+            // Trigger a background sync for TikTok specifically
+            fetch('/api/social/sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ platform: 'tiktok' })
+            }).then(() => {
+                console.log("Auto-synced TikTok posts after connection.");
+                // Remove the param to avoid re-syncing on refresh (optional but good UX)
+                router.replace('/settings/social-connections');
+            }).catch(console.error);
+        }
+    }, [successParam, router]);
+    // --- End Auto-Sync Logic ---
 
     // --- SWR Hooks for Plan and Connection Count ---
     const { data: planData, error: planError, isLoading: planLoading } = useSWR('/api/billing/my-plan', fetcher);
@@ -168,8 +191,9 @@ const SocialConnectionsClient = () => {
 
             {/* 2. STANDARD SOCIAL MEDIA SECTION (Switch List) */}
             <div className="divide-y divide-gray-200 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="p-4 bg-gray-50 border-b border-gray-200">
+                <div className="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
                     <h3 className="text-lg font-bold text-gray-900">Social Media Accounts</h3>
+                    <SocialSyncButton />
                 </div>
 
                 {Object.entries(platformConfig).map(([platform, config]) => {

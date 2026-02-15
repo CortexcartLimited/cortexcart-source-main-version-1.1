@@ -17,14 +17,14 @@ const Ga4LineChart = ({ data = [] }) => {
     datasets: [
       {
         label: 'Page Views',
-        data: data.map(item => item.pageviews),
+        data: data.map(item => item.pageviews || 0),
         borderColor: 'rgb(54, 162, 235)',
         backgroundColor: 'rgba(54, 162, 235, 0.5)',
         yAxisID: 'y',
       },
       {
         label: 'Conversions',
-        data: data.map(item => item.conversions),
+        data: data.map(item => item.conversions || 0),
         borderColor: 'rgb(75, 192, 192)',
         backgroundColor: 'rgba(75, 192, 192, 0.5)',
         yAxisID: 'y1',
