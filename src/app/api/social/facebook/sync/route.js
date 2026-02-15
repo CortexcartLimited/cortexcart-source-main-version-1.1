@@ -30,13 +30,13 @@ export async function POST() {
         }
 
         // Get active page and token (remains the same)
-        const [sites] = await connection.query('SELECT active_facebook_page_id FROM social_connect WHERE user_email = ?', [userEmail]);
-        const pageId = sites[0]?.active_facebook_page_id;
+        const [sites] = await connection.query('SELECT page_id FROM social_connect WHERE user_email = ?', [userEmail]);
+        const pageId = sites[0]?.page_id;
         if (!pageId) throw new Error('No active Facebook Page has been set.');
 
         const [pages] = await connection.query('SELECT page_access_token_encrypted FROM social_connect WHERE page_id = ? AND user_email = ?', [pageId, userEmail]);
         if (!pages.length) throw new Error('Access token for the active page was not found.');
-        
+
         const pageAccessToken = decrypt(pages[0].page_access_token_encrypted);
 
         // --- Step 1: Fetch only the posts (ID, message, time) ---
@@ -45,7 +45,7 @@ export async function POST() {
         const postsData = await postsResponse.json();
 
         if (postsData.error) throw new Error(`Facebook API Error (Fetching Posts): ${postsData.error.message}`);
-        
+
         let postsUpserted = 0;
         if (postsData.data) {
             for (const post of postsData.data) {
@@ -54,7 +54,7 @@ export async function POST() {
                 const insightsUrl = `https://graph.facebook.com/v19.0/${post.id}/insights?metric=${insightsMetrics}&access_token=${pageAccessToken}`;
                 const insightsResponse = await fetch(insightsUrl);
                 const insightsData = await insightsResponse.json();
-                
+
                 let impressions = 0, likes = 0, shares = 0;
 
                 // Check for errors on the insights call specifically
@@ -68,7 +68,7 @@ export async function POST() {
                     likes = getLikes();
                     shares = getInsightValue('post_shares') || 0;
                 }
-                
+
                 // --- Step 3: Save to database (remains the same) ---
                 await connection.query(
                     `INSERT INTO historical_social_posts (user_email, platform, platform_post_id, content, likes, shares, impressions, posted_at)
@@ -80,11 +80,11 @@ export async function POST() {
                 postsUpserted++;
             }
         }
-        
+
         // Log sync and commit (remains the same)
         await connection.query(`INSERT INTO analysis_reports (user_email, report_type) VALUES (?, 'facebook_sync')`, [userEmail]);
         await connection.commit();
-        
+
         return NextResponse.json({ message: `Sync complete. ${postsUpserted} posts from Facebook were updated or added.` });
 
     } catch (error) {
