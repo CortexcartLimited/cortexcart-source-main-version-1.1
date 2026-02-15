@@ -5,7 +5,7 @@ import { Cog6ToothIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outl
 import FacebookPageManager from '@/app/components/social/FacebookPageManager';
 import InstagramAccountManager from '@/app/components/social/InstagramAccountManager';
 import WhatsAppConnect from './WhatsAppConnect'; // <--- IMPORTED HERE
-import WhatsAppConnect from './WhatsAppConnect'; // <--- IMPORTED HERE
+
 import useSWR from 'swr';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation'; // <--- Added
