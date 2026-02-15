@@ -26,7 +26,7 @@ export async function GET() {
       return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
     }
 
-    // Query the social_connections table
+    // Query the social_connect table
     const [rows] = await db.query(
       `SELECT COUNT(*) as currentConnections 
        FROM social_connect 

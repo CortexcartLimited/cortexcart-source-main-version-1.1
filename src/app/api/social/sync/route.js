@@ -32,7 +32,7 @@ export async function POST(request) {
     }
 
     try {
-        let query = 'SELECT platform, access_token, api_key_encrypted, api_secret_encrypted FROM social_connections WHERE user_email = ?';
+        let query = 'SELECT platform, access_token, api_key_encrypted, api_secret_encrypted FROM social_connect WHERE user_email = ?';
         const params = [user.email];
 
         if (targetPlatform) {

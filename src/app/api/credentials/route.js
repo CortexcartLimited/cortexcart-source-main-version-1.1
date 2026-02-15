@@ -23,13 +23,13 @@ export async function POST(request) {
 
         // Use INSERT ... ON DUPLICATE KEY UPDATE to handle both new and existing connections
         const query = `
-            INSERT INTO social_connections (user_email, platform, api_key_encrypted, api_secret_encrypted)
+            INSERT INTO social_connect (user_email, platform, api_key_encrypted, api_secret_encrypted)
             VALUES (?, ?, ?, ?)
             ON DUPLICATE KEY UPDATE 
                 api_key_encrypted = VALUES(api_key_encrypted), 
                 api_secret_encrypted = VALUES(api_secret_encrypted);
         `;
-        
+
         await db.query(query, [session.user.email, platform, encryptedApiKey, encryptedApiSecret]);
 
         return NextResponse.json({ message: `${platform} credentials saved successfully.` }, { status: 200 });
