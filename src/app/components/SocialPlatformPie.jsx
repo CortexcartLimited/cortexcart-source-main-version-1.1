@@ -56,7 +56,8 @@ export default function SocialPlatformPie() {
         />
         <Legend
           verticalAlign="bottom"
-          height={36}
+          height={66}
+          wrapperStyle={{ height: 66 }}
           formatter={(value) => <span style={{ color: textColor }}>{value}</span>}
         />
       </PieChart>

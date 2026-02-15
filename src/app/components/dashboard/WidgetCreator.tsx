@@ -30,10 +30,12 @@ export default function WidgetCreator({ isOpen, onClose }: WidgetCreatorProps) {
 
     const filteredCatalog = WIDGET_CATALOG.map(cat => ({
         ...cat,
-        items: cat.items.filter(item =>
-            item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.type.toLowerCase().includes(searchQuery.toLowerCase())
-        )
+        items: cat.items
+            .filter(item =>
+                item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                item.type.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            .sort((a, b) => a.label.localeCompare(b.label)) // Sort alphabetically
     })).filter(cat => cat.items.length > 0);
 
     return (
@@ -104,19 +106,23 @@ export default function WidgetCreator({ isOpen, onClose }: WidgetCreatorProps) {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            {WIDGET_CATALOG.find(c => c.category === selectedCategory)?.items.map(widget => {
-                                const w = widget as any;
-                                const isConnected = !w.platform || platformStatus?.[w.platform]?.isConnected;
-                                const isDisabled = !isConnected;
-                                return (
-                                    <WidgetCard
-                                        key={widget.type}
-                                        widget={widget}
-                                        onAdd={() => !isDisabled && handleAdd(widget)}
-                                        isDisabled={isDisabled}
-                                    />
-                                );
-                            })}
+                            {WIDGET_CATALOG
+                                .find(c => c.category === selectedCategory)
+                                ?.items
+                                .sort((a, b) => a.label.localeCompare(b.label)) // Sort alphabetically
+                                .map(widget => {
+                                    const w = widget as any;
+                                    const isConnected = !w.platform || platformStatus?.[w.platform]?.isConnected;
+                                    const isDisabled = !isConnected;
+                                    return (
+                                        <WidgetCard
+                                            key={widget.type}
+                                            widget={widget}
+                                            onAdd={() => !isDisabled && handleAdd(widget)}
+                                            isDisabled={isDisabled}
+                                        />
+                                    );
+                                })}
 
                         </div>
                     )}

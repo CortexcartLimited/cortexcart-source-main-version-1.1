@@ -255,7 +255,7 @@ export const WIDGET_REGISTRY: Record<string, RegistryItem> = {
         mapProps: (_, contextData) => ({
             data: contextData.ga4ChartData
         }),
-        wrapperClass: "p-4 bg-white dark:bg-gray-800 rounded-lg shadow h-96 overflow-hidden min-w-0"
+        wrapperClass: "p-6 bg-white dark:bg-gray-800 rounded-lg shadow h-[704px] overflow-hidden min-w-0" // Adjusted height to 704px and padding to p-6
     },
     GoogleAdsCharts: {
         component: GoogleAdsCharts,
@@ -263,7 +263,7 @@ export const WIDGET_REGISTRY: Record<string, RegistryItem> = {
             data: contextData.googleAdsData,
             currencySymbol: contextData.currencySymbol || '$'
         }),
-        wrapperClass: "p-4 bg-white dark:bg-gray-800 rounded-lg shadow h-96 overflow-hidden min-w-0"
+        wrapperClass: "p-6 bg-white dark:bg-gray-800 rounded-lg shadow h-96 overflow-hidden min-w-0"
     },
     QuickBooksStatCard: {
         component: QuickBooksStatCard,
@@ -296,18 +296,18 @@ export const WIDGET_REGISTRY: Record<string, RegistryItem> = {
             };
 
             return (
-                <div className="w-full py-4 border-b border-gray-200 dark:border-gray-700 mb-4 group/header">
+                <div className="w-full py-4 mb-1 group/header">
                     {isEditing ? (
                         <input
                             value={localTitle}
                             onChange={(e) => setLocalTitle(e.target.value)}
                             onBlur={handleBlur}
                             autoFocus
-                            className="text-2xl font-bold text-gray-800 dark:text-gray-100 bg-transparent border-dashed border-b border-gray-400 focus:outline-none w-full"
+                            className="text-2xl font-bold text-gray-800 dark:text-gray-100 bg-transparent border-dashed border-b border-gray-400 focus:outline-none w-full px-4"
                         />
                     ) : (
                         <h2
-                            className="text-2xl font-bold text-gray-800 dark:text-gray-100 cursor-text hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded px-1 -ml-1 transition-colors"
+                            className="text-2xl font-bold text-gray-800 dark:text-gray-100 cursor-text hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded px-4 -ml-1 transition-colors"
                             onClick={() => setIsEditing(true)}
                         >
                             {title}

@@ -1,9 +1,9 @@
 // app/components/StatCard.jsx
 import React from 'react';
 
-const StatCard = ({ title, value, icon }) => {
+const StatCard = ({ title, value, icon, className = '' }) => {
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md flex items-center justify-between border border-gray-200 dark:border-gray-700">
+    <div className={`bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md flex items-center justify-between border border-gray-200 dark:border-gray-700 ${className}`}>
       <div>
         <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
         <p className="text-3xl font-bold dark:text-gray-100">{value}</p>

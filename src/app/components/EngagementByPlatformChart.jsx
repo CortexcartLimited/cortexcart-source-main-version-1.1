@@ -13,7 +13,7 @@ export default function EngagementByPlatformChart({ data }) {
   }));
 
   return (
-    <div className="relative h-full w-full">
+    <div className="relative h-full w-full px-8 py-8">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />

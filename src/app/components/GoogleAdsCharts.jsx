@@ -23,10 +23,10 @@ export default function GoogleAdsCharts({ data, currencySymbol = '$' }) {
     <div className="space-y-8">
       {/* 1. Key Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <StatCard title="Ad Clicks" value={parseInt(data.advertiserAdClicks).toLocaleString()} icon="🖱️" />
-        <StatCard title="Impressions" value={parseInt(data.advertiserAdImpressions).toLocaleString()} icon="👁️" />
-        <StatCard title="Total Cost" value={formatCurrency(data.advertiserAdCost)} icon="💲" />
-        <StatCard title="Conversions" value={parseInt(data.advertiserAdConversions).toLocaleString()} icon="🎯" />
+        <StatCard title="Ad Clicks" value={parseInt(data.advertiserAdClicks).toLocaleString()} icon="🖱️" className="border-none shadow-none" />
+        <StatCard title="Impressions" value={parseInt(data.advertiserAdImpressions).toLocaleString()} icon="👁️" className="border-none shadow-none" />
+        <StatCard title="Total Cost" value={formatCurrency(data.advertiserAdCost)} icon="💲" className="border-none shadow-none" />
+        <StatCard title="Conversions" value={parseInt(data.advertiserAdConversions).toLocaleString()} icon="🎯" className="border-none shadow-none" />
       </div>
 
       {/* 2. Calculated Metrics */}
