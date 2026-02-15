@@ -31,10 +31,11 @@ const SocialConnectionsClient = () => {
     useEffect(() => {
         if (successParam === 'tiktok_connected') {
             // Trigger a background sync for TikTok specifically
-            fetch('/api/social/sync', {
+            // Trigger a background sync for TikTok specifically
+            fetch('/api/social/tiktok/sync', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ platform: 'tiktok' })
+                body: JSON.stringify({}) // Body not utilized by this endpoint but kept for valid JSON
             }).then(() => {
                 console.log("Auto-synced TikTok posts after connection.");
                 // Remove the param to avoid re-syncing on refresh (optional but good UX)
