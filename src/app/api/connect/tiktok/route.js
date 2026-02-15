@@ -19,7 +19,9 @@ export async function GET(req) {
     // video.list: read videos
     // video.upload: upload videos
     const scopes = [
-        'user.info.basic'
+        'user.info.basic',
+        'video.list',
+        'video.upload'
     ];
 
     // State to act as CSRF protection and carry user context
