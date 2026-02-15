@@ -50,7 +50,7 @@ export async function POST(request) {
 
         for (const conn of connections) {
             const [postsToUpdate] = await db.query(
-                'SELECT id, likes, shares, impressions FROM social_posts WHERE user_email = ? AND platform = ?',
+                'SELECT id, likes, shares, impressions FROM historical_social_posts WHERE user_email = ? AND platform = ?',
                 [user.email, conn.platform]
             );
 
@@ -74,7 +74,7 @@ export async function POST(request) {
                 try {
                     for (const post of updatedMetrics) {
                         await connection.query(
-                            'UPDATE social_posts SET likes = ?, shares = ?, impressions = ? WHERE id = ?',
+                            'UPDATE historical_social_posts SET likes = ?, shares = ?, impressions = ? WHERE id = ?',
                             [post.likes, post.shares, post.impressions, post.id]
                         );
                         totalUpdated++;
